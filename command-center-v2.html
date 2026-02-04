@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Command Center</title>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -33,22 +35,10 @@
             --border-color: #e0e0e0;
         }
 
-        .light-mode .sidebar {
-            background: var(--bg-sidebar);
-        }
-
-        .light-mode .task-card {
-            background: var(--bg-card);
-            border-color: var(--border-color);
-        }
-
-        .light-mode .modal-content {
-            background: var(--bg-card);
-        }
-
-        .light-mode .form-input {
-            background: var(--bg-dark);
-        }
+        .light-mode .sidebar { background: var(--bg-sidebar); }
+        .light-mode .task-card { background: var(--bg-card); border-color: var(--border-color); }
+        .light-mode .modal-content { background: var(--bg-card); }
+        .light-mode .form-input { background: var(--bg-dark); }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,7 +48,51 @@
             display: flex;
         }
 
-        /* Sidebar */
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .loading-overlay.hidden { display: none; }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Sync Status */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: var(--bg-card);
+        }
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+        .sync-dot.syncing { background: var(--yellow); animation: pulse 1s infinite; }
+        .sync-dot.error { background: var(--red); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
         /* Theme Toggle */
         .theme-toggle {
             width: 40px;
@@ -74,12 +108,9 @@
             font-size: 1.2rem;
             transition: all 0.2s;
         }
+        .theme-toggle:hover { background: var(--bg-hover); border-color: var(--purple); }
 
-        .theme-toggle:hover {
-            background: var(--bg-hover);
-            border-color: var(--purple);
-        }
-
+        /* Sidebar */
         .sidebar {
             width: 240px;
             background: var(--bg-sidebar);
@@ -112,10 +143,7 @@
 
         .sidebar-title { font-weight: 600; font-size: 1.1rem; }
 
-        .sidebar-section {
-            padding: 20px;
-        }
-
+        .sidebar-section { padding: 20px; }
         .sidebar-label {
             font-size: 0.75rem;
             color: var(--text-secondary);
@@ -125,11 +153,7 @@
         }
 
         .sidebar-nav { list-style: none; }
-
-        .sidebar-nav li {
-            margin-bottom: 4px;
-        }
-
+        .sidebar-nav li { margin-bottom: 4px; }
         .sidebar-nav a {
             display: flex;
             align-items: center;
@@ -141,23 +165,16 @@
             font-size: 0.9rem;
             transition: all 0.2s;
         }
-
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
+        .sidebar-nav a:hover, .sidebar-nav a.active {
             background: var(--bg-card);
             color: var(--text-primary);
         }
-
         .sidebar-nav a.active {
             background: rgba(139, 92, 246, 0.2);
             color: var(--purple);
         }
 
-        .project-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 20px;
-        }
+        .project-list { flex: 1; overflow-y: auto; padding: 0 20px; }
 
         .project-link {
             display: flex;
@@ -172,9 +189,7 @@
             margin-bottom: 4px;
             cursor: pointer;
         }
-
-        .project-link:hover,
-        .project-link.active {
+        .project-link:hover, .project-link.active {
             background: var(--bg-card);
             color: var(--text-primary);
         }
@@ -196,12 +211,7 @@
             margin-top: auto;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .user-info { display: flex; align-items: center; gap: 10px; }
         .user-avatar {
             width: 32px;
             height: 32px;
@@ -213,7 +223,6 @@
             font-weight: 600;
             font-size: 0.8rem;
         }
-
         .user-name { font-size: 0.9rem; }
         .user-email { font-size: 0.75rem; color: var(--text-secondary); }
 
@@ -232,12 +241,7 @@
             margin-bottom: 30px;
         }
 
-        .page-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
+        .page-title { display: flex; align-items: center; gap: 15px; }
         .page-title h1 { font-size: 1.5rem; font-weight: 600; }
         .page-title .updated { font-size: 0.85rem; color: var(--text-secondary); }
 
@@ -253,20 +257,13 @@
             align-items: center;
             gap: 8px;
         }
-
-        .btn-primary {
-            background: var(--purple);
-            color: white;
-        }
-
+        .btn-primary { background: var(--purple); color: white; }
         .btn-primary:hover { background: #7c3aed; }
-
         .btn-secondary {
             background: var(--bg-card);
             color: var(--text-primary);
             border: 1px solid var(--border-color);
         }
-
         .btn-secondary:hover { background: var(--bg-hover); }
 
         /* Stats Cards */
@@ -284,13 +281,7 @@
             border: 1px solid var(--border-color);
         }
 
-        .stat-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
+        .stat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .stat-icon {
             width: 24px;
             height: 24px;
@@ -300,7 +291,6 @@
             justify-content: center;
             font-size: 0.8rem;
         }
-
         .stat-icon.green { background: rgba(34, 197, 94, 0.2); color: var(--green); }
         .stat-icon.blue { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
         .stat-icon.red { background: rgba(239, 68, 68, 0.2); color: var(--red); }
@@ -308,15 +298,9 @@
 
         .stat-label { font-size: 0.85rem; color: var(--text-secondary); }
         .stat-value { font-size: 2rem; font-weight: 600; }
-        .stat-sub { font-size: 0.9rem; color: var(--text-secondary); }
 
         /* View Tabs */
-        .view-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
+        .view-tabs { display: flex; gap: 10px; margin-bottom: 30px; }
         .view-tab {
             padding: 10px 20px;
             border-radius: 8px;
@@ -330,7 +314,6 @@
             gap: 8px;
             transition: all 0.2s;
         }
-
         .view-tab:hover { background: var(--bg-hover); color: var(--text-primary); }
         .view-tab.active { background: var(--bg-hover); color: var(--text-primary); border-color: var(--purple); }
 
@@ -352,19 +335,9 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        .project-card:hover { border-color: var(--purple); transform: translateY(-2px); }
 
-        .project-card:hover {
-            border-color: var(--purple);
-            transform: translateY(-2px);
-        }
-
-        .project-card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
+        .project-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
         .project-card-icon {
             width: 40px;
             height: 40px;
@@ -375,15 +348,10 @@
             font-weight: 600;
             font-size: 1rem;
         }
-
         .project-card-info { flex: 1; }
         .project-card-name { font-weight: 600; font-size: 1rem; }
         .project-card-tasks { font-size: 0.85rem; color: var(--text-secondary); }
-
-        .project-card-percent {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
+        .project-card-percent { font-size: 1.25rem; font-weight: 600; }
 
         .project-progress {
             height: 4px;
@@ -391,18 +359,10 @@
             border-radius: 2px;
             overflow: hidden;
         }
-
-        .project-progress-bar {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.3s;
-        }
+        .project-progress-bar { height: 100%; border-radius: 2px; transition: width 0.3s; }
 
         /* Kanban View */
-        .kanban-container {
-            display: none;
-        }
-
+        .kanban-container { display: none; }
         .kanban-container.active { display: block; }
 
         .kanban-header {
@@ -420,15 +380,9 @@
             cursor: pointer;
             font-size: 0.9rem;
         }
-
         .back-btn:hover { color: var(--text-primary); }
 
-        .kanban-project-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
+        .kanban-project-info { display: flex; align-items: center; gap: 15px; }
         .kanban-project-icon {
             width: 48px;
             height: 48px;
@@ -439,7 +393,6 @@
             font-weight: 600;
             font-size: 1.2rem;
         }
-
         .kanban-project-name { font-size: 1.5rem; font-weight: 600; }
 
         .kanban-tabs {
@@ -448,7 +401,6 @@
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 20px;
         }
-
         .kanban-tab {
             padding: 12px 0;
             color: var(--text-secondary);
@@ -457,16 +409,10 @@
             border-bottom: 2px solid transparent;
             transition: all 0.2s;
         }
-
         .kanban-tab:hover { color: var(--text-primary); }
         .kanban-tab.active { color: var(--text-primary); border-bottom-color: var(--text-primary); }
 
-        .kanban-filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
+        .kanban-filters { display: flex; gap: 10px; margin-bottom: 20px; }
         .filter-chip {
             padding: 6px 14px;
             border-radius: 20px;
@@ -477,7 +423,6 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .filter-chip:hover { color: var(--text-primary); }
         .filter-chip.active { background: var(--text-primary); color: var(--bg-dark); }
 
@@ -503,22 +448,11 @@
             padding-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
         }
-
-        .column-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
+        .column-dot { width: 8px; height: 8px; border-radius: 50%; }
         .column-title { font-weight: 500; font-size: 0.9rem; text-transform: uppercase; }
         .column-count { color: var(--text-secondary); font-size: 0.85rem; }
 
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-height: 300px;
-        }
+        .task-list { display: flex; flex-direction: column; gap: 10px; min-height: 300px; }
 
         .task-card {
             background: var(--bg-dark);
@@ -528,33 +462,12 @@
             cursor: grab;
             transition: all 0.2s;
         }
+        .task-card:hover { border-color: var(--purple); }
+        .task-card.dragging { opacity: 0.5; cursor: grabbing; }
 
-        .task-card:hover {
-            border-color: var(--purple);
-        }
-
-        .task-card.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
-        }
-
-        .task-title {
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-
-        .task-meta {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .task-tag {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-        }
-
+        .task-title { font-size: 0.9rem; margin-bottom: 10px; }
+        .task-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+        .task-tag { padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; }
         .task-tag.due { background: rgba(239, 68, 68, 0.2); color: var(--red); }
         .task-tag.assignee { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
 
@@ -569,13 +482,8 @@
             font-size: 0.85rem;
             transition: all 0.2s;
         }
+        .add-task-btn:hover { border-color: var(--purple); color: var(--text-primary); }
 
-        .add-task-btn:hover {
-            border-color: var(--purple);
-            color: var(--text-primary);
-        }
-
-        /* Overview View */
         .overview-container { display: block; }
         .overview-container.hidden { display: none; }
 
@@ -593,7 +501,6 @@
             justify-content: center;
             align-items: center;
         }
-
         .modal.active { display: flex; }
 
         .modal-content {
@@ -611,20 +518,11 @@
             align-items: center;
             margin-bottom: 24px;
         }
-
         .modal-title { font-size: 1.25rem; font-weight: 600; }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
+        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; }
 
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-size: 0.9rem; margin-bottom: 8px; }
-
         .form-input {
             width: 100%;
             padding: 12px;
@@ -634,24 +532,10 @@
             color: var(--text-primary);
             font-size: 0.95rem;
         }
+        .form-input:focus { outline: none; border-color: var(--purple); }
+        .form-textarea { min-height: 100px; resize: vertical; font-family: inherit; }
 
-        .form-input:focus {
-            outline: none;
-            border-color: var(--purple);
-        }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        .color-options {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
+        .color-options { display: flex; gap: 10px; flex-wrap: wrap; }
         .color-option {
             width: 32px;
             height: 32px;
@@ -660,16 +544,10 @@
             border: 2px solid transparent;
             transition: all 0.2s;
         }
-
         .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; }
 
-        .status-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
+        .status-options { display: flex; flex-wrap: wrap; gap: 8px; }
         .status-option {
             padding: 8px 16px;
             border-radius: 20px;
@@ -680,28 +558,20 @@
             font-size: 0.85rem;
             transition: all 0.2s;
         }
-
         .status-option:hover { color: var(--text-primary); }
         .status-option.selected { background: rgba(34, 197, 94, 0.2); color: var(--green); border-color: var(--green); }
 
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
+        .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
 
         /* Responsive */
         @media (max-width: 1200px) {
             .projects-grid { grid-template-columns: repeat(2, 1fr); }
             .kanban-board { grid-template-columns: repeat(3, 1fr); }
         }
-
         @media (max-width: 900px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .kanban-board { grid-template-columns: repeat(2, 1fr); }
         }
-
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .main { margin-left: 0; }
@@ -711,6 +581,11 @@
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -755,13 +630,13 @@
                         <div class="updated">Updated <span id="update-time"></span></div>
                     </div>
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode" id="theme-toggle">
-                        🌙
-                    </button>
-                    <button class="btn btn-secondary" onclick="location.reload()">
-                        <span>🔄</span> Refresh
-                    </button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div class="sync-status" id="sync-status">
+                        <div class="sync-dot" id="sync-dot"></div>
+                        <span id="sync-text">Synced</span>
+                    </div>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode" id="theme-toggle">🌙</button>
+                    <button class="btn btn-secondary" onclick="refreshData()"><span>🔄</span> Refresh</button>
                 </div>
             </div>
 
@@ -799,31 +674,21 @@
 
             <!-- View Tabs -->
             <div class="view-tabs">
-                <button class="view-tab active" onclick="setViewTab(this, 'projects')">
-                    <span>📊</span> Projects
-                </button>
-                <button class="view-tab" onclick="setViewTab(this, 'tasks')">
-                    <span>📋</span> All Tasks
-                </button>
+                <button class="view-tab active" onclick="setViewTab(this, 'projects')"><span>📊</span> Projects</button>
+                <button class="view-tab" onclick="setViewTab(this, 'tasks')"><span>📋</span> All Tasks</button>
             </div>
 
             <!-- Projects Section -->
             <div id="projects-view">
                 <div class="section-title">Projects</div>
                 <div class="projects-grid" id="projects-grid"></div>
-
-                <!-- Add Project Card -->
-                <button class="btn btn-primary" onclick="openProjectModal()">
-                    + Add Project
-                </button>
+                <button class="btn btn-primary" onclick="openProjectModal()">+ Add Project</button>
             </div>
         </div>
 
-        <!-- Kanban View (Hidden by default) -->
+        <!-- Kanban View -->
         <div class="kanban-container" id="kanban-container">
-            <div class="back-btn" onclick="showOverview()">
-                ← Back to projects
-            </div>
+            <div class="back-btn" onclick="showOverview()">← Back to projects</div>
 
             <div class="kanban-header">
                 <div class="kanban-project-info">
@@ -832,9 +697,7 @@
                         <div class="kanban-project-name" id="kanban-project-name">Project Name</div>
                     </div>
                 </div>
-                <button class="btn btn-secondary" onclick="openProjectSettings()">
-                    ⚙️ Settings
-                </button>
+                <button class="btn btn-secondary" onclick="openProjectSettings()">⚙️ Settings</button>
             </div>
 
             <div class="kanban-tabs">
@@ -922,6 +785,11 @@
             </div>
 
             <div class="form-group">
+                <label class="form-label">Slack Channel</label>
+                <input type="text" class="form-input" id="project-slack-input" placeholder="e.g. #airfresh">
+            </div>
+
+            <div class="form-group">
                 <label class="form-label">Color</label>
                 <div class="color-options" id="color-options">
                     <div class="color-option selected" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
@@ -1004,30 +872,31 @@
     </div>
 
     <script>
-        // Data Store (localStorage)
-        const STORAGE_KEY = 'pepper_command_center';
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://prdhntwypgaakppvklbq.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_BHzTCuZc4a499d8uIMBGyQ_CUXtajbH';
 
-        let data = {
-            projects: [],
-            tasks: []
-        };
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Data Store
+        let projects = [];
+        let tasks = [];
         let currentProjectId = null;
         let currentFilter = 'all';
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
+        document.addEventListener('DOMContentLoaded', async () => {
             loadTheme();
-            if (data.projects.length === 0) {
-                initDefaultProjects();
-            }
+            await loadData();
             render();
             updateTime();
             setInterval(updateTime, 60000);
+
+            // Set up real-time subscriptions
+            setupRealtimeSubscriptions();
         });
 
-        // Theme Toggle
+        // Theme
         function loadTheme() {
             const savedTheme = localStorage.getItem('pepper_theme');
             if (savedTheme === 'light') {
@@ -1042,49 +911,91 @@
             document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
         }
 
-        function loadData() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                data = JSON.parse(saved);
+        // Sync Status
+        function setSyncStatus(status) {
+            const dot = document.getElementById('sync-dot');
+            const text = document.getElementById('sync-text');
+            dot.className = 'sync-dot';
+
+            if (status === 'syncing') {
+                dot.classList.add('syncing');
+                text.textContent = 'Syncing...';
+            } else if (status === 'error') {
+                dot.classList.add('error');
+                text.textContent = 'Sync error';
+            } else {
+                text.textContent = 'Synced';
             }
         }
 
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        // Loading
+        function setLoading(show) {
+            document.getElementById('loading').classList.toggle('hidden', !show);
         }
 
-        function initDefaultProjects() {
-            data.projects = [
-                { id: generateId(), name: 'Air Fresh Marketing', color: '#3b82f6', status: 'active', description: 'Marketing campaigns and brand assets' },
-                { id: generateId(), name: 'Humming Agent AI', color: '#8b5cf6', status: 'active', description: 'AI agent development' },
-                { id: generateId(), name: 'Immerse Forge', color: '#22c55e', status: 'active', description: 'VR/AR experiences' },
-                { id: generateId(), name: 'Slack - General', color: '#f59e0b', status: 'active', description: 'General team tasks' },
-                { id: generateId(), name: 'Slack - Dev', color: '#06b6d4', status: 'active', description: 'Development tasks from Slack' }
-            ];
+        // Data Functions
+        async function loadData() {
+            setLoading(true);
+            setSyncStatus('syncing');
 
-            // Add some sample tasks
-            const sampleTasks = [
-                { title: 'Update brand guidelines', projectId: data.projects[0].id, status: 'in-progress', type: 'task', priority: 'high' },
-                { title: 'Launch Q1 campaign', projectId: data.projects[0].id, status: 'not-started', type: 'task', priority: 'medium' },
-                { title: 'Train new AI model', projectId: data.projects[1].id, status: 'in-progress', type: 'feature', priority: 'high' },
-                { title: 'Fix authentication bug', projectId: data.projects[1].id, status: 'testing', type: 'bug', priority: 'critical' },
-                { title: 'VR prototype v2', projectId: data.projects[2].id, status: 'not-started', type: 'feature', priority: 'medium' },
-                { title: 'Review team proposals', projectId: data.projects[3].id, status: 'completed', type: 'task', priority: 'low' },
-            ];
+            try {
+                // Load projects
+                const { data: projectData, error: projectError } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('created_at', { ascending: true });
 
-            sampleTasks.forEach(t => {
-                data.tasks.push({
-                    id: generateId(),
-                    ...t,
-                    createdAt: new Date().toISOString()
-                });
-            });
+                if (projectError) throw projectError;
+                projects = projectData || [];
 
-            saveData();
+                // Load tasks
+                const { data: taskData, error: taskError } = await supabase
+                    .from('tasks')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (taskError) throw taskError;
+                tasks = taskData || [];
+
+                setSyncStatus('synced');
+            } catch (error) {
+                console.error('Error loading data:', error);
+                setSyncStatus('error');
+
+                // Fallback to localStorage if Supabase fails
+                const saved = localStorage.getItem('pepper_command_center');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    projects = data.projects || [];
+                    tasks = data.tasks || [];
+                }
+            } finally {
+                setLoading(false);
+            }
         }
 
-        function generateId() {
-            return Math.random().toString(36).substr(2, 9);
+        async function refreshData() {
+            await loadData();
+            render();
+        }
+
+        // Real-time Subscriptions
+        function setupRealtimeSubscriptions() {
+            // Subscribe to projects changes
+            supabase
+                .channel('projects-changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
+                    refreshData();
+                })
+                .subscribe();
+
+            // Subscribe to tasks changes
+            supabase
+                .channel('tasks-changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
+                    refreshData();
+                })
+                .subscribe();
         }
 
         function updateTime() {
@@ -1108,7 +1019,7 @@
 
         function renderSidebar() {
             const container = document.getElementById('sidebar-projects');
-            container.innerHTML = data.projects
+            container.innerHTML = projects
                 .filter(p => p.status !== 'archived')
                 .map(p => `
                     <div class="project-link ${currentProjectId === p.id ? 'active' : ''}" onclick="openProject('${p.id}')">
@@ -1121,11 +1032,10 @@
         }
 
         function renderStats() {
-            const tasks = data.tasks;
             const completed = tasks.filter(t => t.status === 'completed').length;
             const inProgress = tasks.filter(t => t.status === 'in-progress').length;
             const highPriority = tasks.filter(t => t.priority === 'high' || t.priority === 'critical').length;
-            const activeProjects = data.projects.filter(p => p.status === 'active').length;
+            const activeProjects = projects.filter(p => p.status === 'active').length;
 
             document.getElementById('stat-completed').textContent = completed;
             document.getElementById('stat-progress').textContent = inProgress;
@@ -1135,10 +1045,10 @@
 
         function renderProjects() {
             const container = document.getElementById('projects-grid');
-            container.innerHTML = data.projects
+            container.innerHTML = projects
                 .filter(p => p.status !== 'archived')
                 .map(p => {
-                    const projectTasks = data.tasks.filter(t => t.projectId === p.id);
+                    const projectTasks = tasks.filter(t => t.project_id === p.id);
                     const completed = projectTasks.filter(t => t.status === 'completed').length;
                     const total = projectTasks.length;
                     const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -1165,7 +1075,7 @@
         }
 
         function renderKanban() {
-            const project = data.projects.find(p => p.id === currentProjectId);
+            const project = projects.find(p => p.id === currentProjectId);
             if (!project) return;
 
             document.getElementById('kanban-project-name').textContent = project.name;
@@ -1175,24 +1085,25 @@
             icon.style.color = project.color;
 
             const statuses = ['not-started', 'in-progress', 'testing', 'blocked', 'completed'];
-            const projectTasks = data.tasks.filter(t => t.projectId === currentProjectId);
+            const projectTasks = tasks.filter(t => t.project_id === currentProjectId);
 
             statuses.forEach(status => {
                 const list = document.getElementById(`list-${status}`);
-                const tasks = projectTasks.filter(t => {
+                const filteredTasks = projectTasks.filter(t => {
                     if (t.status !== status) return false;
                     if (currentFilter === 'all') return true;
                     return t.type === currentFilter;
                 });
 
-                document.getElementById(`count-${status}`).textContent = tasks.length;
+                document.getElementById(`count-${status}`).textContent = filteredTasks.length;
 
-                list.innerHTML = tasks.map(t => `
+                list.innerHTML = filteredTasks.map(t => `
                     <div class="task-card" draggable="true" data-task-id="${t.id}" onclick="openTaskModal('${status}', '${t.id}')">
                         <div class="task-title">${t.title}</div>
                         <div class="task-meta">
                             ${t.priority === 'high' || t.priority === 'critical' ? `<span class="task-tag due">${t.priority}</span>` : ''}
                             ${t.type !== 'task' ? `<span class="task-tag" style="background: ${t.type === 'bug' ? 'rgba(239,68,68,0.2); color: var(--red)' : 'rgba(139,92,246,0.2); color: var(--purple)'};">${t.type}</span>` : ''}
+                            ${t.source === 'slack' ? `<span class="task-tag" style="background: rgba(59,130,246,0.2); color: var(--blue);">slack</span>` : ''}
                         </div>
                     </div>
                 `).join('');
@@ -1217,17 +1128,11 @@
             document.getElementById('overview-container').classList.add('hidden');
             document.getElementById('kanban-container').classList.add('active');
             document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
-            document.querySelectorAll('.project-link').forEach(l => {
-                l.classList.toggle('active', l.onclick.toString().includes(projectId));
-            });
             renderSidebar();
             renderKanban();
         }
 
-        function showAllTasks() {
-            // For now, show overview with tasks tab selected
-            showOverview();
-        }
+        function showAllTasks() { showOverview(); }
 
         function setViewTab(btn, view) {
             document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
@@ -1247,18 +1152,16 @@
             const titleEl = document.getElementById('project-modal-title');
 
             if (projectId) {
-                const project = data.projects.find(p => p.id === projectId);
+                const project = projects.find(p => p.id === projectId);
                 titleEl.textContent = 'Edit Project';
                 document.getElementById('project-name-input').value = project.name;
                 document.getElementById('project-desc-input').value = project.description || '';
+                document.getElementById('project-slack-input').value = project.slack_channel || '';
                 document.getElementById('project-id-input').value = project.id;
 
-                // Set color
                 document.querySelectorAll('.color-option').forEach(c => {
                     c.classList.toggle('selected', c.dataset.color === project.color);
                 });
-
-                // Set status
                 document.querySelectorAll('.status-option[data-status]').forEach(s => {
                     s.classList.toggle('selected', s.dataset.status === project.status);
                 });
@@ -1266,63 +1169,53 @@
                 titleEl.textContent = 'Add Project';
                 document.getElementById('project-name-input').value = '';
                 document.getElementById('project-desc-input').value = '';
+                document.getElementById('project-slack-input').value = '';
                 document.getElementById('project-id-input').value = '';
 
-                // Reset selections
-                document.querySelectorAll('.color-option').forEach((c, i) => {
-                    c.classList.toggle('selected', i === 0);
-                });
-                document.querySelectorAll('.status-option[data-status]').forEach((s, i) => {
-                    s.classList.toggle('selected', i === 0);
-                });
+                document.querySelectorAll('.color-option').forEach((c, i) => c.classList.toggle('selected', i === 0));
+                document.querySelectorAll('.status-option[data-status]').forEach((s, i) => s.classList.toggle('selected', i === 0));
             }
 
             modal.classList.add('active');
         }
 
-        function openProjectSettings() {
-            openProjectModal(currentProjectId);
-        }
+        function openProjectSettings() { openProjectModal(currentProjectId); }
+        function closeProjectModal() { document.getElementById('project-modal').classList.remove('active'); }
 
-        function closeProjectModal() {
-            document.getElementById('project-modal').classList.remove('active');
-        }
-
-        function saveProject() {
+        async function saveProject() {
             const id = document.getElementById('project-id-input').value;
             const name = document.getElementById('project-name-input').value.trim();
             const description = document.getElementById('project-desc-input').value.trim();
+            const slack_channel = document.getElementById('project-slack-input').value.trim();
             const color = document.querySelector('.color-option.selected')?.dataset.color || '#8b5cf6';
             const status = document.querySelector('.status-option[data-status].selected')?.dataset.status || 'active';
 
-            if (!name) {
-                alert('Please enter a project name');
-                return;
-            }
+            if (!name) { alert('Please enter a project name'); return; }
 
-            if (id) {
-                // Update existing
-                const project = data.projects.find(p => p.id === id);
-                if (project) {
-                    project.name = name;
-                    project.description = description;
-                    project.color = color;
-                    project.status = status;
+            setSyncStatus('syncing');
+
+            try {
+                if (id) {
+                    const { error } = await supabase
+                        .from('projects')
+                        .update({ name, description, slack_channel, color, status })
+                        .eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase
+                        .from('projects')
+                        .insert([{ name, description, slack_channel, color, status }]);
+                    if (error) throw error;
                 }
-            } else {
-                // Create new
-                data.projects.push({
-                    id: generateId(),
-                    name,
-                    description,
-                    color,
-                    status
-                });
-            }
 
-            saveData();
-            closeProjectModal();
-            render();
+                await refreshData();
+                closeProjectModal();
+                setSyncStatus('synced');
+            } catch (error) {
+                console.error('Error saving project:', error);
+                setSyncStatus('error');
+                alert('Failed to save project');
+            }
         }
 
         // Task Modal
@@ -1334,22 +1227,15 @@
             document.getElementById('task-status-input').value = status;
 
             if (taskId) {
-                const task = data.tasks.find(t => t.id === taskId);
+                const task = tasks.find(t => t.id === taskId);
                 titleEl.textContent = 'Edit Task';
                 document.getElementById('task-title-input').value = task.title;
                 document.getElementById('task-desc-input').value = task.description || '';
                 document.getElementById('task-id-input').value = task.id;
                 deleteBtn.style.display = 'block';
 
-                // Set type
-                document.querySelectorAll('.status-option[data-type]').forEach(s => {
-                    s.classList.toggle('selected', s.dataset.type === task.type);
-                });
-
-                // Set priority
-                document.querySelectorAll('.status-option[data-priority]').forEach(s => {
-                    s.classList.toggle('selected', s.dataset.priority === task.priority);
-                });
+                document.querySelectorAll('.status-option[data-type]').forEach(s => s.classList.toggle('selected', s.dataset.type === task.type));
+                document.querySelectorAll('.status-option[data-priority]').forEach(s => s.classList.toggle('selected', s.dataset.priority === task.priority));
             } else {
                 titleEl.textContent = 'Add Task';
                 document.getElementById('task-title-input').value = '';
@@ -1357,23 +1243,16 @@
                 document.getElementById('task-id-input').value = '';
                 deleteBtn.style.display = 'none';
 
-                // Reset selections
-                document.querySelectorAll('.status-option[data-type]').forEach((s, i) => {
-                    s.classList.toggle('selected', i === 0);
-                });
-                document.querySelectorAll('.status-option[data-priority]').forEach((s, i) => {
-                    s.classList.toggle('selected', i === 1); // Default to medium
-                });
+                document.querySelectorAll('.status-option[data-type]').forEach((s, i) => s.classList.toggle('selected', i === 0));
+                document.querySelectorAll('.status-option[data-priority]').forEach((s, i) => s.classList.toggle('selected', i === 1));
             }
 
             modal.classList.add('active');
         }
 
-        function closeTaskModal() {
-            document.getElementById('task-modal').classList.remove('active');
-        }
+        function closeTaskModal() { document.getElementById('task-modal').classList.remove('active'); }
 
-        function saveTask() {
+        async function saveTask() {
             const id = document.getElementById('task-id-input').value;
             const title = document.getElementById('task-title-input').value.trim();
             const description = document.getElementById('task-desc-input').value.trim();
@@ -1381,50 +1260,59 @@
             const type = document.querySelector('.status-option[data-type].selected')?.dataset.type || 'task';
             const priority = document.querySelector('.status-option[data-priority].selected')?.dataset.priority || 'medium';
 
-            if (!title) {
-                alert('Please enter a task title');
-                return;
-            }
+            if (!title) { alert('Please enter a task title'); return; }
 
-            if (id) {
-                // Update existing
-                const task = data.tasks.find(t => t.id === id);
-                if (task) {
-                    task.title = title;
-                    task.description = description;
-                    task.type = type;
-                    task.priority = priority;
+            setSyncStatus('syncing');
+
+            try {
+                if (id) {
+                    const { error } = await supabase
+                        .from('tasks')
+                        .update({ title, description, type, priority })
+                        .eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase
+                        .from('tasks')
+                        .insert([{
+                            project_id: currentProjectId,
+                            title,
+                            description,
+                            status,
+                            type,
+                            priority,
+                            source: 'manual'
+                        }]);
+                    if (error) throw error;
                 }
-            } else {
-                // Create new
-                data.tasks.push({
-                    id: generateId(),
-                    projectId: currentProjectId,
-                    title,
-                    description,
-                    status,
-                    type,
-                    priority,
-                    createdAt: new Date().toISOString()
-                });
-            }
 
-            saveData();
-            closeTaskModal();
-            renderKanban();
-            renderStats();
+                await refreshData();
+                closeTaskModal();
+                setSyncStatus('synced');
+            } catch (error) {
+                console.error('Error saving task:', error);
+                setSyncStatus('error');
+                alert('Failed to save task');
+            }
         }
 
-        function deleteTask() {
+        async function deleteTask() {
             const id = document.getElementById('task-id-input').value;
-            if (!id) return;
+            if (!id || !confirm('Delete this task?')) return;
 
-            if (confirm('Delete this task?')) {
-                data.tasks = data.tasks.filter(t => t.id !== id);
-                saveData();
+            setSyncStatus('syncing');
+
+            try {
+                const { error } = await supabase.from('tasks').delete().eq('id', id);
+                if (error) throw error;
+
+                await refreshData();
                 closeTaskModal();
-                renderKanban();
-                renderStats();
+                setSyncStatus('synced');
+            } catch (error) {
+                console.error('Error deleting task:', error);
+                setSyncStatus('error');
+                alert('Failed to delete task');
             }
         }
 
@@ -1455,9 +1343,7 @@
 
         function handleDragEnd(e) {
             e.target.classList.remove('dragging');
-            document.querySelectorAll('.task-list').forEach(list => {
-                list.style.background = '';
-            });
+            document.querySelectorAll('.task-list').forEach(list => list.style.background = '');
         }
 
         function handleDragOver(e) {
@@ -1465,11 +1351,9 @@
             e.currentTarget.style.background = 'rgba(139, 92, 246, 0.1)';
         }
 
-        function handleDragLeave(e) {
-            e.currentTarget.style.background = '';
-        }
+        function handleDragLeave(e) { e.currentTarget.style.background = ''; }
 
-        function handleDrop(e) {
+        async function handleDrop(e) {
             e.preventDefault();
             e.currentTarget.style.background = '';
 
@@ -1479,17 +1363,25 @@
             const column = e.currentTarget.closest('.kanban-column');
             const newStatus = column.dataset.status;
 
-            // Update task status
-            const task = data.tasks.find(t => t.id === taskId);
-            if (task) {
-                task.status = newStatus;
-                saveData();
-                renderKanban();
-                renderStats();
+            setSyncStatus('syncing');
+
+            try {
+                const { error } = await supabase
+                    .from('tasks')
+                    .update({ status: newStatus })
+                    .eq('id', taskId);
+
+                if (error) throw error;
+
+                await refreshData();
+                setSyncStatus('synced');
+            } catch (error) {
+                console.error('Error updating task:', error);
+                setSyncStatus('error');
             }
         }
 
-        // Color/Status selection handlers
+        // Event Listeners
         document.querySelectorAll('.color-option').forEach(option => {
             option.addEventListener('click', () => {
                 document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
@@ -1518,7 +1410,6 @@
             });
         });
 
-        // Close modals on outside click
         document.getElementById('project-modal').addEventListener('click', (e) => {
             if (e.target.id === 'project-modal') closeProjectModal();
         });
