@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Labs - Pepper's Projects</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #ffffff;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #a0aec0;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-live {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+
+        .status-testing {
+            background: rgba(246, 173, 85, 0.2);
+            color: #f6ad55;
+        }
+
+        .status-building {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .card-description {
+            color: #a0aec0;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .card-links {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #a0aec0;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Labs</h1>
+        <p class="subtitle">Active Projects & Demos</p>
+
+        <!-- AI Employees -->
+        <div class="section">
+            <div class="section-title">🤖 AI Employees</div>
+            <div class="grid">
+                <!-- ATLAS -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">⚡ ATLAS Sales Employee</div>
+                        <span class="status-badge status-testing">Testing</span>
+                    </div>
+                    <div class="card-description">
+                        Autonomous AI employee that researches prospects, generates personalized emails, and creates custom landing pages. 24/7 operation with built-in safety features.
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Prospects</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Landing Pages</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">$0.16</div>
+                            <div class="stat-label">Per Lead</div>
+                        </div>
+                    </div>
+                    <div class="card-links">
+                        <a href="atlas.html" class="btn btn-primary" target="_blank">View Widget</a>
+                        <a href="ATLAS-EXECUTIVE-SUMMARY.md" class="btn btn-secondary" target="_blank">Summary</a>
+                        <a href="ATLAS-QUICK-START.md" class="btn btn-secondary" target="_blank">Quick Start</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Web Platforms -->
+        <div class="section">
+            <div class="section-title">🌐 Web Platforms</div>
+            <div class="grid">
+                <!-- RentAHuman -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">💼 RentAHuman</div>
+                        <span class="status-badge status-live">Live</span>
+                    </div>
+                    <div class="card-description">
+                        Web3-powered gig platform connecting skilled workers with clients. Crypto payments, instant bookings, and verified reviews.
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value">12s</div>
+                            <div class="stat-label">Build Time</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Pages</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">Complete</div>
+                        </div>
+                    </div>
+                    <div class="card-links">
+                        <a href="https://rentahuman.vercel.app" class="btn btn-primary" target="_blank">Live Site</a>
+                        <a href="rentahuman-demo.html" class="btn btn-secondary" target="_blank">Demo Page</a>
+                    </div>
+                </div>
+
+                <!-- ImmerseForge -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🏔️ ImmerseForge</div>
+                        <span class="status-badge status-building">Building</span>
+                    </div>
+                    <div class="card-description">
+                        Tour management system with GPS photo tracking, client portals, and admin dashboard. Multiple active components in development.
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Components</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Commits Ahead</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2.3K</div>
+                            <div class="stat-label">Lines of Code</div>
+                        </div>
+                    </div>
+                    <div class="card-links">
+                        <a href="https://immerseforge.com" class="btn btn-primary" target="_blank">Main Site</a>
+                        <a href="https://dev2.immerseforge.com" class="btn btn-secondary" target="_blank">Dev Site</a>
+                    </div>
+                </div>
+
+                <!-- StreetTeamsCo -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🎯 StreetTeamsCo</div>
+                        <span class="status-badge status-building">Building</span>
+                    </div>
+                    <div class="card-description">
+                        Street team marketing platform. Website in development for college campus marketing services.
+                    </div>
+                    <div class="card-links">
+                        <a href="https://streetteamsco.com" class="btn btn-primary" target="_blank">Visit Site</a>
+                    </div>
+                </div>
+
+                <!-- CollegeMarketing.co -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🎓 CollegeMarketing.co</div>
+                        <span class="status-badge status-building">Building</span>
+                    </div>
+                    <div class="card-description">
+                        College marketing services platform. Website development in progress.
+                    </div>
+                    <div class="card-links">
+                        <a href="https://collegemarketing.co" class="btn btn-primary" target="_blank">Visit Site</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marketing Sites -->
+        <div class="section">
+            <div class="section-title">📢 Marketing Sites</div>
+            <div class="grid">
+                <!-- Air Fresh Marketing -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🌬️ Air Fresh Marketing</div>
+                        <span class="status-badge status-building">Launching Soon</span>
+                    </div>
+                    <div class="card-description">
+                        Marketing agency website with AI-powered content generation and client portal.
+                    </div>
+                    <div class="card-links">
+                        <a href="https://dev2.airfreshmarketing.com" class="btn btn-primary" target="_blank">Dev Site</a>
+                    </div>
+                </div>
+
+                <!-- Humming Agent AI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🐝 Humming Agent AI</div>
+                        <span class="status-badge status-building">Active Development</span>
+                    </div>
+                    <div class="card-description">
+                        AI agency platform showcasing autonomous employee capabilities and custom AI solutions.
+                    </div>
+                    <div class="card-links">
+                        <a href="https://hummingagent.ai" class="btn btn-primary" target="_blank">Main Site</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard & Tools -->
+        <div class="section">
+            <div class="section-title">🛠️ Internal Tools</div>
+            <div class="grid">
+                <!-- Pepper's Dashboard -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🌶️ Pepper's Dashboard</div>
+                        <span class="status-badge status-testing">Testing</span>
+                    </div>
+                    <div class="card-description">
+                        Unified command center with real-time metrics, department tracking, and project management.
+                    </div>
+                    <div class="card-links">
+                        <a href="../index.html" class="btn btn-primary" target="_blank">Open Dashboard</a>
+                        <a href="pepper-dashboard-v2.html" class="btn btn-secondary" target="_blank">V2 Demo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

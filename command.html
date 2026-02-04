@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌶️ Pepper Command Center</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pepper">
+    <meta name="theme-color" content="#0f0f0f">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #0f0f0f 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+        
+        /* Keypad Overlay */
+        #keypad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        #keypad-overlay.hidden {
+            display: none;
+        }
+        
+        .keypad-title {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            color: #888;
+        }
+        
+        .keypad-display {
+            font-size: 2.5rem;
+            letter-spacing: 1rem;
+            margin-bottom: 2rem;
+            min-height: 3rem;
+            color: #ff6b6b;
+        }
+        
+        .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 80px);
+            gap: 15px;
+        }
+        
+        .key-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 300;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .key-btn:hover {
+            background: rgba(255, 107, 107, 0.2);
+            border-color: #ff6b6b;
+            transform: scale(1.05);
+        }
+        
+        .key-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .key-btn.clear {
+            font-size: 1rem;
+            color: #888;
+        }
+        
+        .keypad-error {
+            color: #ff4444;
+            margin-top: 1rem;
+            min-height: 1.5rem;
+        }
+        
+        /* Main Command Center */
+        #command-center {
+            display: none;
+            height: 100vh;
+        }
+        
+        #command-center.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(255, 107, 107, 0.2);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+        }
+        
+        .title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4ade80;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .back-btn {
+            padding: 0.6rem 1.2rem;
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            border-radius: 8px;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 107, 107, 0.3);
+        }
+        
+        /* Main Content - Split View */
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            overflow: hidden;
+        }
+        
+        /* Activity Panel (Left) */
+        .activity-panel {
+            flex: 1.5;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            padding: 1rem 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .activity-feed {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .activity-item {
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border-left: 3px solid #ff6b6b;
+        }
+        
+        .activity-item.tool {
+            border-left-color: #4ade80;
+        }
+        
+        .activity-item.thinking {
+            border-left-color: #fbbf24;
+        }
+        
+        .activity-time {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .activity-content {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #ddd;
+        }
+        
+        .activity-content code {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', monospace;
+            font-size: 0.85rem;
+        }
+        
+        /* Chat Panel (Right) */
+        .chat-panel {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            max-width: 85%;
+        }
+        
+        .message.user {
+            margin-left: auto;
+        }
+        
+        .message-bubble {
+            padding: 0.8rem 1rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.assistant .message-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 0.3rem;
+            text-align: right;
+        }
+        
+        .message.assistant .message-time {
+            text-align: left;
+        }
+        
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        
+        .chat-input:focus {
+            border-color: rgba(255, 107, 107, 0.5);
+        }
+        
+        .chat-input::placeholder {
+            color: #666;
+        }
+        
+        .send-btn {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 107, 107, 0.3);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 107, 107, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Keypad Overlay -->
+    <div id="keypad-overlay">
+        <div class="keypad-title">Enter Access Code</div>
+        <div class="keypad-display" id="keypad-display">○○○○</div>
+        <div class="keypad-grid">
+            <button class="key-btn" onclick="addDigit('1')">1</button>
+            <button class="key-btn" onclick="addDigit('2')">2</button>
+            <button class="key-btn" onclick="addDigit('3')">3</button>
+            <button class="key-btn" onclick="addDigit('4')">4</button>
+            <button class="key-btn" onclick="addDigit('5')">5</button>
+            <button class="key-btn" onclick="addDigit('6')">6</button>
+            <button class="key-btn" onclick="addDigit('7')">7</button>
+            <button class="key-btn" onclick="addDigit('8')">8</button>
+            <button class="key-btn" onclick="addDigit('9')">9</button>
+            <button class="key-btn clear" onclick="clearCode()">CLR</button>
+            <button class="key-btn" onclick="addDigit('0')">0</button>
+            <button class="key-btn" onclick="submitCode()">↵</button>
+        </div>
+        <div class="keypad-error" id="keypad-error"></div>
+    </div>
+    
+    <!-- Command Center -->
+    <div id="command-center">
+        <header class="header">
+            <div class="header-left">
+                <span class="logo">🌶️</span>
+                <span class="title">Pepper Command Center</span>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Online</span>
+                </div>
+            </div>
+            <a href="index.html" class="back-btn">← Back to Dashboard</a>
+        </header>
+        
+        <div class="main-content">
+            <!-- Activity Panel -->
+            <div class="activity-panel">
+                <div class="panel-header">
+                    <span class="panel-title">📡 Live Activity Feed</span>
+                    <span style="font-size: 0.8rem; color: #666;" id="last-update">Updated just now</span>
+                </div>
+                <div class="activity-feed" id="activity-feed">
+                    <div class="activity-item">
+                        <div class="activity-time">12:40 PM</div>
+                        <div class="activity-content">
+                            📧 Scanning <code>joey@airfreshmarketing.com</code> inbox for cleanup...
+                        </div>
+                    </div>
+                    <div class="activity-item tool">
+                        <div class="activity-time">12:38 PM</div>
+                        <div class="activity-content">
+                            ✅ Archived 410 old read emails
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">12:35 PM</div>
+                        <div class="activity-content">
+                            📊 Found 147 emails from 37 senders remaining
+                        </div>
+                    </div>
+                    <div class="activity-item thinking">
+                        <div class="activity-time">12:30 PM</div>
+                        <div class="activity-content">
+                            💭 Categorizing emails by sender for quick review...
+                        </div>
+                    </div>
+                    <div class="activity-item tool">
+                        <div class="activity-time">11:50 AM</div>
+                        <div class="activity-content">
+                            🔐 OAuth tokens refreshed for Gmail API
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">8:45 AM</div>
+                        <div class="activity-content">
+                            ✅ Auto-unsubscribed from 16 newsletters
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">8:00 AM</div>
+                        <div class="activity-content">
+                            📧 Morning status email sent to <code>joeykercher@gmail.com</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Panel -->
+            <div class="chat-panel">
+                <div class="panel-header">
+                    <span class="panel-title">💬 Chat with Pepper</span>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message assistant">
+                        <div class="message-bubble">
+                            Hey Joey! 🌶️ I'm here and ready. What do you need?
+                        </div>
+                        <div class="message-time">Now</div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const PASSCODE = '2222';
+        let enteredCode = '';
+        
+        function addDigit(digit) {
+            console.log('Adding digit:', digit, 'Current:', enteredCode);
+            if (enteredCode.length < 4) {
+                enteredCode += digit;
+                updateDisplay();
+            }
+            if (enteredCode.length === 4) {
+                setTimeout(submitCode, 200);
+            }
+        }
+        
+        function clearCode() {
+            enteredCode = '';
+            updateDisplay();
+            document.getElementById('keypad-error').textContent = '';
+        }
+        
+        function updateDisplay() {
+            const display = document.getElementById('keypad-display');
+            // Show filled dots for entered, empty circles for remaining
+            const filled = '●'.repeat(enteredCode.length);
+            const empty = '○'.repeat(4 - enteredCode.length);
+            display.textContent = filled + empty;
+        }
+        
+        function submitCode() {
+            console.log('Submitting code:', enteredCode);
+            if (enteredCode === PASSCODE) {
+                document.getElementById('keypad-overlay').classList.add('hidden');
+                document.getElementById('command-center').classList.add('active');
+                sessionStorage.setItem('command-auth', 'true');
+            } else {
+                document.getElementById('keypad-error').textContent = 'Invalid code - try 2222';
+                enteredCode = '';
+                updateDisplay();
+                setTimeout(() => {
+                    document.getElementById('keypad-error').textContent = '';
+                }, 3000);
+            }
+        }
+        
+        // Initialize display
+        updateDisplay();
+        
+        // Check if already authenticated
+        if (sessionStorage.getItem('command-auth') === 'true') {
+            document.getElementById('keypad-overlay').classList.add('hidden');
+            document.getElementById('command-center').classList.add('active');
+        }
+        
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            addChatMessage(message, 'user');
+            input.value = '';
+            
+            // Simulate response (in production, this would send to Signal)
+            setTimeout(() => {
+                addChatMessage("Got it! I'm processing that request now. You'll see the activity in the feed on the left. 🌶️", 'assistant');
+            }, 1000);
+        }
+        
+        function addChatMessage(text, type) {
+            const container = document.getElementById('chat-messages');
+            const time = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <div class="message-bubble">${text}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // Update time display
+        function updateLastUpdate() {
+            document.getElementById('last-update').textContent = 'Updated ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        }
+        setInterval(updateLastUpdate, 60000);
+    </script>
+</body>
+</html>

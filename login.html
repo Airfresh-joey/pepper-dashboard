@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🔐 Login - Pepper Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 400px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2em;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        input[type="password"], input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+        }
+        
+        input[type="password"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        #pin {
+            text-align: center;
+            font-size: 2.5em;
+            letter-spacing: 0.8em;
+            font-weight: 700;
+            touch-action: manipulation;
+        }
+        
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .key {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.5em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .key:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+        
+        .key:active {
+            transform: scale(0.95);
+        }
+        
+        .key.special {
+            background: rgba(239, 68, 68, 0.2);
+            font-size: 1em;
+        }
+        
+        .key.special:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .login-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .error {
+            color: #ef4444;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>🌶️ Pepper Dashboard</h1>
+        <form id="loginForm" onsubmit="login(event)">
+            <div class="input-group" id="passwordStep">
+                <label>Password</label>
+                <input type="password" id="password" required autocomplete="off">
+                <button type="button" class="login-btn" onclick="checkPassword()" style="margin-top: 15px;">Next →</button>
+            </div>
+            
+            <div class="input-group" id="pinStep" style="display: none;">
+                <label>PIN Code</label>
+                <input type="password" id="pin" readonly required autocomplete="off">
+                <div class="keypad">
+                    <button type="button" class="key" onclick="addDigit('1')">1</button>
+                    <button type="button" class="key" onclick="addDigit('2')">2</button>
+                    <button type="button" class="key" onclick="addDigit('3')">3</button>
+                    <button type="button" class="key" onclick="addDigit('4')">4</button>
+                    <button type="button" class="key" onclick="addDigit('5')">5</button>
+                    <button type="button" class="key" onclick="addDigit('6')">6</button>
+                    <button type="button" class="key" onclick="addDigit('7')">7</button>
+                    <button type="button" class="key" onclick="addDigit('8')">8</button>
+                    <button type="button" class="key" onclick="addDigit('9')">9</button>
+                    <button type="button" class="key special" onclick="clearPin()">Clear</button>
+                    <button type="button" class="key" onclick="addDigit('0')">0</button>
+                    <button type="button" class="key special" onclick="deleteDigit()">⌫</button>
+                </div>
+            </div>
+            
+            <button type="submit" class="login-btn" id="unlockBtn" style="display: none;">🔓 Unlock Dashboard</button>
+            <div id="error" class="error"></div>
+        </form>
+    </div>
+    
+    <script>
+        const CORRECT_PASSWORD = 'pepper';
+        const CORRECT_PIN = '2222';
+        
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            const error = document.getElementById('error');
+            
+            if (password === CORRECT_PASSWORD) {
+                document.getElementById('passwordStep').style.display = 'none';
+                document.getElementById('pinStep').style.display = 'block';
+                document.getElementById('unlockBtn').style.display = 'block';
+                error.textContent = '';
+            } else {
+                error.textContent = '❌ Invalid password';
+                setTimeout(() => error.textContent = '', 3000);
+            }
+        }
+        
+        function addDigit(digit) {
+            const pin = document.getElementById('pin');
+            if (pin.value.length < 4) {
+                pin.value += digit;
+                
+                // Auto-submit after 4 digits
+                if (pin.value.length === 4) {
+                    setTimeout(() => {
+                        document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+                    }, 300);
+                }
+            }
+        }
+        
+        function deleteDigit() {
+            const pin = document.getElementById('pin');
+            pin.value = pin.value.slice(0, -1);
+        }
+        
+        function clearPin() {
+            document.getElementById('pin').value = '';
+        }
+        
+        function login(event) {
+            event.preventDefault();
+            const password = document.getElementById('password').value;
+            const pin = document.getElementById('pin').value;
+            const error = document.getElementById('error');
+            
+            if (password === CORRECT_PASSWORD && pin === CORRECT_PIN) {
+                sessionStorage.setItem('authenticated', 'true');
+                window.location.href = 'index.html';
+            } else {
+                error.textContent = '❌ Invalid password or PIN';
+                document.getElementById('pin').value = '';
+                setTimeout(() => error.textContent = '', 3000);
+            }
+        }
+        
+        // Auto-focus password field
+        document.getElementById('password').focus();
+    </script>
+</body>
+</html>

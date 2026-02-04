@@ -1,0 +1,14 @@
+{
+  "name": "joey-mission-control",
+  "version": "1.0.0",
+  "description": "Joey's Live Mission Control Dashboard",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build needed - serverless functions'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["dashboard", "mission-control", "live"],
+  "author": "Pepper AI",
+  "license": "MIT"
+}

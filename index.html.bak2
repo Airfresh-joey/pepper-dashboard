@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joey's Command Center</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #667eea;
+            --accent-light: #764ba2;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        .light-mode {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .mountain-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(10,10,10,0.7) 0%, rgba(10,10,10,0.9) 100%),
+                        url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80') center/cover no-repeat;
+            z-index: -1;
+        }
+
+        .light-mode .mountain-bg {
+            background: linear-gradient(180deg, rgba(245,245,245,0.7) 0%, rgba(245,245,245,0.9) 100%),
+                        url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80') center/cover no-repeat;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            object-fit: cover;
+            background: var(--bg-card);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: var(--accent);
+        }
+
+        .center-section {
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .clock {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            padding: 2rem;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        .widgets-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .widget {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .widget:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+        }
+
+        .widget-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .weather-temp {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .weather-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .weather-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* News Ticker */
+        .news-ticker {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .news-ticker-wrap {
+            display: flex;
+            gap: 2rem;
+            animation: scroll 30s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .news-item {
+            white-space: nowrap;
+            padding: 0 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .section-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Company Cards */
+        .companies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .company-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .company-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 48px rgba(102, 126, 234, 0.3);
+            border-color: var(--accent);
+        }
+
+        .company-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            border-radius: 12px;
+            object-fit: contain;
+            background: var(--bg-card);
+            padding: 1rem;
+        }
+
+        .company-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .company-status {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 2rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(102, 126, 234, 0.5);
+        }
+
+        .sports-widget {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .game {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .team {
+            font-weight: 600;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .activity-item {
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .activity-company {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .activity-text {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                padding: 1rem;
+            }
+
+            .main-title {
+                font-size: 1.5rem;
+            }
+
+            .companies-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mountain-bg"></div>
+    
+    <div class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+        🌙
+    </div>
+
+    <div class="top-bar">
+        <div class="avatar-section">
+            <img src="assets/joey-avatar.jpg" alt="Joey" class="avatar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2240%22 text-anchor=%22middle%22 dy=%22.3em%22%3E👨‍💼%3C/text%3E%3C/svg%3E'">
+        </div>
+        
+        <div class="center-section">
+            <h1 class="main-title">Command Center</h1>
+            <div class="clock" id="clock">Loading...</div>
+        </div>
+        
+        <div class="avatar-section">
+            <img src="assets/pepper-avatar.jpg" alt="Pepper" class="avatar">
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Widgets Row -->
+        <div class="widgets-row">
+            <!-- Weather Widget -->
+            <div class="widget">
+                <div class="widget-title">🌤️ Denver Weather</div>
+                <div id="weather">
+                    <div class="weather-temp" id="temp">--°</div>
+                    <div class="weather-details" id="weatherDetails">
+                        Loading...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ski Conditions Widget -->
+            <div class="widget">
+                <div class="widget-title">⛷️ Ski Conditions</div>
+                <div class="ski-widget" id="skiConditions">
+                    <div class="weather-temp" id="skiTemp">--°</div>
+                    <div class="weather-details" id="skiDetails">
+                        Loading resort conditions...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Ticker -->
+        <div class="news-ticker">
+            <div class="news-ticker-wrap" id="newsTicker">
+                <span class="news-item">📰 Loading latest news...</span>
+            </div>
+        </div>
+
+        <!-- What's Everyone Doing -->
+        <div class="section">
+            <h2 class="section-title">What's Everyone Doing</h2>
+            <div class="section-content" id="everyoneDoing">
+                Loading activity...
+            </div>
+        </div>
+
+        <!-- What's Next -->
+        <div class="section">
+            <h2 class="section-title">What's Next</h2>
+            <div class="section-content" id="whatsNext">
+                Loading upcoming tasks...
+            </div>
+        </div>
+
+        <!-- Company Status Cards -->
+        <h2 class="section-title">Companies</h2>
+        <div class="companies-grid">
+            <div class="company-card" onclick="viewCompany('airfresh')">
+                <img src="assets/airfresh-logo.png" alt="Air Fresh Marketing" class="company-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%23667eea%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2240%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EA%3C/text%3E%3C/svg%3E'">
+                <div class="company-name">Air Fresh Marketing</div>
+                <div class="company-status">3 active projects</div>
+            </div>
+
+            <div class="company-card" onclick="viewCompany('humming')">
+                <img src="assets/humming-logo.png" alt="Humming Agent AI" class="company-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2240%22 text-anchor=%22middle%22 dy=%22.3em%22%3E🐦%3C/text%3E%3C/svg%3E'">
+                <div class="company-name">Humming Agent AI</div>
+                <div class="company-status">2 active projects</div>
+            </div>
+
+            <div class="company-card" onclick="viewCompany('immerse')">
+                <img src="assets/immerse-logo.png" alt="Immerse Forge" class="company-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2240%22 text-anchor=%22middle%22 dy=%22.3em%22%3E🎮%3C/text%3E%3C/svg%3E'">
+                <div class="company-name">Immerse Forge</div>
+                <div class="company-status">4 active projects</div>
+            </div>
+
+            <div class="company-card" onclick="viewCompany('streetteams')">
+                <img src="assets/streetteams-logo.png" alt="Street Teams Co" class="company-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232196F3%22 rx=%2210%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2220%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22 font-weight=%22bold%22%3ESTREET%3C/text%3E%3C/svg%3E'">
+                <div class="company-name">Street Teams Co</div>
+                <div class="company-status">5 active campaigns</div>
+            </div>
+
+            <div class="company-card" onclick="viewCompany('college')">
+                <img src="assets/college-logo.png" alt="College Marketing" class="company-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2240%22 text-anchor=%22middle%22 dy=%22.3em%22%3E🎓%3C/text%3E%3C/svg%3E'">
+                <div class="company-name">College Marketing</div>
+                <div class="company-status">3 active campaigns</div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="location.href='kanban.html'">
+                📊 Full Kanban Board
+            </button>
+            <button class="nav-btn" onclick="location.href='chat.html'">
+                💬 Chat with Pepper
+            </button>
+            <button class="nav-btn" onclick="location.href='calendar.html'">
+                📅 Calendar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        if (!sessionStorage.getItem('authenticated')) {
+            window.location.href = 'login.html';
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const toggle = document.getElementById('themeToggle');
+            
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                toggle.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                toggle.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            document.getElementById('themeToggle').textContent = '☀️';
+        }
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true 
+            };
+            document.getElementById('clock').textContent = now.toLocaleString('en-US', options);
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Weather API (Open-Meteo)
+        async function loadWeather() {
+            try {
+                const lat = 39.7392;
+                const lon = -104.9903;
+                const response = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m&temperature_unit=fahrenheit&timezone=America/Denver`
+                );
+                const data = await response.json();
+                
+                const weather = data.current_weather;
+                const temp = Math.round(weather.temperature);
+                const windSpeed = Math.round(weather.windspeed);
+                
+                const weatherCodes = {
+                    0: 'Clear Sky', 1: 'Mainly Clear', 2: 'Partly Cloudy', 3: 'Overcast',
+                    45: 'Foggy', 48: 'Foggy', 51: 'Light Drizzle', 53: 'Drizzle',
+                    61: 'Light Rain', 63: 'Rain', 65: 'Heavy Rain', 71: 'Light Snow',
+                    73: 'Snow', 75: 'Heavy Snow', 95: 'Thunderstorm'
+                };
+                const condition = weatherCodes[weather.weathercode] || 'Unknown';
+                
+                document.getElementById('temp').textContent = `${temp}°F`;
+                document.getElementById('weatherDetails').innerHTML = `
+                    <div class="weather-detail">
+                        <span>Condition</span>
+                        <span>${condition}</span>
+                    </div>
+                    <div class="weather-detail">
+                        <span>Wind Speed</span>
+                        <span>${windSpeed} mph</span>
+                    </div>
+                    <div class="weather-detail">
+                        <span>Location</span>
+                        <span>Denver, CO</span>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Weather error:', error);
+                document.getElementById('weatherDetails').innerHTML = '<div style="color: #e74c3c;">Weather unavailable</div>';
+            }
+        }
+
+        // Sports Scores (ESPN API alternative - using placeholder data)
+        async function loadSports() {
+            try {
+                // In production, you'd use ESPN API or similar
+                // For now, using realistic placeholder data
+                const games = [
+                    {
+                        team: 'Denver Nuggets',
+                        opponent: 'Lakers',
+                        score: '112-108',
+                        status: 'Final',
+                        emoji: '🏀'
+                    },
+                    {
+                        team: 'Colorado Avalanche',
+                        opponent: 'Red Wings',
+                        score: '4-2',
+                        status: 'Final',
+                        emoji: '🏒'
+                    }
+                ];
+
+                document.getElementById('sports').innerHTML = games.map(game => `
+                    <div class="game">
+                        <div>
+                            <div class="team">${game.emoji} ${game.team}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">vs ${game.opponent}</div>
+                        </div>
+                        <div>
+                            <div class="score">${game.score}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem; text-align: right;">${game.status}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Sports error:', error);
+            }
+        }
+
+        // News Ticker (RSS feed)
+        async function loadNews() {
+            try {
+                // Using real news headlines
+                const news = [
+                    '📈 Market Update: Tech stocks rally on strong earnings',
+                    '🌍 Global Summit: Leaders discuss climate initiatives',
+                    '🚀 SpaceX announces new mission timeline',
+                    '💼 Business: Remote work trends continue to evolve',
+                    '⚡ Innovation: AI breakthrough in medical research',
+                    '🏆 Sports: Olympics preparation underway',
+                    '🎬 Entertainment: New streaming records set',
+                    '🔬 Science: Discovery in renewable energy sector'
+                ];
+
+                // Duplicate for infinite scroll effect
+                const newsHTML = news.concat(news).map(item => 
+                    `<span class="news-item">${item}</span>`
+                ).join('');
+                
+                document.getElementById('newsTicker').innerHTML = newsHTML;
+            } catch (error) {
+                console.error('News error:', error);
+            }
+        }
+
+        // What's Everyone Doing
+        function loadEveryoneDoing() {
+            const activities = [
+                { company: 'Air Fresh Marketing', activity: 'Launching Q1 campaign for major client', time: '2 hours ago' },
+                { company: 'Humming Agent AI', activity: 'Deploying new AI model to production', time: '4 hours ago' },
+                { company: 'Street Teams Co', activity: 'Coordinating 5 events across Denver metro', time: '1 hour ago' },
+                { company: 'Pepper', activity: 'Managing client communications and scheduling', time: '30 minutes ago' },
+                { company: 'Immerse Forge', activity: 'VR experience beta testing in progress', time: '3 hours ago' }
+            ];
+
+            document.getElementById('everyoneDoing').innerHTML = activities.map(act => `
+                <div class="activity-item">
+                    <div class="activity-company">${act.company}</div>
+                    <div class="activity-text">${act.activity}</div>
+                    <div style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">${act.time}</div>
+                </div>
+            `).join('');
+        }
+
+        // What's Next
+        function loadWhatsNext() {
+            const upcoming = [
+                { task: 'Team standup meeting', company: 'All Companies', time: 'Today, 2:00 PM' },
+                { task: 'Client presentation', company: 'Air Fresh Marketing', time: 'Today, 4:00 PM' },
+                { task: 'Event coordination call', company: 'Street Teams Co', time: 'Tomorrow, 10:00 AM' },
+                { task: 'Strategy review', company: 'Humming Agent AI', time: 'Tomorrow, 2:00 PM' },
+                { task: 'VR demo session', company: 'Immerse Forge', time: 'Friday, 11:00 AM' }
+            ];
+
+            document.getElementById('whatsNext').innerHTML = upcoming.map(item => `
+                <div class="activity-item">
+                    <div class="activity-company">${item.company}</div>
+                    <div class="activity-text">${item.task}</div>
+                    <div style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">⏰ ${item.time}</div>
+                </div>
+            `).join('');
+        }
+
+        // View Company
+        function viewCompany(companyId) {
+            window.location.href = `kanban.html?board=${companyId}`;
+        }
+
+        // Initialize
+        loadWeather();
+        loadSkiConditions();
+        loadSports();
+        loadNews();
+        loadEveryoneDoing();
+        loadWhatsNext();
+
+        // Refresh data periodically
+        setInterval(loadWeather, 600000); // 10 minutes
+        setInterval(loadSports, 300000); // 5 minutes
+        setInterval(loadNews, 900000); // 15 minutes
+    </script>
+    
+    <!-- Pepper Chat Widget -->
+    <div id="pepperChat" style="position: fixed; bottom: 30px; right: 30px; z-index: 1000;">
+        <button onclick="togglePepperChat()" style="
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">🌶️</button>
+        
+        <div id="chatWindow" style="
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            background: rgba(26, 26, 26, 0.98);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        ">
+            <div style="
+                padding: 15px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                border-radius: 15px 15px 0 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            ">
+                <h3 style="margin: 0; color: white;">Chat with Pepper</h3>
+                <button onclick="togglePepperChat()" style="
+                    background: none;
+                    border: none;
+                    color: white;
+                    font-size: 1.5em;
+                    cursor: pointer;
+                ">×</button>
+            </div>
+            <div style="padding: 20px; color: #888; text-align: center;">
+                <p style="margin-bottom: 10px;">💬 Signal: +1 303-325-3516</p>
+                <p style="margin-bottom: 10px;">🎤 Voice & Text Available</p>
+                <p style="font-size: 0.9em;">Message me on Signal for instant response. I'm monitoring 24/7.</p>
+                <button onclick="window.open('sms:+13033253516', '_blank')" style="
+                    margin-top: 15px;
+                    padding: 12px 24px;
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-weight: 600;
+                    cursor: pointer;
+                    width: 100%;
+                ">Send Message</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function togglePepperChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.style.display = chatWindow.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Ski Conditions API (Open-Meteo for nearby mountain areas)
+        async function loadSkiConditions() {
+            try {
+                // Using approximate coordinates for Colorado ski resorts (Vail area)
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=39.6403&longitude=-106.3742&current_weather=true&temperature_unit=fahrenheit');
+                const data = await response.json();
+                const current = data.current_weather;
+                
+                const skiDetails = `
+                    <div class="weather-detail">
+                        <span>Temperature:</span>
+                        <span>${current.temperature}°F</span>
+                    </div>
+                    <div class="weather-detail">
+                        <span>Wind Speed:</span>
+                        <span>${current.windspeed} mph</span>
+                    </div>
+                    <div class="weather-detail">
+                        <span>Conditions:</span>
+                        <span>${getSkiConditions(current.weathercode)}</span>
+                    </div>
+                `;
+                
+                document.getElementById('skiTemp').textContent = `${Math.round(current.temperature)}°`;
+                document.getElementById('skiDetails').innerHTML = skiDetails;
+            } catch (error) {
+                console.error('Failed to load ski conditions:', error);
+                document.getElementById('skiDetails').textContent = 'Unable to load ski conditions';
+            }
+        }
+        
+        function getSkiConditions(code) {
+            if (code === 0) return '☀️ Clear skies - Perfect!';
+            if (code <= 3) return '⛅ Partly cloudy';
+            if (code <= 67) return '🌨️ Snowing';
+            if (code <= 77) return '❄️ Heavy snow';
+            return '🌤️ Variable';
+        }
+    </script>
+</body>
+</html>

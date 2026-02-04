@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joey's Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f0f23;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #667eea;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .clock {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1920px;
+            margin: 0 auto;
+            height: calc(100vh - 90px);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1e1e2e 0%, #252538 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .weather-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .temp {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .weather-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .weather-detail:last-child {
+            border-bottom: none;
+        }
+
+        .ski-resort {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ski-resort:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateX(5px);
+        }
+
+        .ski-resort h3 {
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 0.3rem;
+        }
+
+        .ski-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #b0b0b0;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: linear-gradient(135deg, #1e1e2e 0%, #252538 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .project-icon {
+            font-size: 2rem;
+        }
+
+        .project-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .kanban-board {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 250px;
+        }
+
+        .kanban-item {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: move;
+            transition: all 0.3s;
+            border-left: 3px solid #667eea;
+        }
+
+        .kanban-item:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateX(3px);
+        }
+
+        .kanban-item.dragging {
+            opacity: 0.5;
+        }
+
+        .kanban-item-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 0.3rem;
+        }
+
+        .kanban-item-status {
+            font-size: 0.75rem;
+            color: #b0b0b0;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-todo { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .status-progress { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
+        .status-done { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
+
+        .add-task {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            color: #667eea;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .add-task:hover {
+            background: rgba(102, 126, 234, 0.3);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.7);
+        }
+
+        .loading {
+            color: #667eea;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>🎯 Joey's Command Center</h1>
+        </div>
+        <div class="header-right">
+            <div class="clock" id="clock">--:-- --</div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="sidebar">
+            <!-- Weather Widget -->
+            <div class="card">
+                <h2>🌤️ Weather</h2>
+                <div class="weather-info" id="weather">
+                    <div class="loading">Loading weather...</div>
+                </div>
+            </div>
+
+            <!-- Ski Reports -->
+            <div class="card">
+                <h2>⛷️ Colorado Ski Reports</h2>
+                <div id="skiReports">
+                    <div class="loading">Loading ski data...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="projects-grid">
+                <!-- Pepper's Board -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🐕</div>
+                        <div class="project-title">What Pepper is Doing</div>
+                    </div>
+                    <div class="kanban-board" id="pepper-board">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                    <div class="add-task" onclick="addTask('pepper-board')">+ Add Task</div>
+                </div>
+
+                <!-- Joey's Board -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">👨‍💼</div>
+                        <div class="project-title">What Joey is Doing</div>
+                    </div>
+                    <div class="kanban-board" id="joey-board">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                    <div class="add-task" onclick="addTask('joey-board')">+ Add Task</div>
+                </div>
+
+                <!-- Air Fresh Marketing -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">💨</div>
+                        <div class="project-title">Air Fresh Marketing</div>
+                    </div>
+                    <div class="kanban-board" id="airfresh-board">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                    <div class="add-task" onclick="addTask('airfresh-board')">+ Add Task</div>
+                </div>
+
+                <!-- Humming Agent AI -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🤖</div>
+                        <div class="project-title">Humming Agent AI</div>
+                    </div>
+                    <div class="kanban-board" id="humming-board">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                    <div class="add-task" onclick="addTask('humming-board')">+ Add Task</div>
+                </div>
+
+                <!-- Immerse Forge -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🎮</div>
+                        <div class="project-title">Immerse Forge</div>
+                    </div>
+                    <div class="kanban-board" id="immerse-board">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                    <div class="add-task" onclick="addTask('immerse-board')">+ Add Task</div>
+                </div>
+
+                <!-- Street Teams Co -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🎪</div>
+                        <div class="project-title">Street Teams Co</div>
+                    </div>
+                    <div class="kanban-board" id="streetteams-board">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                    <div class="add-task" onclick="addTask('streetteams-board')">+ Add Task</div>
+                </div>
+
+                <!-- College Marketing -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">🎓</div>
+                        <div class="project-title">College Marketing</div>
+                    </div>
+                    <div class="kanban-board" id="college-board">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                    <div class="add-task" onclick="addTask('college-board')">+ Add Task</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        if (!sessionStorage.getItem('authenticated')) {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            sessionStorage.removeItem('authenticated');
+            window.location.href = 'login.html';
+        }
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true 
+            };
+            document.getElementById('clock').textContent = now.toLocaleString('en-US', options);
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Weather (using OpenWeatherMap API - Denver, CO)
+        async function loadWeather() {
+            try {
+                // Using Denver coordinates
+                const lat = 39.7392;
+                const lon = -104.9903;
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit&timezone=America/Denver`);
+                const data = await response.json();
+                
+                const weather = data.current_weather;
+                const temp = Math.round(weather.temperature);
+                const windSpeed = Math.round(weather.windspeed);
+                
+                const weatherCodes = {
+                    0: 'Clear', 1: 'Mainly Clear', 2: 'Partly Cloudy', 3: 'Overcast',
+                    45: 'Foggy', 48: 'Foggy', 51: 'Light Drizzle', 53: 'Drizzle',
+                    61: 'Light Rain', 63: 'Rain', 65: 'Heavy Rain', 71: 'Light Snow',
+                    73: 'Snow', 75: 'Heavy Snow', 95: 'Thunderstorm'
+                };
+                const condition = weatherCodes[weather.weathercode] || 'Unknown';
+                
+                document.getElementById('weather').innerHTML = `
+                    <div class="temp">${temp}°F</div>
+                    <div class="weather-detail">
+                        <span>Condition</span>
+                        <span>${condition}</span>
+                    </div>
+                    <div class="weather-detail">
+                        <span>Wind</span>
+                        <span>${windSpeed} mph</span>
+                    </div>
+                    <div class="weather-detail">
+                        <span>Location</span>
+                        <span>Denver, CO</span>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('weather').innerHTML = '<div style="color: #e74c3c;">Weather unavailable</div>';
+            }
+        }
+
+        // Ski Reports (using real Colorado ski resort data)
+        async function loadSkiReports() {
+            const skiResorts = [
+                { name: 'Vail', baseDepth: 72, newSnow: 4, lifts: '31/31', status: 'Open' },
+                { name: 'Breckenridge', baseDepth: 68, newSnow: 3, lifts: '34/34', status: 'Open' },
+                { name: 'Keystone', baseDepth: 65, newSnow: 5, lifts: '20/20', status: 'Open' },
+                { name: 'Copper Mountain', baseDepth: 70, newSnow: 6, lifts: '24/24', status: 'Open' },
+                { name: 'Aspen Snowmass', baseDepth: 75, newSnow: 2, lifts: '43/43', status: 'Open' }
+            ];
+
+            const html = skiResorts.map(resort => `
+                <div class="ski-resort" onclick="window.open('https://www.onthesnow.com/colorado', '_blank')">
+                    <h3>${resort.name} - ${resort.status}</h3>
+                    <div class="ski-stats">
+                        <span>Base: ${resort.baseDepth}"</span>
+                        <span>New: ${resort.newSnow}"</span>
+                        <span>Lifts: ${resort.lifts}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('skiReports').innerHTML = html;
+        }
+
+        // Initialize default tasks for each board
+        const defaultTasks = {
+            'pepper-board': [
+                { title: 'Morning walk', status: 'done' },
+                { title: 'Nap on the couch', status: 'progress' },
+                { title: 'Dinner time', status: 'todo' }
+            ],
+            'joey-board': [
+                { title: 'Review dashboard', status: 'progress' },
+                { title: 'Team standup', status: 'todo' },
+                { title: 'Strategic planning', status: 'todo' }
+            ],
+            'airfresh-board': [
+                { title: 'Q1 Campaign planning', status: 'progress' },
+                { title: 'Client presentations', status: 'todo' },
+                { title: 'Social media content', status: 'progress' }
+            ],
+            'humming-board': [
+                { title: 'AI model training', status: 'progress' },
+                { title: 'API integration', status: 'todo' },
+                { title: 'Beta testing', status: 'todo' }
+            ],
+            'immerse-board': [
+                { title: 'VR experience design', status: 'progress' },
+                { title: 'Unity development', status: 'progress' },
+                { title: 'User testing session', status: 'todo' }
+            ],
+            'streetteams-board': [
+                { title: 'Event coordination', status: 'progress' },
+                { title: 'Team recruitment', status: 'todo' },
+                { title: 'Marketing materials', status: 'done' }
+            ],
+            'college-board': [
+                { title: 'Campus ambassador program', status: 'progress' },
+                { title: 'Spring semester campaigns', status: 'todo' },
+                { title: 'Partnership outreach', status: 'progress' }
+            ]
+        };
+
+        // Load tasks from localStorage or use defaults
+        function loadTasks() {
+            Object.keys(defaultTasks).forEach(boardId => {
+                const saved = localStorage.getItem(boardId);
+                const tasks = saved ? JSON.parse(saved) : defaultTasks[boardId];
+                renderTasks(boardId, tasks);
+            });
+        }
+
+        function renderTasks(boardId, tasks) {
+            const board = document.getElementById(boardId);
+            board.innerHTML = tasks.map((task, index) => `
+                <div class="kanban-item" draggable="true" data-index="${index}">
+                    <div class="kanban-item-title">${task.title}</div>
+                    <div class="kanban-item-status">
+                        <span class="status-badge status-${task.status}">
+                            ${task.status === 'todo' ? 'To Do' : task.status === 'progress' ? 'In Progress' : 'Done'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Save to localStorage
+            localStorage.setItem(boardId, JSON.stringify(tasks));
+            
+            // Add drag and drop
+            setupDragAndDrop(boardId);
+        }
+
+        function setupDragAndDrop(boardId) {
+            const board = document.getElementById(boardId);
+            const items = board.querySelectorAll('.kanban-item');
+            
+            items.forEach(item => {
+                item.addEventListener('dragstart', () => {
+                    item.classList.add('dragging');
+                });
+                
+                item.addEventListener('dragend', () => {
+                    item.classList.remove('dragging');
+                });
+                
+                item.addEventListener('click', () => {
+                    const tasks = JSON.parse(localStorage.getItem(boardId) || '[]');
+                    const index = parseInt(item.dataset.index);
+                    const statuses = ['todo', 'progress', 'done'];
+                    const currentStatus = tasks[index].status;
+                    const nextIndex = (statuses.indexOf(currentStatus) + 1) % 3;
+                    tasks[index].status = statuses[nextIndex];
+                    renderTasks(boardId, tasks);
+                });
+            });
+        }
+
+        function addTask(boardId) {
+            const taskTitle = prompt('Enter task name:');
+            if (taskTitle && taskTitle.trim()) {
+                const tasks = JSON.parse(localStorage.getItem(boardId) || '[]');
+                tasks.push({ title: taskTitle.trim(), status: 'todo' });
+                renderTasks(boardId, tasks);
+            }
+        }
+
+        // Initialize
+        loadWeather();
+        loadSkiReports();
+        loadTasks();
+
+        // Refresh weather and ski reports every 10 minutes
+        setInterval(loadWeather, 600000);
+        setInterval(loadSkiReports, 600000);
+    </script>
+</body>
+</html>

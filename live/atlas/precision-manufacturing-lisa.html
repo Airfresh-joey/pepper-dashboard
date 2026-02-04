@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lisa | Precision Manufacturing - HummingAgent Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo h1 {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .hero h2 {
+            font-size: 36px;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .value-prop {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 30px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+        }
+        
+        .value-prop h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .value-prop ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .value-prop li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .value-prop li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .case-study {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            padding: 30px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+        }
+        
+        .case-study h3 {
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .metric {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .calendar {
+            background: #667eea;
+            color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .calendar h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #fff;
+            color: #667eea;
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🤖 HummingAgent AI</h1>
+        </div>
+        
+        <div class="hero">
+            <h2>Hi Lisa! 👋</h2>
+            <p>Let's talk about scaling Precision Manufacturing's operations</p>
+        </div>
+        
+        <div class="value-prop">
+            <h3>What We Can Help With</h3>
+            <ul>
+                <li>Automate repetitive tasks that slow your team down</li>
+                <li>Handle customer communication 24/7</li>
+                <li>Scale without hiring more people</li>
+                <li>Free up your time for strategic work</li>
+            </ul>
+        </div>
+        
+        <div class="case-study">
+            <h3>Manufacturing Co Cuts Admin Time 60%</h3>
+            <p>Automated order processing, inventory tracking, and customer updates for a mid-size manufacturer.</p>
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metric-value">60%</div>
+                    <div class="metric-label">Less Admin Time</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">99%</div>
+                    <div class="metric-label">Order Accuracy</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">$75K</div>
+                    <div class="metric-label">Annual Savings</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="calendar">
+            <h3>📅 Book Your 15-Minute Demo</h3>
+            <p style="margin-bottom: 30px;">Let's see if HummingAgent is a fit for Precision Manufacturing</p>
+            <a href="https://calendly.com/joey/atlas-demo?name=Lisa%20Martinez&email=lisa%40precisionmfg.com&company=Precision%20Manufacturing" class="cta-button">
+                View Available Times
+            </a>
+        </div>
+        
+        <div class="footer">
+            Trusted by 50+ companies in manufacturing<br>
+            Questions? Reply to Joey's email anytime.
+        </div>
+    </div>
+</body>
+</html>

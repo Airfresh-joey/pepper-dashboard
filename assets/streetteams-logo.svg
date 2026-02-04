@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#2196F3" rx="20"/>
+  <text x="100" y="85" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="white" text-anchor="middle">STREET</text>
+  <text x="100" y="115" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="white" text-anchor="middle">TEAMS</text>
+  <rect x="60" y="125" width="80" height="4" fill="white" opacity="0.8"/>
+</svg>

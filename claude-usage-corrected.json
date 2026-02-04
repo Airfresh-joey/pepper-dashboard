@@ -1,0 +1,21 @@
+{
+  "claudeUsage": {
+    "weeklyTokens": 814794648,
+    "monthlyTokens": 64036898,
+    "weeklyPercentage": 34,
+    "monthlySpend": "$68.51",
+    "spendPercentage": 68,
+    "balance": "$8.49",
+    "remainingWeekPercentage": 66,
+    "status": "HEALTHY",
+    "lastUpdated": "2026-02-02T08:15:00.000Z",
+    "notes": {
+      "weeklyUsage": "34% of estimated weekly limit (3 days, 1 hour remaining)",
+      "monthlyStatus": "68% of $50 budget used",
+      "currentModel": "anthropic/claude-haiku-4-5",
+      "contextUsage": "0% of 200k context window",
+      "sessionCount": 297
+    }
+  },
+  "timestamp": "2026-02-02T08:15:00.000Z"
+}

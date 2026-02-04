@@ -1,0 +1,57 @@
+{
+  "timestamp": "2026-01-30T21:47:00Z",
+  "today": "2026-01-30",
+  "tokens": {
+    "total": 520000,
+    "input": 312000,
+    "output": 208000,
+    "sessions_active": 10,
+    "context_windows_used": 520
+  },
+  "cost": {
+    "input": "0.94",
+    "output": "3.12",
+    "total": "4.06",
+    "currency": "USD",
+    "model": "Claude Sonnet 4.5"
+  },
+  "code": {
+    "lines_added_today": 8515,
+    "lines_deleted_today": 142,
+    "lines_total_today": 8657,
+    "lines_this_hour": 3667,
+    "commits_today": 15,
+    "commits_this_hour": 3,
+    "files_changed": 162
+  },
+  "output": {
+    "files_created_today": 54,
+    "reports_created_today": 13,
+    "total_size_kb": 425,
+    "documents_generated": 26,
+    "systems_built": 5
+  },
+  "performance": {
+    "avg_lines_per_commit": 577,
+    "avg_files_per_hour": 3.4,
+    "avg_tokens_per_hour": 32625,
+    "uptime_hours": 15.9
+  },
+  "systems_delivered_today": [
+    "Voice Interface System",
+    "Visual Dashboard (Kanban)",
+    "Department Coordination Framework",
+    "Browser Automation System",
+    "Metrics Tracking System"
+  ],
+  "hourly_breakdown": {
+    "08:00": { "commits": 0, "lines": 0, "tokens": 0 },
+    "09:00": { "commits": 2, "lines": 425, "tokens": 45000 },
+    "10:00": { "commits": 3, "lines": 1250, "tokens": 72000 },
+    "11:00": { "commits": 1, "lines": 892, "tokens": 38000 },
+    "12:00": { "commits": 0, "lines": 0, "tokens": 12000 },
+    "13:00": { "commits": 2, "lines": 1678, "tokens": 95000 },
+    "14:00": { "commits": 4, "lines": 2945, "tokens": 142000 },
+    "15:00": { "commits": 3, "lines": 1467, "tokens": 116000 }
+  }
+}

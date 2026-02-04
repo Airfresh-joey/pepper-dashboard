@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌶️ Executive Dashboard - All Departments</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #667eea;
+            --accent-light: #764ba2;
+            --border: rgba(255, 255, 255, 0.1);
+            --green: #4caf50;
+            --yellow: #ffc107;
+            --red: #e74c3c;
+            --blue: #2196f3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            padding: 2rem 2rem 1.5rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .refresh-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .refresh-btn.spinning {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+        }
+
+        .stat-info h3 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info p {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .main-container {
+            padding: 2rem;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .view-btn {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn.active {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .view-btn:hover:not(.active) {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* KANBAN VIEW */
+        .kanban-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dept-column {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .dept-column:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .dept-header {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+
+        .dept-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .dept-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .dept-title-group h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .dept-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-dot.green { background: var(--green); }
+        .status-dot.yellow { background: var(--yellow); }
+        .status-dot.red { background: var(--red); }
+
+        .dept-body {
+            padding: 1.5rem;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .metric-box h4 {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-box p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .projects-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .project-card:hover {
+            transform: translateX(4px);
+            border-left-color: var(--accent-light);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .project-status {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .project-status.active { background: rgba(76, 175, 80, 0.2); color: var(--green); }
+        .project-status.planning { background: rgba(255, 193, 7, 0.2); color: var(--yellow); }
+        .project-status.blocked { background: rgba(231, 76, 60, 0.2); color: var(--red); }
+
+        .project-progress {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .blockers-section {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .blocker-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .blocker-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .actions-section {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 120px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        /* GRID VIEW */
+        .grid-view {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .grid-view.active {
+            display: grid;
+        }
+
+        /* LIST VIEW */
+        .list-view {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .list-view.active {
+            display: flex;
+        }
+
+        .list-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .list-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        /* DETAIL MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 1200px) {
+            .kanban-view {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kanban-view {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .list-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <div class="header-title">
+                    <h1>🌶️ Executive Dashboard</h1>
+                    <span id="lastUpdate" style="font-size: 0.9rem; opacity: 0.9;">Loading...</span>
+                </div>
+                <button class="refresh-btn" onclick="loadAllDepartments()">
+                    <span id="refreshIcon">🔄</span> Refresh Data
+                </button>
+            </div>
+            <div class="stats-bar" id="statsBar">
+                <div class="stat-card">
+                    <div class="stat-icon">🏢</div>
+                    <div class="stat-info">
+                        <h3>Total Departments</h3>
+                        <p id="totalDepts">-</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🟢</div>
+                    <div class="stat-info">
+                        <h3>Operational</h3>
+                        <p id="operationalDepts">-</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚨</div>
+                    <div class="stat-info">
+                        <h3>Total Blockers</h3>
+                        <p id="totalBlockers">-</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <h3>Active Projects</h3>
+                        <p id="activeProjects">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="view-toggle">
+            <button class="view-btn active" onclick="switchView('kanban')">📋 Kanban View</button>
+            <button class="view-btn" onclick="switchView('grid')">🔲 Grid View</button>
+            <button class="view-btn" onclick="switchView('list')">📝 List View</button>
+        </div>
+
+        <div class="kanban-view" id="kanbanView">
+            <!-- Department cards will be inserted here -->
+        </div>
+
+        <div class="grid-view" id="gridView">
+            <!-- Grid cards will be inserted here -->
+        </div>
+
+        <div class="list-view" id="listView">
+            <!-- List items will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Department Details</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        if (!sessionStorage.getItem('authenticated')) {
+            window.location.href = 'login.html';
+        }
+
+        const departments = [
+            {
+                id: 'air-fresh',
+                name: 'Air Fresh Marketing',
+                logo: 'assets/airfresh-logo.svg',
+                color: '#667eea'
+            },
+            {
+                id: 'humming-agent',
+                name: 'Humming Agent AI',
+                logo: 'assets/humming-logo.svg',
+                color: '#764ba2'
+            },
+            {
+                id: 'web-dev',
+                name: 'Web Development',
+                logo: 'assets/immerse-logo.svg',
+                color: '#f093fb'
+            },
+            {
+                id: 'sales',
+                name: 'Sales',
+                logo: 'assets/streetteams-logo.svg',
+                color: '#4facfe'
+            },
+            {
+                id: 'operations',
+                name: 'Operations',
+                logo: 'assets/college-logo.svg',
+                color: '#43e97b'
+            }
+        ];
+
+        let departmentData = {};
+        let currentView = 'kanban';
+
+        // Load all department data
+        async function loadAllDepartments() {
+            const refreshIcon = document.getElementById('refreshIcon');
+            refreshIcon.classList.add('spinning');
+
+            try {
+                for (const dept of departments) {
+                    await loadDepartmentData(dept.id);
+                }
+                
+                renderDashboard();
+                updateStats();
+                updateTimestamp();
+                
+            } catch (error) {
+                console.error('Error loading departments:', error);
+                showError();
+            } finally {
+                refreshIcon.classList.remove('spinning');
+            }
+        }
+
+        // Load individual department data from API
+        async function loadDepartmentData(deptId) {
+            try {
+                const response = await fetch('./api/departments.json');
+                const data = await response.json();
+                
+                if (data.departments && data.departments[deptId]) {
+                    departmentData[deptId] = data.departments[deptId];
+                    return;
+                }
+            } catch (error) {
+                console.error('Error fetching department data:', error);
+            }
+            
+            // Fallback mock data if API fails
+            const mockData = {
+                'air-fresh': {
+                    status: 'Operational',
+                    statusLevel: 'green',
+                    health: 'HEALTHY',
+                    activeProjects: 2,
+                    blockers: 0,
+                    metrics: {
+                        clients: '--',
+                        revenue: '--',
+                        pipeline: '--',
+                        responseTime: '< 24h'
+                    },
+                    projects: [
+                        { name: 'AFM Website Redesign', status: 'planning', progress: '10%', action: 'Finalize requirements' },
+                        { name: 'Client Campaigns', status: 'active', progress: '3 active', action: 'On track' }
+                    ],
+                    blockerList: [],
+                    actions: ['Review Q1 goals', 'Update client dashboards', 'Schedule team sync']
+                },
+                'humming-agent': {
+                    status: 'Operational',
+                    statusLevel: 'green',
+                    health: 'HEALTHY',
+                    activeProjects: 2,
+                    blockers: 0,
+                    metrics: {
+                        leads: '--',
+                        responseRate: '--',
+                        campaigns: '2',
+                        conversion: '--'
+                    },
+                    projects: [
+                        { name: 'Skylead Outreach', status: 'active', progress: '2 campaigns', action: 'Lead generation active' },
+                        { name: 'AI Agent Development', status: 'planning', progress: 'In progress', action: 'Voice interface research' }
+                    ],
+                    blockerList: [],
+                    actions: ['Review Skylead performance', 'Update agent capabilities', 'Plan Q1 campaigns']
+                },
+                'web-dev': {
+                    status: 'Active Development',
+                    statusLevel: 'yellow',
+                    health: 'HEALTHY',
+                    activeProjects: 2,
+                    blockers: 1,
+                    metrics: {
+                        sites: '4',
+                        uptime: '--',
+                        response: '--',
+                        ssl: '--'
+                    },
+                    projects: [
+                        { name: 'ImmerseForge', status: 'planning', progress: '40%', action: 'Complete Supabase setup' },
+                        { name: 'Dashboard System', status: 'active', progress: 'Live', action: 'Add more integrations' }
+                    ],
+                    blockerList: ['ImmerseForge: Database initialization pending'],
+                    actions: ['Complete ImmerseForge database', 'Security audit all sites', 'Performance optimization']
+                },
+                'sales': {
+                    status: 'Integration Pending',
+                    statusLevel: 'yellow',
+                    health: 'PENDING HUBSPOT',
+                    activeProjects: 1,
+                    blockers: 1,
+                    metrics: {
+                        deals: '--',
+                        revenue: '--',
+                        pipeline: '--',
+                        closeRate: '--'
+                    },
+                    projects: [
+                        { name: 'HubSpot Integration', status: 'blocked', progress: 'Pending', action: 'API integration needed' }
+                    ],
+                    blockerList: ['HubSpot API integration needed for automated reporting'],
+                    actions: ['Complete HubSpot integration', 'Set up automated reporting']
+                },
+                'operations': {
+                    status: 'Operational',
+                    statusLevel: 'green',
+                    health: 'HEALTHY',
+                    activeProjects: 3,
+                    blockers: 2,
+                    metrics: {
+                        systems: '90%',
+                        uptime: '99%+',
+                        automation: '60%',
+                        emailAccess: '5 pending'
+                    },
+                    projects: [
+                        { name: 'Gmail API Setup', status: 'planning', progress: 'In progress', action: '5 accounts pending' },
+                        { name: 'Notion Integration', status: 'planning', progress: 'Pending', action: 'Workspace setup' },
+                        { name: 'Security Monitoring', status: 'active', progress: 'Running', action: 'Daily scans' }
+                    ],
+                    blockerList: ['Gmail API access needed (5 accounts)', 'Notion integration pending'],
+                    actions: ['Complete Gmail API setup', 'Integrate Notion workspace', 'Update automation coverage']
+                }
+            };
+
+            departmentData[deptId] = mockData[deptId] || {};
+        }
+
+        // Render dashboard
+        function renderDashboard() {
+            const kanbanView = document.getElementById('kanbanView');
+            kanbanView.innerHTML = '';
+
+            departments.forEach(dept => {
+                const data = departmentData[dept.id] || {};
+                const card = createDepartmentCard(dept, data);
+                kanbanView.appendChild(card);
+            });
+        }
+
+        // Create department card
+        function createDepartmentCard(dept, data) {
+            const card = document.createElement('div');
+            card.className = 'dept-column';
+            
+            const statusDotClass = data.statusLevel || 'green';
+            
+            card.innerHTML = `
+                <div class="dept-header" onclick="showDepartmentDetails('${dept.id}')">
+                    <div class="dept-logo">
+                        <img src="${dept.logo}" alt="${dept.name}">
+                    </div>
+                    <div class="dept-title-group">
+                        <h2>${dept.name}</h2>
+                        <div class="dept-status">
+                            <span class="status-dot ${statusDotClass}"></span>
+                            ${data.status || 'Loading...'}
+                        </div>
+                    </div>
+                </div>
+                <div class="dept-body">
+                    <div class="metric-row">
+                        <div class="metric-box">
+                            <h4>Health</h4>
+                            <p>${data.health || '--'}</p>
+                        </div>
+                        <div class="metric-box">
+                            <h4>Projects</h4>
+                            <p>${data.activeProjects || 0}</p>
+                        </div>
+                        <div class="metric-box">
+                            <h4>Blockers</h4>
+                            <p style="color: ${data.blockers > 0 ? 'var(--red)' : 'var(--green)'}">${data.blockers || 0}</p>
+                        </div>
+                        <div class="metric-box">
+                            <h4>Status</h4>
+                            <p style="font-size: 1rem;">🟢</p>
+                        </div>
+                    </div>
+                    
+                    ${data.blockerList && data.blockerList.length > 0 ? `
+                        <div class="blockers-section">
+                            <div class="section-title">🚨 Blockers</div>
+                            ${data.blockerList.map(blocker => `
+                                <div class="blocker-item">
+                                    <span>⚠️</span>
+                                    <span>${blocker}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="projects-section">
+                        <div class="section-title">🎯 Active Projects</div>
+                        ${(data.projects || []).map(project => `
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <span class="project-name">${project.name}</span>
+                                    <span class="project-status ${project.status}">${project.status}</span>
+                                </div>
+                                <div class="project-progress">${project.progress} • ${project.action}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="actions-section">
+                        <button class="action-btn" onclick="showDepartmentDetails('${dept.id}')">
+                            📊 View Details
+                        </button>
+                        <button class="action-btn" onclick="refreshDepartment('${dept.id}')">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Update stats
+        function updateStats() {
+            const total = departments.length;
+            let operational = 0;
+            let totalBlockers = 0;
+            let totalProjects = 0;
+
+            departments.forEach(dept => {
+                const data = departmentData[dept.id] || {};
+                if (data.statusLevel === 'green') operational++;
+                totalBlockers += data.blockers || 0;
+                totalProjects += data.activeProjects || 0;
+            });
+
+            document.getElementById('totalDepts').textContent = total;
+            document.getElementById('operationalDepts').textContent = operational;
+            document.getElementById('totalBlockers').textContent = totalBlockers;
+            document.getElementById('activeProjects').textContent = totalProjects;
+        }
+
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const formatted = now.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+            document.getElementById('lastUpdate').textContent = `Last updated: ${formatted}`;
+        }
+
+        // Show department details
+        function showDepartmentDetails(deptId) {
+            const dept = departments.find(d => d.id === deptId);
+            const data = departmentData[deptId] || {};
+            
+            document.getElementById('modalTitle').textContent = dept.name;
+            
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">📊 Overview</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        ${Object.entries(data.metrics || {}).map(([key, value]) => `
+                            <div class="metric-box">
+                                <h4>${key}</h4>
+                                <p>${value}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">🎯 Projects</h3>
+                    ${(data.projects || []).map(project => `
+                        <div class="project-card">
+                            <div class="project-header">
+                                <span class="project-name">${project.name}</span>
+                                <span class="project-status ${project.status}">${project.status}</span>
+                            </div>
+                            <div class="project-progress">${project.progress} • ${project.action}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                ${data.blockerList && data.blockerList.length > 0 ? `
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">🚨 Blockers</h3>
+                        <div class="blockers-section">
+                            ${data.blockerList.map(blocker => `
+                                <div class="blocker-item">
+                                    <span>⚠️</span>
+                                    <span>${blocker}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div>
+                    <h3 style="margin-bottom: 1rem;">⚡ Next Actions</h3>
+                    ${(data.actions || []).map(action => `
+                        <div style="padding: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem;">
+                            ☐ ${action}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        // Switch view
+        function switchView(view) {
+            currentView = view;
+            
+            // Update buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update views
+            document.getElementById('kanbanView').style.display = view === 'kanban' ? 'grid' : 'none';
+            document.getElementById('gridView').style.display = view === 'grid' ? 'grid' : 'none';
+            document.getElementById('listView').style.display = view === 'list' ? 'flex' : 'none';
+        }
+
+        // Refresh single department
+        async function refreshDepartment(deptId) {
+            await loadDepartmentData(deptId);
+            renderDashboard();
+            updateStats();
+        }
+
+        // Close modal on outside click
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') {
+                closeModal();
+            }
+        });
+
+        // Initialize dashboard
+        loadAllDepartments();
+
+        // Auto-refresh every 5 minutes
+        setInterval(loadAllDepartments, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

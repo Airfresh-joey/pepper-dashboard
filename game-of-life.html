@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Joey's Life OS - Game Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(238, 90, 111, 0.1));
+            border-radius: 15px;
+            border: 2px solid rgba(255, 107, 107, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .xp-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 65%;
+            transition: width 0.5s ease;
+        }
+        
+        .xp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .section {
+            margin: 20px 0;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(52, 152, 219, 0.5);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+        
+        .status-green {
+            background: #2ecc71;
+            color: #fff;
+        }
+        
+        .status-yellow {
+            background: #f39c12;
+            color: #fff;
+        }
+        
+        .status-red {
+            background: #e74c3c;
+            color: #fff;
+        }
+        
+        .progress-ring {
+            width: 80px;
+            height: 80px;
+            margin: 10px auto;
+        }
+        
+        .progress-circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 8;
+        }
+        
+        .progress-circle-fill {
+            fill: none;
+            stroke: #3498db;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .progress-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            fill: #fff;
+        }
+        
+        .quest-list {
+            list-style: none;
+        }
+        
+        .quest-item {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .quest-item.completed {
+            opacity: 0.6;
+            border-left-color: #2ecc71;
+            text-decoration: line-through;
+        }
+        
+        .xp-badge {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .tomorrow-section {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(46, 204, 113, 0.1));
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .goal-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .goal-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Auth check - redirect to login if not authenticated
+        if (sessionStorage.getItem('auth') !== 'true') {
+            window.location.href = '/';
+        }
+    </script>
+    <div class="header">
+        <h1>🎮 JOEY'S LIFE OS</h1>
+        <div>Level 23 Entrepreneur</div>
+        <div class="xp-bar">
+            <div class="xp-fill"></div>
+            <div class="xp-text">6,500 / 10,000 XP</div>
+        </div>
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-value">💪 85</div>
+                <div class="stat-label">Health</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">💰 92</div>
+                <div class="stat-label">Wealth</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">❤️ 78</div>
+                <div class="stat-label">Relationships</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">🚀 88</div>
+                <div class="stat-label">Projects</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tomorrow-section">
+        <div class="section-title">⏰ TOMORROW'S GAME PLAN</div>
+        <div class="goal-item">
+            <span>🏋️ 50 Push-ups</span>
+            <span class="xp-badge">+25 XP</span>
+        </div>
+        <div class="goal-item">
+            <span>📞 3 Sales Calls</span>
+            <span class="xp-badge">+50 XP</span>
+        </div>
+        <div class="goal-item">
+            <span>🏠 Respond to Architect (Kitchen)</span>
+            <span class="xp-badge">+30 XP</span>
+        </div>
+        <div class="goal-item">
+            <span>💑 Date night planned</span>
+            <span class="xp-badge">+20 XP</span>
+        </div>
+        <div class="goal-item">
+            <span>📧 Zero inbox</span>
+            <span class="xp-badge">+40 XP</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">🏢 BUSINESS DEPARTMENTS</div>
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📊 Marketing</div>
+                    <div class="status-badge status-green">ON TRACK</div>
+                </div>
+                <svg class="progress-ring" viewBox="0 0 100 100">
+                    <circle class="progress-circle" cx="50" cy="50" r="40"/>
+                    <circle class="progress-circle-fill" cx="50" cy="50" r="40" 
+                            stroke-dasharray="251.2" stroke-dashoffset="62.8"/>
+                    <text class="progress-text" x="50" y="55" text-anchor="middle">75%</text>
+                </svg>
+                <div style="font-size: 0.9em; color: #888; text-align: center;">
+                    Social posts scheduled, campaigns running
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">💰 Sales</div>
+                    <div class="status-badge status-yellow">NEEDS PUSH</div>
+                </div>
+                <svg class="progress-ring" viewBox="0 0 100 100">
+                    <circle class="progress-circle" cx="50" cy="50" r="40"/>
+                    <circle class="progress-circle-fill" cx="50" cy="50" r="40" 
+                            stroke-dasharray="251.2" stroke-dashoffset="125.6" stroke="#f39c12"/>
+                    <text class="progress-text" x="50" y="55" text-anchor="middle">50%</text>
+                </svg>
+                <div style="font-size: 0.9em; color: #888; text-align: center;">
+                    3 deals pending, follow-ups needed
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">💼 Operations</div>
+                    <div class="status-badge status-green">RUNNING</div>
+                </div>
+                <svg class="progress-ring" viewBox="0 0 100 100">
+                    <circle class="progress-circle" cx="50" cy="50" r="40"/>
+                    <circle class="progress-circle-fill" cx="50" cy="50" r="40" 
+                            stroke-dasharray="251.2" stroke-dashoffset="37.68"/>
+                    <text class="progress-text" x="50" y="55" text-anchor="middle">85%</text>
+                </svg>
+                <div style="font-size: 0.9em; color: #888; text-align: center;">
+                    Systems optimized, team coordinated
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⚖️ Legal</div>
+                    <div class="status-badge status-yellow">IN PROGRESS</div>
+                </div>
+                <svg class="progress-ring" viewBox="0 0 100 100">
+                    <circle class="progress-circle" cx="50" cy="50" r="40"/>
+                    <circle class="progress-circle-fill" cx="50" cy="50" r="40" 
+                            stroke-dasharray="251.2" stroke-dashoffset="175.84" stroke="#f39c12"/>
+                    <text class="progress-text" x="50" y="55" text-anchor="middle">30%</text>
+                </svg>
+                <div style="font-size: 0.9em; color: #888; text-align: center;">
+                    NY matters - withdrawal strategy planned
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🌐 Web Dev</div>
+                    <div class="status-badge status-yellow">ACTIVE</div>
+                </div>
+                <svg class="progress-ring" viewBox="0 0 100 100">
+                    <circle class="progress-circle" cx="50" cy="50" r="40"/>
+                    <circle class="progress-circle-fill" cx="50" cy="50" r="40" 
+                            stroke-dasharray="251.2" stroke-dashoffset="87.92" stroke="#f39c12"/>
+                    <text class="progress-text" x="50" y="55" text-anchor="middle">65%</text>
+                </svg>
+                <div style="font-size: 0.9em; color: #888; text-align: center;">
+                    ImmerseForge 65%, AFM redesign queued
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🎓 Onboarding</div>
+                    <div class="status-badge status-green">COMPLETE</div>
+                </div>
+                <svg class="progress-ring" viewBox="0 0 100 100">
+                    <circle class="progress-circle" cx="50" cy="50" r="40"/>
+                    <circle class="progress-circle-fill" cx="50" cy="50" r="40" 
+                            stroke-dasharray="251.2" stroke-dashoffset="25.12"/>
+                    <text class="progress-text" x="50" y="55" text-anchor="middle">90%</text>
+                </svg>
+                <div style="font-size: 0.9em; color: #888; text-align: center;">
+                    Slack integrated, systems connected
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">💪 PERSONAL LIFE</div>
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🏋️ Fitness</div>
+                    <div class="status-badge status-red">NEEDS WORK</div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <div style="font-size: 2em; text-align: center;">0</div>
+                    <div style="text-align: center; color: #888; font-size: 0.9em;">Push-ups today</div>
+                    <div style="text-align: center; color: #888; font-size: 0.8em; margin-top: 10px;">
+                        Goal: 50/day • Tomorrow's quest ready!
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">👥 Relationships</div>
+                    <div class="status-badge status-yellow">CHECK IN</div>
+                </div>
+                <ul class="quest-list">
+                    <li class="quest-item">
+                        <span>Text Ryan</span>
+                        <span style="font-size: 0.8em; color: #888;">Last: 3 days ago</span>
+                    </li>
+                    <li class="quest-item">
+                        <span>Call Mom</span>
+                        <span style="font-size: 0.8em; color: #888;">Last: 1 week ago</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🏠 Home Projects</div>
+                    <div class="status-badge status-red">ACTION NEEDED</div>
+                </div>
+                <ul class="quest-list">
+                    <li class="quest-item">
+                        <span>🔥 Respond to Architect</span>
+                        <span class="xp-badge">HIGH PRIORITY</span>
+                    </li>
+                    <li class="quest-item">
+                        <span>Kitchen Designer - Schedule meeting</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">💑 Marriage</div>
+                    <div class="status-badge status-green">DOING GOOD</div>
+                </div>
+                <div style="margin: 15px 0; text-align: center;">
+                    <div style="font-size: 1.2em; margin-bottom: 10px;">Date night: This weekend</div>
+                    <div style="font-size: 0.9em; color: #888;">Last: 4 days ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">🎯 TODAY'S QUESTS</div>
+        <ul class="quest-list">
+            <li class="quest-item completed">
+                <span>✅ Security system built</span>
+                <span class="xp-badge">+100 XP</span>
+            </li>
+            <li class="quest-item completed">
+                <span>✅ Slack channels integrated</span>
+                <span class="xp-badge">+75 XP</span>
+            </li>
+            <li class="quest-item completed">
+                <span>✅ Dashboard created</span>
+                <span class="xp-badge">+80 XP</span>
+            </li>
+            <li class="quest-item">
+                <span>📧 Email access setup</span>
+                <span class="xp-badge">+60 XP</span>
+            </li>
+            <li class="quest-item">
+                <span>🏠 Respond to architect</span>
+                <span class="xp-badge">+30 XP</span>
+            </li>
+        </ul>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 15px;">
+        <div style="font-size: 0.9em; color: #888;">Last Updated: <span id="timestamp"></span></div>
+        <div style="font-size: 0.8em; color: #666; margin-top: 5px;">Auto-refresh: 60s</div>
+    </div>
+
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        setTimeout(() => location.reload(), 60000);
+    </script>
+</body>
+</html>

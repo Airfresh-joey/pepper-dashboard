@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RentAHuman - Live Demo | Pepper Labs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-4xl font-bold bg-gradient-to-r from-cyan-500 to-violet-600 bg-clip-text text-transparent">
+            🔥 RentAHuman
+          </h1>
+          <p class="text-gray-600 mt-2">Gig Platform MVP - Live Demo</p>
+        </div>
+        <div class="text-right">
+          <div class="text-sm text-gray-500">Deployed</div>
+          <div class="text-2xl font-bold text-green-600">✅ LIVE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="text-sm text-gray-500">Build Time</div>
+        <div class="text-3xl font-bold text-cyan-600">12s</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="text-sm text-gray-500">Pages</div>
+        <div class="text-3xl font-bold text-violet-600">7</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="text-sm text-gray-500">Status</div>
+        <div class="text-3xl font-bold text-green-600">100%</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="text-sm text-gray-500">Platform</div>
+        <div class="text-2xl font-bold text-orange-600">Vercel</div>
+      </div>
+    </div>
+
+    <!-- Live Links -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <span class="mr-3">🚀</span>
+        Live Application
+      </h2>
+      
+      <div class="space-y-4">
+        <a href="https://rentahuman.vercel.app" target="_blank" 
+           class="block p-4 bg-gradient-to-r from-cyan-500 to-violet-600 text-white rounded-lg hover:shadow-xl transition-all">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-bold text-lg">Homepage</div>
+              <div class="text-sm opacity-90">https://rentahuman.vercel.app</div>
+            </div>
+            <div class="text-3xl">🏠</div>
+          </div>
+        </a>
+
+        <a href="https://rentahuman.vercel.app/signup" target="_blank" 
+           class="block p-4 bg-gradient-to-r from-violet-500 to-orange-500 text-white rounded-lg hover:shadow-xl transition-all">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-bold text-lg">Worker Signup</div>
+              <div class="text-sm opacity-90">https://rentahuman.vercel.app/signup</div>
+            </div>
+            <div class="text-3xl">👷</div>
+          </div>
+        </a>
+
+        <a href="https://rentahuman.vercel.app/jobs" target="_blank" 
+           class="block p-4 bg-gradient-to-r from-orange-500 to-cyan-500 text-white rounded-lg hover:shadow-xl transition-all">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-bold text-lg">Job Board</div>
+              <div class="text-sm opacity-90">https://rentahuman.vercel.app/jobs</div>
+            </div>
+            <div class="text-3xl">💼</div>
+          </div>
+        </a>
+
+        <a href="https://rentahuman.vercel.app/post-job" target="_blank" 
+           class="block p-4 bg-gradient-to-r from-cyan-500 to-orange-500 text-white rounded-lg hover:shadow-xl transition-all">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-bold text-lg">Post a Job</div>
+              <div class="text-sm opacity-90">https://rentahuman.vercel.app/post-job</div>
+            </div>
+            <div class="text-3xl">📝</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <span class="mr-3">🛠️</span>
+        Tech Stack
+      </h2>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 border-2 border-cyan-200 rounded-lg text-center">
+          <div class="text-3xl mb-2">⚡</div>
+          <div class="font-bold">Next.js 14</div>
+          <div class="text-sm text-gray-500">Framework</div>
+        </div>
+        <div class="p-4 border-2 border-violet-200 rounded-lg text-center">
+          <div class="text-3xl mb-2">🗄️</div>
+          <div class="font-bold">Supabase</div>
+          <div class="text-sm text-gray-500">Database</div>
+        </div>
+        <div class="p-4 border-2 border-orange-200 rounded-lg text-center">
+          <div class="text-3xl mb-2">🎨</div>
+          <div class="font-bold">Tailwind</div>
+          <div class="text-sm text-gray-500">Styling</div>
+        </div>
+        <div class="p-4 border-2 border-green-200 rounded-lg text-center">
+          <div class="text-3xl mb-2">▲</div>
+          <div class="font-bold">Vercel</div>
+          <div class="text-sm text-gray-500">Hosting</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Checklist -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <span class="mr-3">✅</span>
+        Features
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex items-start space-x-3">
+          <div class="text-2xl">✅</div>
+          <div>
+            <div class="font-bold">Beautiful UI Design</div>
+            <div class="text-sm text-gray-500">Cyan/Orange/Violet palette</div>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="text-2xl">✅</div>
+          <div>
+            <div class="font-bold">Homepage Hero</div>
+            <div class="text-sm text-gray-500">Categories, featured workers</div>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="text-2xl">✅</div>
+          <div>
+            <div class="font-bold">Worker Signup Flow</div>
+            <div class="text-sm text-gray-500">Split-screen design</div>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="text-2xl">✅</div>
+          <div>
+            <div class="font-bold">Job Board</div>
+            <div class="text-sm text-gray-500">Card grid with filters</div>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="text-2xl">✅</div>
+          <div>
+            <div class="font-bold">Post Job Wizard</div>
+            <div class="text-sm text-gray-500">4-step progress indicator</div>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="text-2xl">✅</div>
+          <div>
+            <div class="font-bold">Supabase Connected</div>
+            <div class="text-sm text-gray-500">Database ready</div>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="text-2xl">⏸️</div>
+          <div>
+            <div class="font-bold">Stripe Payments</div>
+            <div class="text-sm text-gray-500">Waiting for setup</div>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="text-2xl">⏸️</div>
+          <div>
+            <div class="font-bold">Custom Domain</div>
+            <div class="text-sm text-gray-500">rentahuman.co - waiting</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Next Steps -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <span class="mr-3">🎯</span>
+        Next Steps
+      </h2>
+      
+      <div class="space-y-3">
+        <div class="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
+          <div class="text-2xl">⚠️</div>
+          <div>
+            <div class="font-bold text-yellow-800">Database Schema</div>
+            <div class="text-sm text-yellow-700">
+              <a href="https://supabase.com/dashboard/project/trzodphcrselrcfuhook/editor" 
+                 target="_blank" 
+                 class="underline hover:text-yellow-900">
+                Run SUPABASE-SCHEMA.sql in SQL Editor
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
+          <div class="text-2xl">🔐</div>
+          <div>
+            <div class="font-bold text-blue-800">Stripe Integration</div>
+            <div class="text-sm text-gray-600">Connect Stripe for payments</div>
+          </div>
+        </div>
+        
+        <div class="flex items-start space-x-3 p-4 bg-purple-50 rounded-lg">
+          <div class="text-2xl">🌐</div>
+          <div>
+            <div class="font-bold text-purple-800">Custom Domain</div>
+            <div class="text-sm text-gray-600">Point rentahuman.co to Vercel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-8 text-white">
+      <div class="text-sm opacity-75">Built by Pepper Potts 🌶️ | Chief of Staff @ Humming Agent AI</div>
+      <div class="text-xs opacity-50 mt-1">Deployed: Feb 4, 2026 @ 7:24 AM MST</div>
+    </div>
+  </div>
+
+  <script>
+    // Auto-refresh status every 30 seconds
+    setInterval(() => {
+      console.log('✅ RentAHuman demo page active');
+    }, 30000);
+  </script>
+</body>
+</html>

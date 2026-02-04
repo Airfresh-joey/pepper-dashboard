@@ -1,0 +1,124 @@
+{
+  "lastUpdated": "2026-02-01T10:13:00-07:00",
+  "departments": {
+    "sales": {
+      "name": "Sales",
+      "channelId": "C09604GRK",
+      "status": "pending",
+      "statusText": "Email responses queued",
+      "lastUpdate": "10:04 AM",
+      "blockers": ["Need approval to send"],
+      "active": ["Samuel Darwin ROI", "Krista's 3 outstanding emails"]
+    },
+    "marketing": {
+      "name": "Marketing",
+      "channelId": "G1D3YBM9D",
+      "status": "pending",
+      "statusText": "Proposals need updates",
+      "lastUpdate": "10:04 AM",
+      "blockers": [],
+      "active": ["All-Star Weekend proposal", "Campaign updates"]
+    },
+    "operations": {
+      "name": "Operations",
+      "channelId": "C0ABKSYDBGW",
+      "status": "active",
+      "statusText": "Running scheduled checks",
+      "lastUpdate": "10:13 AM",
+      "blockers": [],
+      "active": ["Dashboard automation", "24/7 monitoring"]
+    },
+    "finance": {
+      "name": "Finance",
+      "channelId": "C0ABB4SU2TZ",
+      "status": "idle",
+      "statusText": "Awaiting system access",
+      "lastUpdate": "9:00 AM",
+      "blockers": ["Need QuickBooks/bank access"],
+      "active": []
+    },
+    "webdev": {
+      "name": "Web Development",
+      "channelId": "C0AC34FCSTD",
+      "status": "idle",
+      "statusText": "Sites stable",
+      "lastUpdate": "10:13 AM",
+      "blockers": [],
+      "active": ["ImmerseForge deployed", "AFM sites stable"]
+    },
+    "legal": {
+      "name": "Legal",
+      "channelId": "C0ACG7MF4FJ",
+      "status": "idle",
+      "statusText": "Standing by",
+      "lastUpdate": "10:04 AM",
+      "blockers": ["Need source documents"],
+      "active": []
+    },
+    "email": {
+      "name": "Email Ops",
+      "status": "active",
+      "statusText": "Gmail API operational",
+      "lastUpdate": "10:13 AM",
+      "blockers": [],
+      "active": ["30-minute updates running"]
+    }
+  },
+  "priorities": [
+    {
+      "id": 1,
+      "text": "Slack channel IDs configured - 24/7 communication ready",
+      "status": "done",
+      "priority": "high"
+    },
+    {
+      "id": 2,
+      "text": "Samuel Darwin ROI - Response needed",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": 3,
+      "text": "Krista's 3 emails (All-Star, Jeffrey, Sweet Greens)",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": 4,
+      "text": "Oracle NetSuite event response",
+      "status": "pending",
+      "priority": "normal"
+    },
+    {
+      "id": 5,
+      "text": "Google Calendar OAuth setup",
+      "status": "blocked",
+      "priority": "high"
+    }
+  ],
+  "blockers": [
+    {
+      "item": "Google Calendar OAuth",
+      "impact": "No morning briefings, no calendar monitoring",
+      "status": "critical",
+      "owner": "Joey",
+      "action": "Create OAuth credentials at console.cloud.google.com"
+    },
+    {
+      "item": "Finance system access",
+      "impact": "No revenue/expense tracking",
+      "status": "blocked",
+      "owner": "Joey",
+      "action": "Provide QuickBooks/bank credentials"
+    }
+  ],
+  "metrics": {
+    "claudeUsage": {
+      "weeklyPercent": 64,
+      "sonnetPercent": 100,
+      "monthlySpend": 29.77,
+      "spendLimit": 50,
+      "balance": 47.72
+    }
+  }
+}

@@ -1,0 +1,208 @@
+::1 - - [30/Jan/2026 15:24:19] "GET /login.html HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:19] code 404, message File not found
+::1 - - [30/Jan/2026 15:24:19] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [30/Jan/2026 15:24:29] "GET /executive-dashboard.html HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:29] "GET /api/departments.json HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:29] "GET /login.html HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:29] "GET /assets/airfresh-logo.svg HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:29] "GET /assets/streetteams-logo.svg HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:29] "GET /assets/humming-logo.svg HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:29] "GET /assets/immerse-logo.svg HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('::1', 50791, 0, 0)
+----------------------------------------
+Exception occurred during processing of request from ('::1', 50792, 0, 0)
+----------------------------------------
+Exception occurred during processing of request from ('::1', 50790, 0, 0)
+::1 - - [30/Jan/2026 15:24:29] "GET /assets/college-logo.svg HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('::1', 50793, 0, 0)
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 1422, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                             directory=args.directory)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 1422, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                             directory=args.directory)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 1422, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                             directory=args.directory)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 1422, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                             directory=args.directory)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+::1 - - [30/Jan/2026 15:24:29] code 404, message File not found
+::1 - - [30/Jan/2026 15:24:29] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [30/Jan/2026 15:24:38] "GET /index.html HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:38] "GET /assets/pepper-avatar.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:38] "GET /assets/joey-avatar.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:38] "GET /assets/airfresh-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:38] "GET /assets/immerse-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:38] "GET /assets/humming-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:38] "GET /assets/streetteams-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:38] "GET /assets/college-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:38] "GET /index.html HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:39] "GET /assets/pepper-avatar.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:39] "GET /assets/joey-avatar.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:39] "GET /assets/airfresh-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:39] "GET /assets/immerse-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:39] "GET /assets/humming-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:39] "GET /assets/streetteams-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:39] "GET /assets/college-logo.svg?v=2 HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:55] "GET /kanban.html?board=airfresh HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:24:57] "GET /index.html HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:25:12] "GET /executive-dashboard.html HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:25:12] "GET /api/departments.json HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:25:12] "GET /assets/humming-logo.svg HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:25:12] "GET /assets/airfresh-logo.svg HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:25:12] "GET /assets/immerse-logo.svg HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:25:12] "GET /assets/streetteams-logo.svg HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:25:12] "GET /assets/college-logo.svg HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:25:43] "GET /api/departments.json HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:30:12] "GET /api/departments.json HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:35:12] "GET /api/departments.json HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:38:03] "GET /executive-dashboard.html HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:40:12] "GET /api/departments.json HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:44:22] "GET /executive-dashboard.html HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:44:22] "GET /api/departments.json HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:44:22] code 404, message File not found
+::1 - - [30/Jan/2026 15:44:22] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [30/Jan/2026 15:46:28] "GET /executive-dashboard.html HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:46:28] "GET /api/departments.json HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:46:28] code 404, message File not found
+::1 - - [30/Jan/2026 15:46:28] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [30/Jan/2026 15:46:28] "GET /assets/airfresh-logo.svg HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:46:28] "GET /assets/humming-logo.svg HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:46:28] "GET /assets/immerse-logo.svg HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:46:28] "GET /assets/streetteams-logo.svg HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:46:28] "GET /assets/college-logo.svg HTTP/1.1" 304 -
+::1 - - [30/Jan/2026 15:46:29] "GET /executive-dashboard.html HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:46:29] "GET /api/departments.json HTTP/1.1" 200 -
+::1 - - [30/Jan/2026 15:46:29] code 404, message File not found
+::1 - - [30/Jan/2026 15:46:29] "GET /favicon.ico HTTP/1.1" 404 -

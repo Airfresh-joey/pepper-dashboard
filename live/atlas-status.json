@@ -1,0 +1,87 @@
+{
+  "status": "demo_ready",
+  "created": "2026-02-04T14:20:00Z",
+  "build_time_minutes": 20,
+  "uptime_hours": 0,
+  "metrics": {
+    "prospects_researched": 5,
+    "emails_sent": 0,
+    "linkedin_sent": 0,
+    "responses": 0,
+    "meetings_booked": 0,
+    "landing_pages_created": 5
+  },
+  "test_results": {
+    "status": "passed",
+    "prospects_tested": 5,
+    "success_rate": "100%",
+    "errors": 0,
+    "processing_time_seconds": 10
+  },
+  "current_action": {
+    "type": "idle",
+    "description": "Awaiting Joey's demo or approval to go live",
+    "progress": 100
+  },
+  "next_action": {
+    "type": "demo_or_launch",
+    "description": "Demo to client OR configure APIs for live operation",
+    "options": [
+      "Demo to client (ready now)",
+      "Send test emails to Joey",
+      "Configure Gmail/Apollo APIs for live"
+    ]
+  },
+  "config": {
+    "target_industries": ["construction", "it-services", "manufacturing"],
+    "daily_email_limit": 20,
+    "approval_required": true,
+    "status": "configured"
+  },
+  "landing_pages": [
+    {
+      "prospect": "Jeremy Anslow - Anslow Bryant",
+      "industry": "construction",
+      "url": "http://localhost:8080/live/atlas/anslow-bryant-jeremy.html"
+    },
+    {
+      "prospect": "Sarah Chen - TechFlow Solutions",
+      "industry": "it-services",
+      "url": "http://localhost:8080/live/atlas/techflow-solutions-sarah.html"
+    },
+    {
+      "prospect": "Mike Rodriguez - Apex Construction LLC",
+      "industry": "construction",
+      "url": "http://localhost:8080/live/atlas/apex-construction-llc-mike.html"
+    },
+    {
+      "prospect": "Lisa Martinez - Precision Manufacturing",
+      "industry": "manufacturing",
+      "url": "http://localhost:8080/live/atlas/precision-manufacturing-lisa.html"
+    },
+    {
+      "prospect": "David Park - Summit IT Services",
+      "industry": "it-services",
+      "url": "http://localhost:8080/live/atlas/summit-it-services-david.html"
+    }
+  ],
+  "documentation": [
+    "~/clawd/atlas/QUICK-ACCESS.md",
+    "~/clawd/atlas/DEMO-READY.md",
+    "~/clawd/atlas/TEST-RESULTS.md",
+    "~/clawd/dashboard/live/AI-EMPLOYEE-DEMO-PLAN.md"
+  ],
+  "ready_for": [
+    "Client demos",
+    "Sales presentations",
+    "Proof of concept",
+    "Live operation (with API setup)"
+  ],
+  "build_summary": {
+    "total_files_created": 16,
+    "total_code_kb": 120,
+    "build_time_minutes": 20,
+    "from_approval_to_demo": "20 minutes",
+    "quality_score": "5/5"
+  }
+}

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"="width=device-width, initial-scale=1.0">
+    <title>Pepper 🌶️ Command Center</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌶️</text></svg>">
+    <style>
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --bg-card: #252b48;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --accent: #667eea;
+            --success: #48bb78;
+            --warning: #f6ad55;
+            --danger: #fc8181;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f3a 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(26, 31, 58, 0.98);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-section {
+            padding: 1.5rem 1rem;
+        }
+
+        .nav-section-title {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Hamburger Menu */
+        .menu-toggle {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .menu-toggle span {
+            width: 24px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .menu-toggle.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 0;
+            padding: 2rem;
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+
+        .main-content.sidebar-open {
+            margin-left: 280px;
+        }
+
+        /* Header */
+        .dashboard-header {
+            margin-left: 70px;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        .stat-large {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Weather Card */
+        .weather-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .weather-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .weather-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Kanban Board */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .kanban-column {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .kanban-header {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .kanban-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            cursor: move;
+        }
+
+        .kanban-item-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .kanban-item-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(72, 187, 120, 0.2);
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: rgba(246, 173, 85, 0.2);
+            color: var(--warning);
+        }
+
+        .status-danger {
+            background: rgba(252, 129, 129, 0.2);
+            color: var(--danger);
+        }
+
+        /* Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Hidden class for views */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Menu -->
+    <button class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">🌶️ Pepper</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Dashboards</div>
+            <a class="nav-item active" data-view="main">
+                <span class="nav-icon">🏠</span>
+                <span>Overview</span>
+            </a>
+            <a class="nav-item" data-view="tasks">
+                <span class="nav-icon">✅</span>
+                <span>Tasks</span>
+            </a>
+            <a class="nav-item" data-view="humming-agent">
+                <span class="nav-icon">🤖</span>
+                <span>Humming Agent</span>
+            </a>
+            <a class="nav-item" data-view="air-fresh">
+                <span class="nav-icon">💨</span>
+                <span>Air Fresh Marketing</span>
+            </a>
+            <a class="nav-item" data-view="projects">
+                <span class="nav-icon">📋</span>
+                <span>Projects</span>
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Tools</div>
+            <a class="nav-item" href="claude-usage.html" target="_blank">
+                <span class="nav-icon">📊</span>
+                <span>API Usage</span>
+            </a>
+            <a class="nav-item" href="#" onclick="location.reload()">
+                <span class="nav-icon">🔄</span>
+                <span>Refresh Data</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        
+        <!-- Main Dashboard View -->
+        <div class="view active" id="view-main">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Command Center</h1>
+                <p class="dashboard-subtitle">Monday, February 3, 2026</p>
+            </div>
+
+            <div class="card-grid">
+                <!-- Weather & Ski Conditions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🌤️ Weather & Snow</h3>
+                    </div>
+                    <div id="weatherData">Loading...</div>
+                </div>
+
+                <!-- Critical Alerts -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🚨 Critical Alerts</h3>
+                    </div>
+                    <div id="alerts">
+                        <div class="status-badge status-danger">BILL.com - $60K unpaid</div><br><br>
+                        <div class="status-badge status-danger">401k - 19 days overdue</div><br><br>
+                        <div class="status-badge status-warning">Budget exceeded - $77.86/$50</div>
+                    </div>
+                </div>
+
+                <!-- Today's Schedule -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📅 Today</h3>
+                    </div>
+                    <div id="schedule">
+                        <p>✅ Adrija Datta Meeting - 1:30 PM (Complete)</p>
+                        <p>📧 Year-end accounting docs needed</p>
+                        <p>🔒 Security: Rotate AWS/GCP keys</p>
+                    </div>
+                </div>
+
+                <!-- System Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">⚙️ System Status</h3>
+                    </div>
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <div class="weather-value">85/100</div>
+                            <div class="stat-label">Security Score</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value">40+</div>
+                            <div class="stat-label">Unread Emails</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value status-danger">$77.86</div>
+                            <div class="stat-label">API Spend</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value status-success">Online</div>
+                            <div class="stat-label">Harper Agent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks View -->
+        <div class="view" id="view-tasks">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">✅ Tasks & Projects</h1>
+                <p class="dashboard-subtitle">Kanban boards by business unit</p>
+            </div>
+
+            <div class="card-grid">
+                <!-- Air Fresh Marketing Card -->
+                <div class="card" style="cursor: pointer; transition: transform 0.2s;" onclick="showBusinessKanban('air-fresh')" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <div class="card-header">
+                        <h3 class="card-title">💨 Air Fresh Marketing</h3>
+                    </div>
+                    <div style="padding: 1rem 0;">
+                        <div class="stat-large">12</div>
+                        <div class="stat-label">Active tasks across all agents</div>
+                        <div style="margin-top: 1rem;">
+                            <div class="status-badge status-danger" style="margin-right: 0.5rem;">3 Critical</div>
+                            <div class="status-badge status-warning" style="margin-right: 0.5rem;">5 High</div>
+                            <div class="status-badge status-success">4 Normal</div>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+                            👉 Click to view Kanban board
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Humming Agent AI Card -->
+                <div class="card" style="cursor: pointer; transition: transform 0.2s;" onclick="showBusinessKanban('humming-agent')" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <div class="card-header">
+                        <h3 class="card-title">🤖 Humming Agent AI</h3>
+                    </div>
+                    <div style="padding: 1rem 0;">
+                        <div class="stat-large">8</div>
+                        <div class="stat-label">Active tasks across all agents</div>
+                        <div style="margin-top: 1rem;">
+                            <div class="status-badge status-warning" style="margin-right: 0.5rem;">2 High</div>
+                            <div class="status-badge status-success">6 Normal</div>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+                            👉 Click to view Kanban board
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Agent Status Overview -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🤖 Agent Status</h3>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <p style="margin: 0.5rem 0;"><span style="font-weight: 600;">Finance:</span> <span class="status-badge status-success">Active</span> - 3 tasks</p>
+                        <p style="margin: 0.5rem 0;"><span style="font-weight: 600;">Legal:</span> <span class="status-badge status-warning">Busy</span> - 2 tasks</p>
+                        <p style="margin: 0.5rem 0;"><span style="font-weight: 600;">Marketing:</span> <span class="status-badge status-success">Active</span> - 4 tasks</p>
+                        <p style="margin: 0.5rem 0;"><span style="font-weight: 600;">Operations:</span> <span class="status-badge status-success">Active</span> - 2 tasks</p>
+                        <p style="margin: 0.5rem 0;"><span style="font-weight: 600;">Sales:</span> <span class="status-badge status-warning">Busy</span> - 5 tasks</p>
+                        <p style="margin: 0.5rem 0;"><span style="font-weight: 600;">Security:</span> <span class="status-badge status-danger">Critical</span> - 2 tasks</p>
+                        <p style="margin: 0.5rem 0;"><span style="font-weight: 600;">Web Dev:</span> <span class="status-badge status-success">Active</span> - 2 tasks</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📊 Quick Stats</h3>
+                    </div>
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <div class="weather-value">20</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value">7</div>
+                            <div class="stat-label">In Progress</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value status-danger">5</div>
+                            <div class="stat-label">Blocked/Critical</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value status-success">8</div>
+                            <div class="stat-label">Completed Today</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Humming Agent View -->
+        <div class="view" id="view-humming-agent">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">🤖 Humming Agent AI</h1>
+                <p class="dashboard-subtitle">AI-Powered Business Operations</p>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📈 Leads</h3>
+                    </div>
+                    <div class="stat-large">1</div>
+                    <div class="stat-label">New lead: Pam (pilotpammydlh@outlook.com)</div>
+                    <div style="margin-top: 1rem;">
+                        <div class="status-badge status-warning">Needs Follow-up</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">💰 Revenue</h3>
+                    </div>
+                    <div class="stat-large">$0</div>
+                    <div class="stat-label">Monthly Recurring Revenue</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">👥 Active Clients</h3>
+                    </div>
+                    <div class="stat-large">0</div>
+                    <div class="stat-label">Current customers</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🎯 This Week</h3>
+                    </div>
+                    <p>• Follow up with Pam</p>
+                    <p>• Review website analytics</p>
+                    <p>• Plan marketing campaigns</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Air Fresh View -->
+        <div class="view" id="view-air-fresh">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">💨 Air Fresh Marketing</h1>
+                <p class="dashboard-subtitle">Experiential Marketing & Events</p>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🎯 Active Campaigns</h3>
+                    </div>
+                    <div>
+                        <p><strong>Major Opportunity:</strong> Adrija Datta</p>
+                        <p>• 3 Dallas events, 10K+ attendees each</p>
+                        <p>• Meeting held today @ 1:30 PM</p>
+                        <div style="margin-top: 1rem;">
+                            <div class="status-badge status-success">In Progress</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">👥 Recruiting</h3>
+                    </div>
+                    <div class="stat-large">17+</div>
+                    <div class="stat-label">ImmerseForge applicants (24 hours)</div>
+                    <p style="margin-top: 1rem;">• Rita Zhang - NYC Street Team</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">💰 Finance</h3>
+                    </div>
+                    <div class="status-badge status-danger">CRITICAL</div>
+                    <p style="margin-top: 1rem;">
+                        • BILL.com: $60K+ unpaid bills<br>
+                        • Year-end docs needed<br>
+                        • 401k compliance overdue
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📧 Email Status</h3>
+                    </div>
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <div class="weather-value">40+</div>
+                            <div class="stat-label">Unread</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value">5</div>
+                            <div class="stat-label">Urgent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects View -->
+        <div class="view" id="view-projects">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">📋 Projects</h1>
+                <p class="dashboard-subtitle">Kanban Board</p>
+            </div>
+
+            <div class="kanban-board">
+                <div class="kanban-column">
+                    <div class="kanban-header">📥 To Do</div>
+                    <div class="kanban-item">
+                        <div class="kanban-item-title">Fix BILL.com sync</div>
+                        <div class="kanban-item-meta">Priority: Critical | <span class="status-badge" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">💰 Finance Agent</span></div>
+                    </div>
+                    <div class="kanban-item">
+                        <div class="kanban-item-title">401k compliance tasks</div>
+                        <div class="kanban-item-meta">Priority: High | <span class="status-badge" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">⚖️ Legal Agent</span></div>
+                    </div>
+                    <div class="kanban-item">
+                        <div class="kanban-item-title">Rotate AWS/GCP keys</div>
+                        <div class="kanban-item-meta">Priority: Critical | <span class="status-badge status-danger" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">🔒 Security Agent</span></div>
+                    </div>
+                    <div class="kanban-item">
+                        <div class="kanban-item-title">Update dev2.airfreshmarketing.com</div>
+                        <div class="kanban-item-meta">Priority: High | <span class="status-badge" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">💻 Web Dev Agent</span></div>
+                    </div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header">🏗️ In Progress</div>
+                    <div class="kanban-item">
+                        <div class="kanban-item-title">Adrija Datta proposal</div>
+                        <div class="kanban-item-meta">Priority: High | <span class="status-badge status-warning" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">📈 Sales Agent</span></div>
+                    </div>
+                    <div class="kanban-item">
+                        <div class="kanban-item-title">ImmerseForge applicant review</div>
+                        <div class="kanban-item-meta">Priority: Medium | <span class="status-badge" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">⚙️ Operations Agent</span></div>
+                    </div>
+                    <div class="kanban-item">
+                        <div class="kanban-item-title">LinkedIn campaign optimization</div>
+                        <div class="kanban-item-meta">Priority: Medium | <span class="status-badge" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">📢 Marketing Agent</span></div>
+                    </div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header">✅ Done</div>
+                    <div class="kanban-item">
+                        <div class="kanban-item-title">Adrija meeting scheduled</div>
+                        <div class="kanban-item-meta">Completed: Feb 3 | <span class="status-badge status-success" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">📈 Sales Agent</span></div>
+                    </div>
+                    <div class="kanban-item">
+                        <div class="kanban-item-title">Harper email schedule reduced</div>
+                        <div class="kanban-item-meta">Completed: Feb 3 | <span class="status-badge status-success" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">⚙️ Operations Agent</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Sidebar Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mainContent = document.getElementById('mainContent');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            menuToggle.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show');
+            mainContent.classList.toggle('sidebar-open');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            menuToggle.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+            mainContent.classList.remove('sidebar-open');
+        });
+
+        // View Switching
+        const navItems = document.querySelectorAll('.nav-item[data-view]');
+        const views = document.querySelectorAll('.view');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const viewId = item.getAttribute('data-view');
+                
+                // Update active nav item
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                // Switch views
+                views.forEach(view => view.classList.remove('active'));
+                document.getElementById(`view-${viewId}`).classList.add('active');
+
+                // Close sidebar on mobile
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('open');
+                    menuToggle.classList.remove('open');
+                    sidebarOverlay.classList.remove('show');
+                    mainContent.classList.remove('sidebar-open');
+                }
+            });
+        });
+
+        // Business Kanban Navigation
+        function showBusinessKanban(businessId) {
+            // Find the nav item for this business
+            const navItem = document.querySelector(`.nav-item[data-view="${businessId}"]`);
+            if (navItem) {
+                // Update active nav item
+                navItems.forEach(nav => nav.classList.remove('active'));
+                navItem.classList.add('active');
+
+                // Switch to the business view
+                views.forEach(view => view.classList.remove('active'));
+                document.getElementById(`view-${businessId}`).classList.add('active');
+
+                // Close sidebar on mobile
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('open');
+                    menuToggle.classList.remove('open');
+                    sidebarOverlay.classList.remove('show');
+                    mainContent.classList.remove('sidebar-open');
+                }
+            }
+        }
+
+        // Fetch Weather Data
+        async function updateWeather() {
+            try {
+                const response = await fetch('https://wttr.in/Denver?format=j1');
+                const data = await response.json();
+                
+                const current = data.current_condition[0];
+                const today = data.weather[0];
+                
+                const html = `
+                    <div class="stat-large">${current.temp_F}°F</div>
+                    <div class="stat-label">${current.weatherDesc[0].value}</div>
+                    
+                    <div class="weather-grid" style="margin-top: 1.5rem;">
+                        <div class="weather-item">
+                            <div class="weather-value">${current.humidity}%</div>
+                            <div class="stat-label">Humidity</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value">${current.windspeedMiles} mph</div>
+                            <div class="stat-label">Wind</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value">${current.FeelsLikeF}°F</div>
+                            <div class="stat-label">Feels Like</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="weather-value">${current.precipInches}"</div>
+                            <div class="stat-label">Precipitation</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <div class="stat-label" style="margin-bottom: 0.5rem;">⛷️ Ski Conditions</div>
+                        <p style="font-size: 0.9rem;">Check <a href="https://www.snow-forecast.com/resorts/Vail/6day/mid" target="_blank" style="color: var(--accent);">Vail Snow Forecast</a></p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Next snow: Check local forecasts</p>
+                    </div>
+                `;
+                
+                document.getElementById('weatherData').innerHTML = html;
+            } catch (error) {
+                document.getElementById('weatherData').innerHTML = '<p>Unable to load weather data</p>';
+            }
+        }
+
+        // Initial load
+        updateWeather();
+
+        // Auto-refresh every 30 minutes
+        setInterval(updateWeather, 1800000);
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.querySelectorAll('.dashboard-subtitle').forEach(el => {
+                if (el.textContent.includes(',')) {
+                    el.textContent = now.toLocaleDateString('en-US', options);
+                }
+            });
+        }
+        updateTime();
+        setInterval(updateTime, 60000);
+    </script>
+</body>
+</html>

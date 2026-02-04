@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Mission Control V2 - Joey's Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-elevated: #1e2a47;
+            --accent-blue: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-red: #ff4757;
+            --accent-yellow: #ffd93d;
+            --accent-purple: #a29bfe;
+            --accent-orange: #ff6b35;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+            --text-muted: #6b6b8d;
+            --border: rgba(255, 255, 255, 0.08);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --glow-blue: rgba(0, 212, 255, 0.3);
+            --glow-green: rgba(0, 255, 136, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0a0a1e 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px var(--shadow);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green), var(--accent-purple), var(--accent-orange));
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            margin-top: 8px;
+            font-size: 1rem;
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-elevated);
+            padding: 12px 24px;
+            border-radius: 16px;
+            border: 2px solid var(--accent-purple);
+            box-shadow: 0 4px 20px rgba(162, 155, 254, 0.3);
+        }
+
+        .level-badge .level {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-purple);
+        }
+
+        .xp-bar {
+            margin-top: 24px;
+        }
+
+        .xp-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .xp-bar-container {
+            height: 24px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .xp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.5s ease;
+            box-shadow: 0 0 20px var(--glow-blue);
+            position: relative;
+        }
+
+        .xp-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Voice Button */
+        .voice-section {
+            margin: 30px 0;
+        }
+
+        .talk-to-pepper-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 16px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 auto;
+            max-width: 500px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .talk-to-pepper-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.7);
+        }
+
+        .talk-to-pepper-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .widget-full { grid-column: span 12; }
+        .widget-half { grid-column: span 6; }
+        .widget-third { grid-column: span 4; }
+        .widget-two-thirds { grid-column: span 8; }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Loading */
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pepper Modal */
+        .pepper-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .pepper-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.7);
+        }
+
+        .pepper-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .pepper-modal.active {
+            display: flex;
+        }
+
+        .pepper-modal-content {
+            width: 95%;
+            max-width: 900px;
+            height: 90vh;
+            background: white;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .pepper-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .pepper-modal-close:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.1);
+        }
+
+        .pepper-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Responsive */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @media (max-width: 1200px) {
+            .widget-half, .widget-third, .widget-two-thirds {
+                grid-column: span 12;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+        }
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-top">
+                <div>
+                    <h1>🎮 Mission Control V2</h1>
+                    <p class="header-subtitle">
+                        Joey's Command Center • <span id="currentTime"></span>
+                    </p>
+                </div>
+                <div class="level-badge">
+                    <span class="level" id="userLevel">Level 1</span>
+                    <span id="userName">Joey</span>
+                </div>
+            </div>
+            <div class="xp-bar">
+                <div class="xp-bar-label">
+                    <span>Experience Points</span>
+                    <span><strong id="currentXP">0</strong> / <span id="maxXP">500</span> XP</span>
+                </div>
+                <div class="xp-bar-container">
+                    <div class="xp-bar-fill" id="xpBarFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- VOICE INTERFACE -->
+        <div class="voice-section">
+            <button class="talk-to-pepper-btn" onclick="openPepper()">
+                🎤 Talk to Pepper
+            </button>
+        </div>
+
+        <!-- MAIN DASHBOARD GRID -->
+        <div id="dashboardContent">
+            <div style="text-align: center; padding: 60px 20px;">
+                <div class="loading-spinner"></div>
+                <p style="color: var(--text-secondary); margin-top: 20px;">Loading Command Center...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING PEPPER BUTTON -->
+    <button class="pepper-button" onclick="openPepper()" title="Talk to Pepper">
+        🌶️
+    </button>
+
+    <!-- PEPPER MODAL -->
+    <div class="pepper-modal" id="pepperModal">
+        <div class="pepper-modal-content">
+            <button class="pepper-modal-close" onclick="closePepper()">✕</button>
+            <iframe 
+                class="pepper-iframe" 
+                src="https://pepper-voice-web.vercel.app"
+                title="Talk to Pepper - Chief of Staff"
+            ></iframe>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+<!-- Add Pepper Status Modal -->
+<div id="pepperStatusModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 800px;">
+        <span class="close" onclick="document.getElementById('pepperStatusModal').style.display='none'">&times;</span>
+        <h2>🌶️ What's Pepper Doing?</h2>
+        <div id="pepperStatus" style="padding: 20px; background: #1a1a2e; border-radius: 10px; margin-top: 20px;">
+            <div style="text-align: center; padding: 40px; color: #666;">
+                Loading...
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add Pepper Status button near voice button
+setTimeout(() => {
+    const header = document.querySelector('.header-top') || document.querySelector('header');
+    if (header) {
+        const statusBtn = document.createElement('button');
+        statusBtn.innerHTML = '📊 What\'s Pepper Doing?';
+        statusBtn.style.cssText = 'background: #fbbf24; color: black; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; margin-left: 10px;';
+        statusBtn.onclick = showPepperStatus;
+        header.appendChild(statusBtn);
+    }
+}, 1000);
+
+async function showPepperStatus() {
+    document.getElementById('pepperStatusModal').style.display = 'flex';
+    const statusDiv = document.getElementById('pepperStatus');
+    
+    statusDiv.innerHTML = `
+        <h3 style="margin-bottom: 20px;">🔍 Current Status</h3>
+        <div style="background: #2a2a4e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <strong>Voice System:</strong> <span style="color: #4ade80;">● READY</span><br>
+            Location: http://localhost:8888/talk.html
+        </div>
+        <div style="background: #2a2a4e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <strong>Dashboard:</strong> <span style="color: #4ade80;">● LIVE</span><br>
+            Weather, Ski, Calendar, Kanban all running
+        </div>
+        <div style="background: #2a2a4e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <strong>Daily Review:</strong> <span style="color: #4ade80;">● ACTIVE</span><br>
+            Runs every night at 2 AM
+        </div>
+        <h3 style="margin: 30px 0 20px;">🎯 Next Steps</h3>
+        <div style="background: #2a2a4e; padding: 15px; border-radius: 8px;">
+            <ol style="margin-left: 20px; line-height: 2;">
+                <li>Test voice interface (10 voices available)</li>
+                <li>Connect Notion workspace</li>
+                <li>Set up Google Calendar integration</li>
+                <li>Add Gmail inbox preview</li>
+                <li>Connect HubSpot CRM data</li>
+            </ol>
+        </div>
+    `;
+}
+</script>

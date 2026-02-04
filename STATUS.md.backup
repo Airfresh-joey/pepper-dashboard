@@ -1,0 +1,73 @@
+# 📊 OPERATIONS DASHBOARD
+**Last Updated:** February 01, 2026 @ 04:13 PM MST
+**Next Update:** 5:38 PM MST
+**Mode:** 24/7 Operations | 30-Minute Updates
+
+---
+
+## 🚦 SYSTEM STATUS
+
+| Department | Status | Last Update | Blockers |
+|------------|--------|-------------|----------|
+| 🌶️ Chief of Staff | 🟢 ACTIVE | 5:09 PM | None |
+| 📧 Email Ops | 🟢 ACTIVE | 8:00 AM | Gmail API working ✅ |
+| 💼 Sales | 🟡 PENDING | - | Waiting on email responses |
+| 📢 Marketing | 🟡 ACTIVE | - | Proposal updates needed |
+| 🌐 Web Dev | ⚪ IDLE | - | No tasks assigned |
+| ⚖️ Legal | 🟡 PENDING | - | Need source docs |
+| 📬 Mail/Notion | 🔴 BLOCKED | - | Integration not connected |
+
+---
+
+## 📋 ACTIVE PRIORITIES
+
+### Email Queue (Top 5)
+1. ✅ The Block (Mariette) - CLOSED by Kimberly
+2. ⏳ Samuel Darwin ROI - NEEDS RESPONSE
+3. ⏳ Krista's 3 outstanding (All-Star, Jeffrey, Sweet Greens)
+4. ⏳ Oracle NetSuite event
+5. ⏳ Shawn sync Monday
+
+### Department Deliverables
+- [ ] Vernon/LightStrike campaign update (drafted, needs send)
+- [ ] All-Star Weekend proposal update
+- [ ] Jeffrey/STM response
+- [ ] Sweet Greens response
+- [ ] Air Fresh contract for Kimberly/Krista
+- [ ] Immerse Forge contract
+
+---
+
+## 🚫 CRITICAL BLOCKERS
+
+| Blocker | Impact | Owner | ETA |
+|---------|--------|-------|-----|
+| ~~Email SEND capability~~ | ~~Can't send responses~~ | ~~Pepper~~ | ✅ RESOLVED - Gmail API |
+| Notion integration | Can't file mail | Pepper | Need page shared |
+| Signal unclear | Can't use for comms | Pepper | Need verification |
+
+---
+
+## ⏱️ 30-MINUTE UPDATE LOG
+
+| Time | Department | Status | Notes |
+|------|------------|--------|-------|
+| 5:09 PM | ALL | DIRECTIVE SENT | 24/7 ops, 30-min updates |
+| 5:38 PM | - | PENDING | - |
+| 6:08 PM | - | PENDING | - |
+
+---
+
+## 📞 ESCALATION PATH
+
+```
+Issue → Department Head → Pepper → Joey
+         (Slack channel)    (#chief-of-staff)
+```
+
+**Critical Issues:** Escalate IMMEDIATELY to Joey via Slack or Signal
+
+---
+
+*Dashboard auto-updates every 30 minutes*
+*Manual refresh: ~/clawd/dashboard/update-dashboard.sh*

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Quest Board - Mission Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-elevated: #1e2a47;
+            --accent-blue: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-red: #ff4757;
+            --accent-yellow: #ffd93d;
+            --accent-purple: #a29bfe;
+            --accent-orange: #ff6b35;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+            --text-muted: #6b6b8d;
+            --border: rgba(255, 255, 255, 0.08);
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0a0a1e 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px var(--shadow);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card));
+            border: 2px solid var(--accent-purple);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 30px rgba(162, 155, 254, 0.2);
+        }
+
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .score-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .streak {
+            font-size: 2rem;
+        }
+
+        .xp-bar {
+            width: 100%;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+            transition: width 0.3s ease;
+        }
+
+        .xp-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .quests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .quest-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+        .quest-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .quest-card.main { border-left: 4px solid var(--accent-red); }
+        .quest-card.side { border-left: 4px solid var(--accent-yellow); }
+        .quest-card.daily { border-left: 4px solid var(--accent-green); }
+        .quest-card.power { border-left: 4px solid var(--accent-purple); }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .quest-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .quest-meta {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge.difficulty { background: rgba(255, 71, 87, 0.2); color: var(--accent-red); }
+        .badge.reward { background: rgba(162, 155, 254, 0.2); color: var(--accent-purple); }
+        .badge.time { background: rgba(255, 217, 61, 0.2); color: var(--accent-yellow); }
+
+        .progress-bar {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-track {
+            height: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+            transition: width 0.3s;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .task-item.completed {
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .task-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .task-xp {
+            color: var(--accent-purple);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .bonus-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 217, 61, 0.1);
+            border: 1px solid rgba(255, 217, 61, 0.3);
+            border-radius: 8px;
+        }
+
+        .bonus-box .bonus-label {
+            color: var(--accent-yellow);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .bonus-box .bonus-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .achievements-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .achievement {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .achievement.unlocked {
+            background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange));
+            cursor: pointer;
+        }
+
+        .achievement.locked {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            opacity: 0.5;
+        }
+
+        .achievement-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .achievement-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .pepper-connect {
+            background: linear-gradient(135deg, #ff6b35, #ff4757);
+            border: 2px solid var(--accent-orange);
+            border-radius: 16px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .pepper-avatar {
+            font-size: 4rem;
+        }
+
+        .pepper-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .pepper-info p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .pepper-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .pepper-stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .quests-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .pepper-connect {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Pepper's Power-Up Dashboard</h1>
+            <p class="subtitle">GAME MODE: ACTIVATED 🌶️⚡</p>
+        </header>
+
+        <!-- SCORE TRACKER -->
+        <div class="score-card">
+            <div class="score-header">
+                <div>
+                    <div class="score-title">Total Points: <span id="totalXP">600</span> / 10,000</div>
+                    <div style="color: var(--text-secondary); margin-top: 5px;">Level 1 - Operator</div>
+                </div>
+                <div class="streak">
+                    <span id="streakCount">1</span>🔥
+                </div>
+            </div>
+            <div class="xp-bar">
+                <div class="xp-fill" id="xpFill" style="width: 6%"></div>
+            </div>
+            <div class="xp-stats">
+                <span>TODAY'S POINTS: 600</span>
+                <span>THIS WEEK: 600</span>
+                <span>THIS MONTH: 600</span>
+            </div>
+        </div>
+
+        <!-- ACTIVE QUESTS -->
+        <div class="section-title">🎯 Active Quests</div>
+        <div class="quests-grid" id="questsContainer"></div>
+
+        <!-- ACHIEVEMENTS -->
+        <div class="achievements-section">
+            <div class="section-title">🏅 Achievements Unlocked</div>
+            <div class="achievements-grid" id="achievementsContainer"></div>
+        </div>
+
+        <!-- PEPPER CONNECTION -->
+        <div class="pepper-connect">
+            <div class="pepper-avatar">🌶️</div>
+            <div class="pepper-info">
+                <h2>Connected with Pepper Potts</h2>
+                <p>Your Chief of Staff • Quest Master • XP Tracker</p>
+                <div class="pepper-stats">
+                    <div class="pepper-stat">
+                        <div class="stat-label">Communication</div>
+                        <div class="stat-value">Signal + Slack</div>
+                    </div>
+                    <div class="pepper-stat">
+                        <div class="stat-label">Response Time</div>
+                        <div class="stat-value">&lt; 1 minute</div>
+                    </div>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.95rem;">
+                    💬 <strong>Your move, Boss!</strong> Tell Pepper which quest you want to tackle, 
+                    and I'll track your points in real-time. Complete tasks → earn XP → level up → unlock power-ups!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quests = [
+            {
+                id: 'main-email',
+                title: '🔴 Email Domination',
+                category: 'main',
+                reward: 1000,
+                difficulty: 3,
+                timeLimit: '48 hours',
+                tasks: [
+                    { id: 'e1', title: 'Grant email access (5 accounts)', completed: false, xp: 200 },
+                    { id: 'e2', title: 'First inbox sweep complete', completed: false, xp: 300 },
+                    { id: 'e3', title: 'All emails categorized', completed: false, xp: 200 },
+                    { id: 'e4', title: 'Response templates created', completed: false, xp: 150 },
+                    { id: 'e5', title: 'Auto-filter rules deployed', completed: false, xp: 150 }
+                ],
+                bonus: { condition: 'Complete in <24 hours', xp: 500 }
+            },
+            {
+                id: 'side-dashboard',
+                title: '🟡 Dashboard Command Center',
+                category: 'side',
+                reward: 500,
+                difficulty: 2,
+                tasks: [
+                    { id: 'd1', title: 'Create gamified dashboard', completed: true, xp: 100 },
+                    { id: 'd2', title: 'Connect HubSpot data', completed: false, xp: 150 },
+                    { id: 'd3', title: 'Connect calendar feed', completed: false, xp: 100 },
+                    { id: 'd4', title: 'Live website monitoring', completed: false, xp: 150 }
+                ]
+            },
+            {
+                id: 'daily-morning',
+                title: '🟢 Morning Power-Up',
+                category: 'daily',
+                reward: 100,
+                difficulty: 1,
+                tasks: [
+                    { id: 'm1', title: 'Weather check', completed: false, xp: 20 },
+                    { id: 'm2', title: 'Calendar preview', completed: false, xp: 20 },
+                    { id: 'm3', title: 'Email overnight scan', completed: false, xp: 20 },
+                    { id: 'm4', title: 'Priority task list', completed: false, xp: 20 },
+                    { id: 'm5', title: 'Dashboard updated', completed: false, xp: 20 }
+                ]
+            },
+            {
+                id: 'power-security',
+                title: '🟣 Security Lockdown',
+                category: 'power',
+                reward: 750,
+                difficulty: 4,
+                tasks: [
+                    { id: 's1', title: 'All websites SSL verified', completed: false, xp: 150 },
+                    { id: 's2', title: 'API keys secured', completed: false, xp: 150 },
+                    { id: 's3', title: 'Backup codes stored', completed: false, xp: 150 },
+                    { id: 's4', title: 'Security audit complete', completed: false, xp: 200 },
+                    { id: 's5', title: 'Emergency procedures documented', completed: false, xp: 100 }
+                ]
+            }
+        ];
+
+        const achievements = [
+            { id: 'a1', name: 'First Steps', unlocked: true, icon: '🏆' },
+            { id: 'a2', name: 'Night Owl', unlocked: true, icon: '🦉' },
+            { id: 'a3', name: 'Taskmaster', unlocked: true, icon: '✅' },
+            { id: 'a4', name: 'Email Warrior', unlocked: false, icon: '📧' },
+            { id: 'a5', name: 'Week Warrior', unlocked: false, icon: '🔥' },
+            { id: 'a6', name: 'Inbox Zero', unlocked: false, icon: '💯' },
+            { id: 'a7', name: 'CEO Mode', unlocked: false, icon: '👔' }
+        ];
+
+        function renderQuests() {
+            const container = document.getElementById('questsContainer');
+            container.innerHTML = quests.map(quest => {
+                const completedTasks = quest.tasks.filter(t => t.completed).length;
+                const totalTasks = quest.tasks.length;
+                const progressPercent = (completedTasks / totalTasks) * 100;
+                const stars = '⭐'.repeat(quest.difficulty);
+
+                return `
+                    <div class="quest-card ${quest.category}">
+                        <div class="quest-header">
+                            <div>
+                                <div class="quest-title">${quest.title}</div>
+                                <div class="quest-meta">
+                                    <span class="badge difficulty">${stars}</span>
+                                    <span class="badge reward">+${quest.reward} XP</span>
+                                    ${quest.timeLimit ? `<span class="badge time">⏱️ ${quest.timeLimit}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="progress-bar">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>${completedTasks} / ${totalTasks}</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="task-list">
+                            ${quest.tasks.map(task => `
+                                <div class="task-item ${task.completed ? 'completed' : ''}">
+                                    <div class="task-content">
+                                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} disabled>
+                                        <span class="task-title">${task.title}</span>
+                                    </div>
+                                    <span class="task-xp">+${task.xp} XP</span>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        ${quest.bonus ? `
+                            <div class="bonus-box">
+                                <div class="bonus-label">⚡ BONUS</div>
+                                <div class="bonus-text">
+                                    <span>${quest.bonus.condition}</span>
+                                    <strong>+${quest.bonus.xp} XP</strong>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAchievements() {
+            const container = document.getElementById('achievementsContainer');
+            container.innerHTML = achievements.map(ach => `
+                <div class="achievement ${ach.unlocked ? 'unlocked' : 'locked'}">
+                    <div class="achievement-icon">${ach.unlocked ? ach.icon : '🔒'}</div>
+                    <div class="achievement-name">${ach.name}</div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        renderQuests();
+        renderAchievements();
+    </script>
+</body>
+</html>

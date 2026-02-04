@@ -1,0 +1,831 @@
+/**
+ * Admin Chat Hub - Professional Styling
+ * Features modern UI with ImmerseForge branding
+ */
+
+:root {
+  --immerseforge-blue: #0066cc;
+  --immerseforge-dark: #003d7a;
+  --immerseforge-light: #e6f0ff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --bg-light: #f8f9fa;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+}
+
+/* ==========================================
+   Main Container
+   ========================================== */
+
+.admin-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e6f0ff 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.admin-chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background: white;
+  border-bottom: 2px solid var(--immerseforge-blue);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-chat-header h2 {
+  margin: 0;
+  color: var(--immerseforge-dark);
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-chat-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-action {
+  padding: 10px 20px;
+  background: var(--immerseforge-blue);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-action:hover:not(:disabled) {
+  background: var(--immerseforge-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   Main Content Area
+   ========================================== */
+
+.admin-chat-main {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  padding: 20px;
+  flex: 1;
+  overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .admin-chat-main {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-chat-right {
+    display: none;
+  }
+}
+
+.admin-chat-left,
+.admin-chat-right {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow: hidden;
+}
+
+/* ==========================================
+   File Upload UI
+   ========================================== */
+
+.file-upload-ui {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.file-upload-header h3 {
+  margin-top: 0;
+  color: var(--immerseforge-dark);
+  font-size: 18px;
+}
+
+.file-upload-header p {
+  margin: 5px 0 15px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.drag-drop-zone {
+  border: 3px dashed var(--border-color);
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--bg-light);
+}
+
+.drag-drop-zone:hover:not(.disabled) {
+  border-color: var(--immerseforge-blue);
+  background: var(--immerseforge-light);
+}
+
+.drag-drop-zone.active {
+  border-color: var(--immerseforge-blue);
+  background: var(--immerseforge-light);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+}
+
+.drag-drop-zone.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.upload-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.file-preview {
+  padding: 20px;
+}
+
+.file-icon {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.file-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+  word-break: break-word;
+}
+
+.file-size {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.file-input {
+  display: none;
+}
+
+.btn-browse {
+  padding: 10px 20px;
+  background: var(--immerseforge-blue);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-browse:hover:not(:disabled) {
+  background: var(--immerseforge-dark);
+  transform: translateY(-2px);
+}
+
+.category-selection {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.category-selection label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.category-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-btn {
+  padding: 8px 12px;
+  border: 2px solid var(--border-color);
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.category-btn:hover {
+  border-color: var(--immerseforge-blue);
+  color: var(--immerseforge-blue);
+}
+
+.category-btn.active {
+  background: var(--immerseforge-blue);
+  color: white;
+  border-color: var(--immerseforge-blue);
+}
+
+.upload-progress {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--immerseforge-blue), var(--success-color));
+  transition: width 0.3s ease;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-upload,
+.btn-send,
+.btn-primary {
+  flex: 1;
+  padding: 12px 20px;
+  background: var(--immerseforge-blue);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-upload:hover:not(:disabled),
+.btn-send:hover:not(:disabled),
+.btn-primary:hover:not(:disabled) {
+  background: var(--immerseforge-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.btn-upload:disabled,
+.btn-send:disabled,
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-cancel,
+.btn-secondary {
+  padding: 12px 20px;
+  background: var(--border-color);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-cancel:hover:not(:disabled),
+.btn-secondary:hover:not(:disabled) {
+  background: var(--text-secondary);
+  color: white;
+}
+
+.btn-cancel:disabled,
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   Chat History
+   ========================================== */
+
+.admin-chat-history {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-chat-history.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+
+.message {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--bg-light);
+  border-radius: 8px;
+  border-left: 4px solid var(--immerseforge-blue);
+}
+
+.date-divider {
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 15px 0;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.admin-name {
+  color: var(--immerseforge-dark);
+  font-size: 14px;
+}
+
+.message-time {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.message-text {
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  word-break: break-word;
+}
+
+.message-files {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.file-icon {
+  font-size: 20px;
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-info a {
+  color: var(--immerseforge-blue);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.file-info a:hover {
+  text-decoration: underline;
+}
+
+.file-category {
+  display: inline-block;
+  font-size: 11px;
+  background: var(--immerseforge-light);
+  color: var(--immerseforge-blue);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+.message-reactions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.reaction {
+  display: inline-block;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.reaction:hover {
+  transform: scale(1.2);
+}
+
+.btn-reply {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--immerseforge-blue);
+  color: var(--immerseforge-blue);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-reply:hover {
+  background: var(--immerseforge-light);
+}
+
+/* ==========================================
+   Chat Input Box
+   ========================================== */
+
+.admin-chat-box {
+  padding: 20px;
+  background: white;
+  border-top: 2px solid var(--border-color);
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--immerseforge-blue);
+  box-shadow: 0 0 0 3px var(--immerseforge-light);
+}
+
+.chat-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   Forms (Job Posting, Staff List)
+   ========================================== */
+
+.job-posting-form,
+.staff-list-form,
+.staff-list-preview {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.form-header h3 {
+  margin: 0;
+  color: var(--immerseforge-dark);
+  font-size: 18px;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.3s;
+}
+
+.btn-close:hover {
+  color: var(--text-primary);
+}
+
+.parse-section,
+.form-section {
+  margin-bottom: 20px;
+}
+
+.parse-section label,
+.form-section label,
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.parse-section textarea,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--immerseforge-blue);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--immerseforge-blue);
+}
+
+.form-help {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ==========================================
+   Staff List Preview
+   ========================================== */
+
+.staff-table-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.staff-table-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.staff-table-header h4 {
+  margin: 0 0 5px 0;
+  color: var(--immerseforge-dark);
+}
+
+.staff-table-header p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.staff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.staff-table thead th {
+  background: var(--immerseforge-light);
+  color: var(--immerseforge-dark);
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--immerseforge-blue);
+}
+
+.staff-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.staff-table tbody tr:hover {
+  background: var(--bg-light);
+}
+
+.edit-field {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.edit-field.short {
+  max-width: 40px;
+  text-align: center;
+}
+
+.staff-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.btn-remove {
+  background: var(--error-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s;
+}
+
+.btn-remove:hover {
+  background: #d93636;
+}
+
+.staff-list-actions {
+  background: var(--bg-light);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.email-section {
+  margin-bottom: 15px;
+}
+
+.email-section label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.email-section input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.action-buttons button {
+  flex: 1;
+}
+
+.staff-list-info {
+  padding: 12px;
+  background: var(--immerseforge-light);
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 13px;
+  color: var(--immerseforge-dark);
+}
+
+.staff-list-info p {
+  margin: 5px 0;
+}
+
+/* ==========================================
+   Responsive Design
+   ========================================== */
+
+@media (max-width: 768px) {
+  .admin-chat-container {
+    height: auto;
+  }
+
+  .admin-chat-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .admin-chat-main {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .admin-chat-history {
+    max-height: 400px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .category-buttons {
+    flex-direction: column;
+  }
+
+  .category-btn {
+    width: 100%;
+  }
+
+  .staff-table {
+    font-size: 12px;
+  }
+
+  .staff-table thead th,
+  .staff-table tbody td {
+    padding: 8px;
+  }
+}
+
+/* ==========================================
+   Scrollbar Styling
+   ========================================== */
+
+.admin-chat-history::-webkit-scrollbar,
+.job-posting-form::-webkit-scrollbar,
+.staff-list-preview::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-chat-history::-webkit-scrollbar-track,
+.job-posting-form::-webkit-scrollbar-track,
+.staff-list-preview::-webkit-scrollbar-track {
+  background: var(--bg-light);
+  border-radius: 4px;
+}
+
+.admin-chat-history::-webkit-scrollbar-thumb,
+.job-posting-form::-webkit-scrollbar-thumb,
+.staff-list-preview::-webkit-scrollbar-thumb {
+  background: var(--immerseforge-blue);
+  border-radius: 4px;
+}
+
+.admin-chat-history::-webkit-scrollbar-thumb:hover,
+.job-posting-form::-webkit-scrollbar-thumb:hover,
+.staff-list-preview::-webkit-scrollbar-thumb:hover {
+  background: var(--immerseforge-dark);
+}

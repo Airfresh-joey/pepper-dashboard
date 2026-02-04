@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="college-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1976d2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1565c0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <polygon points="100,60 40,85 100,110 160,85" fill="url(#college-gradient)"/>
+  <rect x="95" y="85" width="10" height="40" fill="url(#college-gradient)"/>
+  <rect x="85" y="120" width="30" height="8" fill="url(#college-gradient)"/>
+  <circle cx="110" cy="65" r="5" fill="#ffd700"/>
+  <line x1="110" y1="65" x2="125" y2="50" stroke="#ffd700" stroke-width="2"/>
+  <text x="100" y="160" font-family="Arial, sans-serif" font-size="18" font-weight="bold" 
+        fill="url(#college-gradient)" text-anchor="middle">COLLEGE</text>
+  <text x="100" y="180" font-family="Arial, sans-serif" font-size="14" font-weight="600" 
+        fill="url(#college-gradient)" text-anchor="middle">MARKETING</text>
+</svg>
