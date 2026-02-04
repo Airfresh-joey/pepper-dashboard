@@ -8,6 +8,9 @@
     "build": "echo 'No build needed - serverless functions'",
     "deploy": "vercel --prod"
   },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
   "keywords": ["dashboard", "mission-control", "live"],
   "author": "Pepper AI",
   "license": "MIT"
