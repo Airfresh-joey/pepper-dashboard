@@ -1,14 +1,11 @@
 // Pepper Command Center - Tasks API
-// Endpoint: /api/tasks
-// Methods: GET, POST, PATCH, DELETE
-
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = 'https://prdhntwypgaakppvklbq.supabase.co';
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY || 'sb_publishable_BHzTCuZc4a499d8uIMBGyQ_CUXtajbH';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
@@ -35,9 +32,8 @@ export default async function handler(req, res) {
         console.error('API Error:', error);
         return res.status(500).json({ error: error.message });
     }
-}
+};
 
-// GET /api/tasks?project_id=xxx
 async function getTasks(req, res) {
     const { project_id, status, source } = req.query;
 
@@ -55,8 +51,6 @@ async function getTasks(req, res) {
     return res.status(200).json(data);
 }
 
-// POST /api/tasks
-// Body: { project_id, title, description?, status?, type?, priority?, source?, slack_message_id?, slack_channel? }
 async function createTask(req, res) {
     const {
         project_id,
@@ -67,7 +61,6 @@ async function createTask(req, res) {
         priority = 'medium',
         source = 'api',
         slack_message_id = null,
-        slack_channel = null,
         assignee = null
     } = req.body;
 
@@ -95,8 +88,6 @@ async function createTask(req, res) {
     return res.status(201).json({ success: true, task: data });
 }
 
-// PATCH /api/tasks
-// Body: { id, ...fields to update }
 async function updateTask(req, res) {
     const { id, ...updates } = req.body;
 
@@ -115,7 +106,6 @@ async function updateTask(req, res) {
     return res.status(200).json({ success: true, task: data });
 }
 
-// DELETE /api/tasks?id=xxx
 async function deleteTask(req, res) {
     const { id } = req.query;
 

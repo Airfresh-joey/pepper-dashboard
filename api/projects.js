@@ -1,14 +1,11 @@
 // Pepper Command Center - Projects API
-// Endpoint: /api/projects
-// Methods: GET, POST, PATCH
-
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = 'https://prdhntwypgaakppvklbq.supabase.co';
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY || 'sb_publishable_BHzTCuZc4a499d8uIMBGyQ_CUXtajbH';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
@@ -33,9 +30,8 @@ export default async function handler(req, res) {
         console.error('API Error:', error);
         return res.status(500).json({ error: error.message });
     }
-}
+};
 
-// GET /api/projects?slack_channel=xxx
 async function getProjects(req, res) {
     const { slack_channel, status, name } = req.query;
 
@@ -53,7 +49,6 @@ async function getProjects(req, res) {
     return res.status(200).json(data);
 }
 
-// POST /api/projects
 async function createProject(req, res) {
     const {
         name,
@@ -77,7 +72,6 @@ async function createProject(req, res) {
     return res.status(201).json({ success: true, project: data });
 }
 
-// PATCH /api/projects
 async function updateProject(req, res) {
     const { id, ...updates } = req.body;
 
