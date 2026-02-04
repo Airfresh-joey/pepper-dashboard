@@ -11,6 +11,7 @@
             --bg-dark: #1a1a1a;
             --bg-card: #242424;
             --bg-hover: #2a2a2a;
+            --bg-sidebar: #141414;
             --text-primary: #ffffff;
             --text-secondary: #888;
             --border-color: #333;
@@ -19,6 +20,34 @@
             --red: #ef4444;
             --yellow: #f59e0b;
             --purple: #8b5cf6;
+        }
+
+        /* Light Mode */
+        .light-mode {
+            --bg-dark: #f5f5f5;
+            --bg-card: #ffffff;
+            --bg-hover: #f0f0f0;
+            --bg-sidebar: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666;
+            --border-color: #e0e0e0;
+        }
+
+        .light-mode .sidebar {
+            background: var(--bg-sidebar);
+        }
+
+        .light-mode .task-card {
+            background: var(--bg-card);
+            border-color: var(--border-color);
+        }
+
+        .light-mode .modal-content {
+            background: var(--bg-card);
+        }
+
+        .light-mode .form-input {
+            background: var(--bg-dark);
         }
 
         body {
@@ -30,9 +59,30 @@
         }
 
         /* Sidebar */
+        /* Theme Toggle */
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-hover);
+            border-color: var(--purple);
+        }
+
         .sidebar {
             width: 240px;
-            background: #141414;
+            background: var(--bg-sidebar);
             border-right: 1px solid var(--border-color);
             padding: 20px 0;
             display: flex;
@@ -705,9 +755,14 @@
                         <div class="updated">Updated <span id="update-time"></span></div>
                     </div>
                 </div>
-                <button class="btn btn-secondary" onclick="location.reload()">
-                    <span>🔄</span> Refresh
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode" id="theme-toggle">
+                        🌙
+                    </button>
+                    <button class="btn btn-secondary" onclick="location.reload()">
+                        <span>🔄</span> Refresh
+                    </button>
+                </div>
             </div>
 
             <!-- Stats -->
@@ -963,6 +1018,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
+            loadTheme();
             if (data.projects.length === 0) {
                 initDefaultProjects();
             }
@@ -970,6 +1026,21 @@
             updateTime();
             setInterval(updateTime, 60000);
         });
+
+        // Theme Toggle
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('pepper_theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('theme-toggle').textContent = '☀️';
+            }
+        }
+
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-mode');
+            localStorage.setItem('pepper_theme', isLight ? 'light' : 'dark');
+            document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
+        }
 
         function loadData() {
             const saved = localStorage.getItem(STORAGE_KEY);
