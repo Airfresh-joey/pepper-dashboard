@@ -2,1455 +2,2703 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"="width=device-width, initial-scale=1.0">
-    <title>Pepper 🌶️ Command Center</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌶️</text></svg>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌶️ Joey's Command Center</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pepper">
+    <meta name="theme-color" content="#0a0a0a">
     <style>
-        :root {
-            --bg-primary: #0a0e27;
-            --bg-secondary: #1a1f3a;
-            --bg-card: #252b48;
-            --text-primary: #ffffff;
-            --text-secondary: #a0aec0;
-            --accent: #667eea;
-            --success: #48bb78;
-            --warning: #f6ad55;
-            --danger: #fc8181;
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f3a 100%);
-            color: var(--text-primary);
-            overflow-x: hidden;
-        }
-
-        /* Login Screen Styles */
-        .login-screen {
+        /* Login Overlay Styles */
+        .login-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f3a 100%);
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            transition: opacity 0.3s ease;
         }
-
-        .login-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .login-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+        .login-overlay.hidden { display: none; }
+        
+        .login-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px;
             padding: 3rem;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .login-header {
             text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .login-box h2 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .login-box p {
+            color: #888;
+            font-size: 0.9rem;
             margin-bottom: 2rem;
         }
-
-        .login-icon {
+        .login-box input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            outline: none;
+        }
+        .login-box input:focus {
+            border-color: #e82127;
+        }
+        .login-box input::placeholder {
+            color: #666;
+        }
+        .login-box button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #e82127, #c91c21);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .login-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(232,33,39,0.4);
+        }
+        .login-error {
+            color: #e82127;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            min-height: 1.5rem;
+        }
+        .login-logo {
             font-size: 4rem;
             margin-bottom: 1rem;
-            animation: bounce 2s infinite;
         }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .login-title {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        .login-subtitle {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .form-group input {
+        
+        /* Keypad Styles */
+        .keypad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 0.875rem 1rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-primary);
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .keypad-overlay.hidden { display: none; }
+        
+        .keypad-title {
+            color: #888;
             font-size: 1rem;
-            transition: all 0.2s;
+            margin-bottom: 2rem;
         }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        .keypad-display {
+            font-size: 2.5rem;
+            letter-spacing: 0.8rem;
+            margin-bottom: 2rem;
+            color: #e82127;
         }
-
-        .pin-pad {
+        .keypad-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-            margin-top: 1rem;
+            grid-template-columns: repeat(3, 70px);
+            gap: 12px;
         }
-
-        .pin-btn {
-            padding: 1rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-primary);
-            font-size: 1.2rem;
-            font-weight: 600;
+        .key-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid rgba(232,33,39,0.3);
+            background: rgba(255,255,255,0.03);
+            color: #fff;
+            font-size: 1.5rem;
             cursor: pointer;
             transition: all 0.2s;
         }
-
-        .pin-btn:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
+        .key-btn:hover {
+            background: rgba(232,33,39,0.2);
+            border-color: #e82127;
+        }
+        .key-btn:active { transform: scale(0.95); }
+        .key-btn.clear { font-size: 0.8rem; color: #888; }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header { padding: 0.75rem 1rem; }
+            .header-content { flex-direction: column; gap: 0.5rem; }
+            .header-left { flex-direction: column; text-align: center; }
+            .header-right { width: 100%; justify-content: center; }
+            .branding h1 { font-size: 1.2rem; }
+            
+            .container { padding: 0.75rem; }
+            .dept-grid { grid-template-columns: 1fr; }
+            .kanban-grid { grid-template-columns: 1fr; }
+            
+            .task-card { padding: 0.75rem; }
+            .task-title { font-size: 0.9rem; }
+            
+            .blockers-section { margin: 0.5rem 0; padding: 0.75rem; }
+            
+            .login-box { padding: 2rem 1.5rem; }
+            .keypad-grid { grid-template-columns: repeat(3, 60px); gap: 10px; }
+            .key-btn { width: 60px; height: 60px; font-size: 1.3rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .header-right .refresh-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+            .clock { font-size: 0.85rem; }
+            .section-header h2 { font-size: 0.9rem; }
         }
 
-        .pin-btn:active {
-            transform: translateY(0);
-        }
-
-        .login-error {
-            color: var(--danger);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-            min-height: 1.5rem;
-            text-align: center;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Hide main content when not logged in */
-        body.logged-out .sidebar,
-        body.logged-out .main-content,
-        body.logged-out .menu-toggle {
-            display: none;
-        }
-
-        /* Sidebar */
+        /* Sidebar Styles */
         .sidebar {
             position: fixed;
             left: -280px;
             top: 0;
             width: 280px;
             height: 100vh;
-            background: rgba(26, 31, 58, 0.98);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border);
+            background: #1a1a2e;
+            border-right: 1px solid #333;
+            z-index: 99999;
             transition: left 0.3s ease;
-            z-index: 1000;
             overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.5);
         }
-
-        .sidebar.open {
-            left: 0;
-        }
-
+        .sidebar.open { left: 0 !important; }
+        body.light-theme .sidebar { background: #fff; border-right: 1px solid #e0e0e0; box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
+        body.light-theme .sidebar-title { color: #1a1a1a; }
+        body.light-theme .sidebar-label { color: #666; }
+        body.light-theme .sidebar-item { color: #333; }
+        body.light-theme .sidebar-item:hover { background: #f0f0f0; }
+        body.light-theme .sidebar-close { color: #666; }
         .sidebar-header {
-            padding: 2rem 1.5rem;
-            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+            border-bottom: 1px solid #333;
         }
-
-        .sidebar-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .sidebar-logo { font-size: 1.8rem; }
+        .sidebar-title { font-size: 1.2rem; font-weight: 700; color: #fff; flex: 1; }
+        .sidebar-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.2rem;
+            cursor: pointer;
         }
-
-        .nav-section {
-            padding: 1.5rem 1rem;
-        }
-
-        .nav-section-title {
-            color: var(--text-secondary);
+        .sidebar-section { padding: 15px 20px; }
+        .sidebar-label {
             font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.75rem;
-            padding-left: 0.5rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
+        .sidebar-item {
+            display: block;
+            padding: 10px 12px;
+            color: #ccc;
+            text-decoration: none;
             border-radius: 8px;
+            margin-bottom: 4px;
             cursor: pointer;
             transition: all 0.2s;
-            color: var(--text-primary);
-            text-decoration: none;
         }
-
-        .nav-item:hover {
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        .nav-item.active {
-            background: var(--accent);
-        }
-
-        .nav-icon {
-            font-size: 1.25rem;
-            width: 24px;
-            text-align: center;
-        }
-
-        /* Hamburger Menu */
-        .menu-toggle {
-            position: fixed;
-            top: 1.5rem;
-            left: 1.5rem;
-            width: 50px;
-            height: 50px;
-            background: var(--accent);
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            z-index: 1001;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            transition: all 0.3s;
-        }
-
-        .menu-toggle:hover {
-            transform: scale(1.05);
-        }
-
-        .menu-toggle span {
-            width: 24px;
-            height: 3px;
-            background: white;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-
-        .menu-toggle.open span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .menu-toggle.open span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-toggle.open span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
-        }
-
-        /* Sidebar Overlay */
+        .sidebar-item:hover { background: #1a1a1a; color: #fff; }
+        .sidebar-item.active { background: #e82127; color: #fff; }
         .sidebar-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+            background: rgba(0,0,0,0.5);
+            z-index: 99998;
+            display: none;
+        }
+        .sidebar-overlay.show { display: block !important; }
+    </style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .sidebar-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
+        :root {
+            /* Tesla-style dark theme colors */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #1e1e1e;
+            --bg-hover: #252525;
+            --border-color: #2a2a2a;
+            --border-light: #333;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666;
+            --accent-red: #e82127;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --accent-purple: #a855f7;
+            --accent-orange: #f97316;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            
+            /* Department colors */
+            --dept-airfresh: #06b6d4;
+            --dept-streetteams: #22d3ee;
+            --dept-humming: #a855f7;
+            --dept-webdev: #22c55e;
+            --dept-operations: #f97316;
+            --dept-sales: #3b82f6;
+            --dept-legal: #eab308;
         }
 
-        /* Main Content */
-        .main-content {
-            margin-left: 0;
-            padding: 6rem 2rem 2rem 2rem;
-            transition: margin-left 0.3s;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
+            line-height: 1.5;
         }
 
-        @media (min-width: 768px) {
-            .main-content.sidebar-open {
-                margin-left: 280px;
-            }
+        /* Header - Tesla style minimal */
+        .header {
+            background: var(--bg-secondary);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        /* Dashboard Header */
-        .dashboard-header {
-            margin-bottom: 2rem;
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .dashboard-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        .dashboard-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-
-        /* Grid Layout */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        /* Card Styles */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-header {
+        .header-left {
             display: flex;
             align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .branding h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .clock {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+        }
+
+        /* Blockers Section - Always at top */
+        .blockers-section {
+            background: linear-gradient(135deg, rgba(232, 33, 39, 0.1) 0%, rgba(232, 33, 39, 0.05) 100%);
+            border: 1px solid rgba(232, 33, 39, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .blockers-header {
+            display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 1rem;
         }
 
-        .card-title {
-            font-size: 1.1rem;
+        .blockers-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
             font-weight: 600;
+            color: var(--accent-red);
+        }
+
+        .blockers-count {
+            background: var(--accent-red);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .blockers-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .blocker-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-red);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .blocker-dept {
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .no-blockers {
+            color: var(--accent-green);
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-
-        .card-icon {
-            font-size: 1.5rem;
-        }
-
-        .stat-large {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin: 0.5rem 0;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
-        /* View Container */
-        .view {
-            display: none;
+        /* Quick Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .view.active {
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-light);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-value.green { color: var(--accent-green); }
+        .stat-value.yellow { color: var(--accent-yellow); }
+        .stat-value.red { color: var(--accent-red); }
+        .stat-value.blue { color: var(--accent-blue); }
+        .stat-value.purple { color: var(--accent-purple); }
+
+        /* View Toggle */
+        .view-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .view-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .view-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .dept-filter {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .add-task-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-task-btn:hover {
+            background: #2563eb;
+        }
+
+        /* Kanban Board */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .kanban-column {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .column-title.todo { color: var(--text-secondary); }
+        .column-title.progress { color: var(--accent-blue); }
+        .column-title.blocked { color: var(--accent-red); }
+        .column-title.done { color: var(--accent-green); }
+
+        .column-count {
+            background: var(--bg-hover);
+            padding: 0.25rem 0.625rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .tasks-container {
+            padding: 0.75rem;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* Task Cards */
+        .task-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: grab;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .task-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+        }
+
+        .task-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .task-dept-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .task-dept-bar.airfresh { background: var(--dept-airfresh); }
+        .task-dept-bar.streetteams { background: var(--dept-streetteams); }
+        .task-dept-bar.humming { background: var(--dept-humming); }
+        .task-dept-bar.webdev { background: var(--dept-webdev); }
+        .task-dept-bar.operations { background: var(--dept-operations); }
+        .task-dept-bar.sales { background: var(--dept-sales); }
+        .task-dept-bar.legal { background: var(--dept-legal); }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-dept-label {
+            font-size: 0.7rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .task-dept-label.airfresh { background: rgba(6, 182, 212, 0.2); color: var(--dept-airfresh); }
+        .task-dept-label.streetteams { background: rgba(34, 211, 238, 0.2); color: var(--dept-streetteams); }
+        .task-dept-label.humming { background: rgba(168, 85, 247, 0.2); color: var(--dept-humming); }
+        .task-dept-label.webdev { background: rgba(34, 197, 94, 0.2); color: var(--dept-webdev); }
+        .task-dept-label.operations { background: rgba(249, 115, 22, 0.2); color: var(--dept-operations); }
+        .task-dept-label.sales { background: rgba(59, 130, 246, 0.2); color: var(--dept-sales); }
+        .task-dept-label.legal { background: rgba(234, 179, 8, 0.2); color: var(--dept-legal); }
+
+        .task-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Progress Bar */
+        .task-progress {
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.375rem;
+        }
+
+        .progress-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .progress-percent {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-hover);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .progress-fill.low { background: var(--accent-red); }
+        .progress-fill.medium { background: var(--accent-yellow); }
+        .progress-fill.high { background: var(--accent-green); }
+
+        /* Task Meta */
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .task-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .task-meta-item.overdue {
+            color: var(--accent-red);
+        }
+
+        .task-meta-item.soon {
+            color: var(--accent-yellow);
+        }
+
+        /* Department Status Panel */
+        .dept-status-panel {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .dept-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .dept-card:hover {
+            border-color: var(--border-light);
+        }
+
+        .dept-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .dept-name {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .dept-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dept-icon.airfresh { background: var(--dept-airfresh); }
+        .dept-icon.streetteams { background: var(--dept-streetteams); }
+        .dept-icon.humming { background: var(--dept-humming); }
+        .dept-icon.webdev { background: var(--dept-webdev); }
+        .dept-icon.operations { background: var(--dept-operations); }
+        .dept-icon.sales { background: var(--dept-sales); }
+        .dept-icon.legal { background: var(--dept-legal); }
+
+        .dept-status-badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .dept-status-badge.operational {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--accent-green);
+        }
+
+        .dept-status-badge.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .dept-status-badge.blocked {
+            background: rgba(232, 33, 39, 0.2);
+            color: var(--accent-red);
+        }
+
+        .dept-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .dept-stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .dept-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
             display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
         }
 
         /* Responsive */
+        @media (max-width: 1200px) {
+            .kanban-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .dept-status-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
-            .dashboard-grid {
+            .container {
+                padding: 1rem;
+            }
+            .kanban-board {
                 grid-template-columns: 1fr;
             }
-
-            .main-content {
-                padding: 5rem 1rem 1rem 1rem;
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
             }
-
-            .dashboard-title {
-                font-size: 2rem;
+            .dept-status-panel {
+                grid-template-columns: 1fr;
             }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
     </style>
 </head>
-<body class="logged-out">
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-screen">
-        <div class="login-container">
-            <div class="login-header">
-                <div class="login-icon">🌶️</div>
-                <h1 class="login-title">Pepper Command Center</h1>
-                <p class="login-subtitle">Enter your credentials to continue</p>
+<body>
+    <!-- Password Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <div class="login-logo">🌶️</div>
+            <h2>Joey's Command Center</h2>
+            <p>Enter password to continue</p>
+            <input type="password" id="loginPassword" placeholder="Password" onkeypress="if(event.key==='Enter')checkPassword()">
+            <button onclick="checkPassword()">Enter</button>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+    
+    <!-- Keypad Overlay -->
+    <div class="keypad-overlay hidden" id="keypadOverlay">
+        <div class="login-logo" style="font-size:3rem;margin-bottom:1rem;">🌶️</div>
+        <div class="keypad-title">Enter Access Code</div>
+        <div class="keypad-display" id="keypadDisplay">○○○○</div>
+        <div class="keypad-grid">
+            <button class="key-btn" onclick="addKey('1')">1</button>
+            <button class="key-btn" onclick="addKey('2')">2</button>
+            <button class="key-btn" onclick="addKey('3')">3</button>
+            <button class="key-btn" onclick="addKey('4')">4</button>
+            <button class="key-btn" onclick="addKey('5')">5</button>
+            <button class="key-btn" onclick="addKey('6')">6</button>
+            <button class="key-btn" onclick="addKey('7')">7</button>
+            <button class="key-btn" onclick="addKey('8')">8</button>
+            <button class="key-btn" onclick="addKey('9')">9</button>
+            <button class="key-btn clear" onclick="clearKeys()">CLR</button>
+            <button class="key-btn" onclick="addKey('0')">0</button>
+            <button class="key-btn" onclick="submitKeys()">↵</button>
+        </div>
+        <div class="login-error" id="keypadError"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo">🌶️</span>
+            <span class="sidebar-title">Pepper</span>
+            <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-label">Dashboard</div>
+            <a class="sidebar-item active" onclick="showView('dashboard')">📊 Overview</a>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-label">AI Products</div>
+            <a class="sidebar-item" onclick="showView('bloom')">🌸 BLOOM Proposals</a>
+            <a class="sidebar-item" onclick="showView('nectar')">🍯 NECTAR CRM</a>
+            <a class="sidebar-item" onclick="showView('atlas')">⚡ ATLAS AI</a>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-label">Departments</div>
+            <a class="sidebar-item" onclick="filterDept('airfresh')">🌬️ Air Fresh Marketing</a>
+            <a class="sidebar-item" onclick="filterDept('streetteams')">🚶 Street Teams Co</a>
+            <a class="sidebar-item" onclick="filterDept('humming')">🐝 Humming Agent</a>
+            <a class="sidebar-item" onclick="filterDept('webdev')">💻 Web Development</a>
+            <a class="sidebar-item" onclick="filterDept('operations')">⚙️ Operations</a>
+            <a class="sidebar-item" onclick="filterDept('sales')">💰 Sales</a>
+            <a class="sidebar-item" onclick="filterDept('legal')">⚖️ Legal</a>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-label">📧 Email Accounts</div>
+            <a class="sidebar-item" href="https://mail.google.com/mail/u/0/#inbox" target="_blank">joey@airfreshmarketing.com</a>
+            <a class="sidebar-item" href="https://mail.google.com/mail/u/1/#inbox" target="_blank">hello@airfreshmarketing.com</a>
+            <a class="sidebar-item" href="https://mail.google.com/mail/u/2/#inbox" target="_blank">hello@streetteamsco.com</a>
+            <a class="sidebar-item" href="https://mail.google.com/mail/u/3/#inbox" target="_blank">forge@immerseforge.com</a>
+            <a class="sidebar-item" href="https://mail.google.com/mail/u/4/#inbox" target="_blank">hey@collegemarketing.co</a>
+            <a class="sidebar-item" href="https://mail.google.com/mail/u/5/#inbox" target="_blank">1@magen22.com</a>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-label">Slack Channels</div>
+            <a class="sidebar-item" href="https://app.slack.com/client/T095ZMAP5/C0AC79DH1L6" target="_blank">#labs</a>
+            <a class="sidebar-item" href="https://app.slack.com/client/T095ZMAP5" target="_blank">#chief-of-staff</a>
+            <a class="sidebar-item" href="https://app.slack.com/client/T095ZMAP5" target="_blank">#air-fresh</a>
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <span class="logo-icon">🌶️</span>
+                <div class="branding">
+                    <h1>Pepper</h1>
+                </div>
             </div>
-            
-            <div class="login-form">
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="off">
+            <div class="header-right">
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <span class="theme-icon" id="sunIcon">☀️</span>
+                    <span class="theme-icon active" id="moonIcon">🌙</span>
                 </div>
-                
-                <div class="form-group">
-                    <label>PIN Code</label>
-                    <input type="text" id="loginPIN" placeholder="Enter 4-digit PIN" maxlength="4" autocomplete="off" readonly>
-                    <div class="pin-pad">
-                        <button class="pin-btn" onclick="addPinDigit('1')">1</button>
-                        <button class="pin-btn" onclick="addPinDigit('2')">2</button>
-                        <button class="pin-btn" onclick="addPinDigit('3')">3</button>
-                        <button class="pin-btn" onclick="addPinDigit('4')">4</button>
-                        <button class="pin-btn" onclick="addPinDigit('5')">5</button>
-                        <button class="pin-btn" onclick="addPinDigit('6')">6</button>
-                        <button class="pin-btn" onclick="addPinDigit('7')">7</button>
-                        <button class="pin-btn" onclick="addPinDigit('8')">8</button>
-                        <button class="pin-btn" onclick="addPinDigit('9')">9</button>
-                        <button class="pin-btn" onclick="clearPin()">Clear</button>
-                        <button class="pin-btn" onclick="addPinDigit('0')">0</button>
-                        <button class="pin-btn" onclick="deletePinDigit()">⌫</button>
-                    </div>
-                </div>
-                
-                <div id="loginError" class="login-error"></div>
-                
-                <button class="login-btn" onclick="attemptLogin()">
-                    <span>🔓 Login</span>
-                </button>
+                <button class="icon-btn" onclick="toggleNotifications()">🔔</button>
+                <div class="clock" id="clock">--</div>
             </div>
         </div>
     </div>
 
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- Hamburger Menu -->
-    <button class="menu-toggle" id="menuToggle">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-title">🌶️ Pepper</div>
+    <div class="container">
+        <!-- Blockers Section -->
+        <div class="blockers-section" id="blockersSection">
+            <div class="blockers-header">
+                <div class="blockers-title">
+                    <span>🚨</span>
+                    <span>Current Blockers</span>
+                </div>
+                <span class="blockers-count" id="blockersCount">0</span>
+            </div>
+            <div class="blockers-list" id="blockersList">
+                <div class="no-blockers">✓ No active blockers</div>
+            </div>
         </div>
 
-        <nav class="nav-section">
-            <div class="nav-section-title">Dashboard</div>
-            <a href="#" class="nav-item active" data-view="overview">
-                <span class="nav-icon">📊</span>
-                <span>Overview</span>
-            </a>
-            <a href="#" class="nav-item" data-view="weather">
-                <span class="nav-icon">🌤️</span>
-                <span>Weather</span>
-            </a>
-            <a href="#" class="nav-item" data-view="tasks">
-                <span class="nav-icon">✅</span>
-                <span>Tasks</span>
-            </a>
-            <a href="#" class="nav-item" data-view="labs">
-                <span class="nav-icon">🧪</span>
-                <span>Labs</span>
-            </a>
-            <a href="#" class="nav-item" data-view="kanban">
-                <span class="nav-icon">📋</span>
-                <span>Kanban</span>
-            </a>
-        </nav>
-
-        <nav class="nav-section">
-            <div class="nav-section-title">Quick Links</div>
-            <a href="#" class="nav-item" onclick="logout(); return false;">
-                <span class="nav-icon">🚪</span>
-                <span>Logout</span>
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content" id="mainContent">
-        <!-- Overview View -->
-        <div id="view-overview" class="view active">
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">Mission Control</h1>
-                <p class="dashboard-subtitle">Tuesday, February 4th, 2026 • 7:32 AM MST</p>
+        <!-- Usage Stats -->
+        <div class="usage-section" id="usageSection">
+            <div class="usage-header">
+                <span>📊 API Usage</span>
+                <button onclick="refreshUsage()" style="background:none;border:none;cursor:pointer;font-size:1rem;">↻</button>
             </div>
-
-            <!-- Quick Stats -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                <div class="card" style="padding: 1.5rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: #48bb78; margin-bottom: 0.5rem;">6</div>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Active Projects</div>
-                </div>
-                <div class="card" style="padding: 1.5rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: #667eea; margin-bottom: 0.5rem;">7</div>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Departments</div>
-                </div>
-                <div class="card" style="padding: 1.5rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: #f6ad55; margin-bottom: 0.5rem;">2</div>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Live Demos</div>
-                </div>
-                <div class="card" style="padding: 1.5rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: #fc8181; margin-bottom: 0.5rem;">3</div>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Slack Channels</div>
-                </div>
-            </div>
-
-            <!-- Departments -->
-            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">📊 Departments</h2>
-            <div class="dashboard-grid" style="margin-bottom: 2rem;">
-                <!-- Air Fresh Marketing -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🌬️</span>
-                            Air Fresh Marketing
-                        </div>
-                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
-                    </div>
-                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
-                        <div style="margin-bottom: 0.5rem;">📍 Status: Dev site launching soon</div>
-                        <div style="margin-bottom: 0.5rem;">🔗 dev2.airfreshmarketing.com</div>
-                        <div>📧 Lead generation campaigns active</div>
-                    </div>
-                </div>
-
-                <!-- Humming Agent AI -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🐝</span>
-                            Humming Agent AI
-                        </div>
-                        <span class="status-indicator" style="background: rgba(102, 126, 234, 0.2); color: #667eea;">Active</span>
-                    </div>
-                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
-                        <div style="margin-bottom: 0.5rem;">📍 Status: ATLAS demo ready</div>
-                        <div style="margin-bottom: 0.5rem;">🤖 AI employee prototypes</div>
-                        <div>💼 Sales automation live</div>
-                    </div>
-                </div>
-
-                <!-- Web Development -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">💻</span>
-                            Web Development
-                        </div>
-                        <span class="status-indicator" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">On Track</span>
-                    </div>
-                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
-                        <div style="margin-bottom: 0.5rem;">📍 ImmerseForge: 3 commits ahead</div>
-                        <div style="margin-bottom: 0.5rem;">📍 RentAHuman: Live on Vercel</div>
-                        <div>📍 StreetTeams & College sites in progress</div>
-                    </div>
-                </div>
-
-                <!-- Sales & Operations -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">📈</span>
-                            Sales & Operations
-                        </div>
-                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Needs Attention</span>
-                    </div>
-                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
-                        <div style="margin-bottom: 0.5rem;">📍 LinkedIn: Skylead campaigns running</div>
-                        <div style="margin-bottom: 0.5rem;">📍 Email: Management needed (5 accounts)</div>
-                        <div>📍 CRM: HubSpot integration pending</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Active Projects -->
-            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">🚀 Active Projects</h2>
-            <div class="dashboard-grid" style="margin-bottom: 2rem;">
-                <!-- ATLAS -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">⚡</span>
-                            ATLAS AI Employee
-                        </div>
-                        <span class="status-indicator" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">Demo Ready</span>
-                    </div>
-                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
-                        <div style="margin-bottom: 0.5rem;">✅ 5 prospects processed</div>
-                        <div style="margin-bottom: 0.5rem;">✅ 5 landing pages generated</div>
-                        <div>✅ Ready to show clients</div>
-                    </div>
-                </div>
-
-                <!-- RentAHuman -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">💼</span>
-                            RentAHuman
-                        </div>
-                        <span class="status-indicator" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">Live</span>
-                    </div>
-                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
-                        <div style="margin-bottom: 0.5rem;">✅ Deployed to Vercel (12s build)</div>
-                        <div style="margin-bottom: 0.5rem;">⏳ Database schema ready</div>
-                        <div>🔗 rentahuman.vercel.app</div>
-                    </div>
-                </div>
-
-                <!-- ImmerseForge -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🏔️</span>
-                            ImmerseForge
-                        </div>
-                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
-                    </div>
-                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
-                        <div style="margin-bottom: 0.5rem;">📍 Help pages complete</div>
-                        <div style="margin-bottom: 0.5rem;">📍 3 commits ready to deploy</div>
-                        <div>📍 2,300+ lines of code</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Access -->
-            <div class="dashboard-grid">
-                <!-- Weather Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🌤️</span>
-                            Denver Weather
-                        </div>
-                    </div>
-                    <div id="weatherData">Loading weather...</div>
-                </div>
-
-                <!-- Tasks Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">✅</span>
-                            Pending Tasks
-                        </div>
-                    </div>
-                    <div id="hummingTasks">Loading tasks...</div>
+            <div class="usage-cards" id="usageCards">
+                <div class="usage-card">
+                    <div class="usage-service">ElevenLabs</div>
+                    <div class="usage-bar"><div class="usage-fill" style="width:0%"></div></div>
+                    <div class="usage-text">Loading...</div>
                 </div>
             </div>
         </div>
 
-        <!-- Weather View -->
-        <div id="view-weather" class="view">
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">Weather</h1>
-                <p class="dashboard-subtitle">Denver, Colorado</p>
+        <!-- Quick Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">Todo</div>
+                <div class="stat-value" id="stat-todo">0</div>
             </div>
-            <div class="card">
-                <div id="weatherDataFull">Loading weather...</div>
+            <div class="stat-card">
+                <div class="stat-label">In Progress</div>
+                <div class="stat-value blue" id="stat-progress">0</div>
             </div>
-        </div>
-
-        <!-- Tasks View -->
-        <div id="view-tasks" class="view">
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">Tasks</h1>
-                <p class="dashboard-subtitle">HummingAgent Project Dashboard</p>
+            <div class="stat-card">
+                <div class="stat-label">Blocked</div>
+                <div class="stat-value red" id="stat-blocked">0</div>
             </div>
-            <div class="card">
-                <div id="hummingTasksFull">Loading tasks...</div>
+            <div class="stat-card">
+                <div class="stat-label">Done</div>
+                <div class="stat-value green" id="stat-done">0</div>
             </div>
-        </div>
-
-        <!-- Labs View -->
-        <div id="view-labs" class="view">
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">🧪 Labs</h1>
-                <p class="dashboard-subtitle">Active Projects & Demos</p>
-            </div>
-
-            <!-- AI Employees -->
-            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">🤖 AI Employees</h2>
-            <div class="dashboard-grid" style="margin-bottom: 2rem;">
-                <!-- ATLAS -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">⚡</span>
-                            ATLAS Sales Employee
-                        </div>
-                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Testing</span>
-                    </div>
-                    <div style="padding: 1rem;">
-                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
-                            Autonomous AI employee that researches prospects, generates personalized emails, and creates custom landing pages. 24/7 operation with built-in safety features.
-                        </div>
-                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">5</div>
-                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Prospects</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">5</div>
-                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Landing Pages</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">$0.16</div>
-                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Per Lead</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                            <a href="live/atlas.html" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">View Widget</a>
-                            <a href="live/ATLAS-EXECUTIVE-SUMMARY.md" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); text-decoration: none; font-size: 0.9rem;">Summary</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Web Platforms -->
-            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">🌐 Web Platforms</h2>
-            <div class="dashboard-grid" style="margin-bottom: 2rem;">
-                <!-- RentAHuman -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">💼</span>
-                            RentAHuman
-                        </div>
-                        <span class="status-indicator" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">Live</span>
-                    </div>
-                    <div style="padding: 1rem;">
-                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
-                            Web3-powered gig platform connecting skilled workers with clients. Crypto payments, instant bookings, and verified reviews.
-                        </div>
-                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #48bb78;">12s</div>
-                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Build Time</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #48bb78;">7</div>
-                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Pages</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #48bb78;">100%</div>
-                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Complete</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                            <a href="https://rentahuman.vercel.app" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Live Site</a>
-                            <a href="live/rentahuman-demo.html" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); text-decoration: none; font-size: 0.9rem;">Demo Page</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ImmerseForge -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🏔️</span>
-                            ImmerseForge
-                        </div>
-                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
-                    </div>
-                    <div style="padding: 1rem;">
-                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
-                            Tour management system with GPS photo tracking, client portals, and admin dashboard. Multiple active components in development.
-                        </div>
-                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">4</div>
-                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Components</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">3</div>
-                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Commits Ahead</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">2.3K</div>
-                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Lines of Code</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                            <a href="https://immerseforge.com" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Main Site</a>
-                            <a href="https://dev2.immerseforge.com" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); text-decoration: none; font-size: 0.9rem;">Dev Site</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- StreetTeamsCo -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🎯</span>
-                            StreetTeamsCo
-                        </div>
-                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
-                    </div>
-                    <div style="padding: 1rem;">
-                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
-                            Street team marketing platform. Website in development for college campus marketing services.
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                            <a href="https://streetteamsco.com" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Visit Site</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CollegeMarketing.co -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🎓</span>
-                            CollegeMarketing.co
-                        </div>
-                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
-                    </div>
-                    <div style="padding: 1rem;">
-                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
-                            College marketing services platform. Website development in progress.
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                            <a href="https://collegemarketing.co" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Visit Site</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Marketing Sites -->
-            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">📢 Marketing Sites</h2>
-            <div class="dashboard-grid" style="margin-bottom: 2rem;">
-                <!-- Air Fresh Marketing -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🌬️</span>
-                            Air Fresh Marketing
-                        </div>
-                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Launching Soon</span>
-                    </div>
-                    <div style="padding: 1rem;">
-                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
-                            Marketing agency website with AI-powered content generation and client portal.
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                            <a href="https://dev2.airfreshmarketing.com" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Dev Site</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Humming Agent AI -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🐝</span>
-                            Humming Agent AI
-                        </div>
-                        <span class="status-indicator" style="background: rgba(102, 126, 234, 0.2); color: #667eea;">Active Development</span>
-                    </div>
-                    <div style="padding: 1rem;">
-                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
-                            AI agency platform showcasing autonomous employee capabilities and custom AI solutions.
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                            <a href="https://hummingagent.ai" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Main Site</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dashboard & Tools -->
-            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">🛠️ Internal Tools</h2>
-            <div class="dashboard-grid">
-                <!-- Pepper's Dashboard V2 Demo -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span class="card-icon">🌶️</span>
-                            Dashboard V2 Demo
-                        </div>
-                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Testing</span>
-                    </div>
-                    <div style="padding: 1rem;">
-                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
-                            Alternative dashboard layout demo with unified metrics view.
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                            <a href="pepper-dashboard-v2.html" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Open Demo</a>
-                        </div>
-                    </div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-label">Overall Progress</div>
+                <div class="stat-value purple" id="stat-overall">0%</div>
             </div>
         </div>
 
-        <!-- Kanban View -->
-        <div id="view-kanban" class="view">
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">📋 Kanban Board</h1>
-                <p class="dashboard-subtitle">Project & Channel Task Management</p>
+        <!-- AI Products Quick Access -->
+        <div class="stats-row" style="margin-bottom: 1rem;">
+            <div onclick="showView('bloom')" class="stat-card" style="cursor: pointer; border: 2px solid #f687b3; transition: all 0.2s;">
+                <div class="stat-label" style="color: #f687b3;">🌸 BLOOM</div>
+                <div class="stat-value" style="font-size: 0.9rem; color: #fff;">Proposals</div>
+            </div>
+            <div onclick="showView('nectar')" class="stat-card" style="cursor: pointer; border: 2px solid #f6ad55; transition: all 0.2s;">
+                <div class="stat-label" style="color: #f6ad55;">🍯 NECTAR</div>
+                <div class="stat-value" style="font-size: 0.9rem; color: #fff;">CRM</div>
+            </div>
+            <div onclick="showView('atlas')" class="stat-card" style="cursor: pointer; border: 2px solid #667eea; transition: all 0.2s;">
+                <div class="stat-label" style="color: #667eea;">⚡ ATLAS</div>
+                <div class="stat-value" style="font-size: 0.9rem; color: #fff;">AI Employee</div>
+            </div>
+        </div>
+
+        <!-- Kanban Controls -->
+        <div class="view-controls">
+            <h2 class="view-title">Task Board</h2>
+            <div class="view-actions">
+                <select class="dept-filter" id="deptFilter" onchange="filterTasks()">
+                    <option value="all">All Departments</option>
+                    <option value="airfresh">Air Fresh Marketing</option>
+                    <option value="streetteams">Street Teams Co</option>
+                    <option value="humming">Humming Agent</option>
+                    <option value="webdev">Web Development</option>
+                    <option value="operations">Operations</option>
+                    <option value="sales">Sales</option>
+                    <option value="legal">Legal</option>
+                </select>
+                <button class="add-task-btn" onclick="openAddTaskModal()">+ Add Task</button>
+            </div>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="kanban-board">
+            <div class="kanban-column">
+                <div class="column-header">
+                    <div class="column-title todo">
+                        <span>📋</span> TODO
+                    </div>
+                    <span class="column-count" id="count-todo">0</span>
+                </div>
+                <div class="tasks-container" id="tasks-todo" data-status="todo"></div>
             </div>
 
-            <!-- Filter Controls -->
-            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
-                <div style="display: flex; gap: 2rem; flex-wrap: wrap; align-items: center;">
-                    <!-- View Mode -->
-                    <div>
-                        <label style="display: block; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">View Mode:</label>
-                        <select id="kanban-view-mode" style="background: var(--bg-secondary); color: white; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.95rem;">
-                            <option value="all">All Tasks</option>
-                            <option value="project">By Project</option>
-                            <option value="channel">By Slack Channel</option>
+            <div class="kanban-column">
+                <div class="column-header">
+                    <div class="column-title progress">
+                        <span>🔄</span> IN PROGRESS
+                    </div>
+                    <span class="column-count" id="count-progress">0</span>
+                </div>
+                <div class="tasks-container" id="tasks-progress" data-status="progress"></div>
+            </div>
+
+            <div class="kanban-column">
+                <div class="column-header">
+                    <div class="column-title blocked">
+                        <span>⛔</span> BLOCKED
+                    </div>
+                    <span class="column-count" id="count-blocked">0</span>
+                </div>
+                <div class="tasks-container" id="tasks-blocked" data-status="blocked"></div>
+            </div>
+
+            <div class="kanban-column">
+                <div class="column-header">
+                    <div class="column-title done">
+                        <span>✅</span> DONE
+                    </div>
+                    <span class="column-count" id="count-done">0</span>
+                </div>
+                <div class="tasks-container" id="tasks-done" data-status="done"></div>
+            </div>
+        </div>
+
+        <!-- Department Status Panel -->
+        <div class="dept-status-panel" id="deptStatusPanel">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal" id="addTaskModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Add Task</h2>
+            <form id="addTaskForm" onsubmit="addTask(event)">
+                <div class="form-group">
+                    <label class="form-label">Task Name</label>
+                    <input type="text" id="taskTitle" class="form-input" required placeholder="What needs to be done?">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <select id="taskDept" class="form-input">
+                            <option value="airfresh">Air Fresh Marketing</option>
+                            <option value="streetteams">Street Teams Co</option>
+                            <option value="humming">Humming Agent</option>
+                            <option value="webdev">Web Development</option>
+                            <option value="operations">Operations</option>
+                            <option value="sales">Sales</option>
+                            <option value="legal">Legal</option>
                         </select>
                     </div>
-
-                    <!-- Project Filter -->
-                    <div id="project-filter-container" style="display: none;">
-                        <label style="display: block; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">Project:</label>
-                        <select id="kanban-project-filter" style="background: var(--bg-secondary); color: white; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.95rem;">
-                            <option value="">Select Project...</option>
-                            <option value="atlas">⚡ ATLAS AI Employee</option>
-                            <option value="rentahuman">💼 RentAHuman</option>
-                            <option value="immerseforge">🏔️ ImmerseForge</option>
-                            <option value="streetteams">🎯 StreetTeamsCo</option>
-                            <option value="collegemarketing">🎓 CollegeMarketing.co</option>
-                            <option value="airfresh">🌬️ Air Fresh Marketing</option>
-                            <option value="hummingagent">🐝 Humming Agent AI</option>
-                        </select>
-                    </div>
-
-                    <!-- Channel Filter -->
-                    <div id="channel-filter-container" style="display: none;">
-                        <label style="display: block; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">Slack Channel:</label>
-                        <select id="kanban-channel-filter" style="background: var(--bg-secondary); color: white; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.95rem;">
-                            <option value="">Select Channel...</option>
-                            <option value="chief-of-staff">#chief-of-staff</option>
-                            <option value="labs">#labs</option>
-                            <option value="air-fresh">#air-fresh</option>
-                            <option value="immerse-forge-dev">#immerse-forge-dev</option>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="taskStatus" class="form-input">
+                            <option value="todo">Todo</option>
+                            <option value="progress">In Progress</option>
+                            <option value="blocked">Blocked</option>
+                            <option value="done">Done</option>
                         </select>
                     </div>
                 </div>
-            </div>
-
-            <!-- Kanban Board -->
-            <div id="kanban-board" style="display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 2rem;">
-                <!-- Backlog Column -->
-                <div class="kanban-column" data-status="backlog" style="min-width: 300px; flex: 1;">
-                    <div style="background: rgba(160, 174, 192, 0.1); border: 1px solid rgba(160, 174, 192, 0.3); border-radius: 12px; padding: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 style="font-size: 1.1rem; color: #a0aec0; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>📥</span>
-                                <span>Backlog</span>
-                            </h3>
-                            <span class="kanban-count" style="background: rgba(160, 174, 192, 0.2); color: #a0aec0; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
-                        </div>
-                        <div class="kanban-cards" style="min-height: 100px;"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Progress %</label>
+                        <input type="number" id="taskProgress" class="form-input" min="0" max="100" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Estimate</label>
+                        <input type="text" id="taskTime" class="form-input" placeholder="e.g., 2h, 1d, 1w">
                     </div>
                 </div>
-
-                <!-- To Do Column -->
-                <div class="kanban-column" data-status="todo" style="min-width: 300px; flex: 1;">
-                    <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 12px; padding: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 style="font-size: 1.1rem; color: #667eea; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>📝</span>
-                                <span>To Do</span>
-                            </h3>
-                            <span class="kanban-count" style="background: rgba(102, 126, 234, 0.2); color: #667eea; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
-                        </div>
-                        <div class="kanban-cards" style="min-height: 100px;"></div>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Due Date</label>
+                    <input type="date" id="taskDue" class="form-input">
                 </div>
-
-                <!-- In Progress Column -->
-                <div class="kanban-column" data-status="in-progress" style="min-width: 300px; flex: 1;">
-                    <div style="background: rgba(246, 173, 85, 0.1); border: 1px solid rgba(246, 173, 85, 0.3); border-radius: 12px; padding: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 style="font-size: 1.1rem; color: #f6ad55; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>⚡</span>
-                                <span>In Progress</span>
-                            </h3>
-                            <span class="kanban-count" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
-                        </div>
-                        <div class="kanban-cards" style="min-height: 100px;"></div>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Blocker Note (if blocked)</label>
+                    <textarea id="taskBlocker" class="form-input" placeholder="What's blocking this?"></textarea>
                 </div>
-
-                <!-- Testing Column -->
-                <div class="kanban-column" data-status="testing" style="min-width: 300px; flex: 1;">
-                    <div style="background: rgba(159, 122, 234, 0.1); border: 1px solid rgba(159, 122, 234, 0.3); border-radius: 12px; padding: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 style="font-size: 1.1rem; color: #9f7aea; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>🧪</span>
-                                <span>Testing</span>
-                            </h3>
-                            <span class="kanban-count" style="background: rgba(159, 122, 234, 0.2); color: #9f7aea; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
-                        </div>
-                        <div class="kanban-cards" style="min-height: 100px;"></div>
-                    </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddTaskModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Task</button>
                 </div>
-
-                <!-- Done Column -->
-                <div class="kanban-column" data-status="done" style="min-width: 300px; flex: 1;">
-                    <div style="background: rgba(72, 187, 120, 0.1); border: 1px solid rgba(72, 187, 120, 0.3); border-radius: 12px; padding: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 style="font-size: 1.1rem; color: #48bb78; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>✅</span>
-                                <span>Done</span>
-                            </h3>
-                            <span class="kanban-count" style="background: rgba(72, 187, 120, 0.2); color: #48bb78; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
-                        </div>
-                        <div class="kanban-cards" style="min-height: 100px;"></div>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
-    </main>
+    </div>
 
     <script>
-        // Login System
-        const CORRECT_PASSWORD = 'pepper';
-        const CORRECT_PIN = '2222';
+        // ============ SIDEBAR ============
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
 
-        function addPinDigit(digit) {
-            const pinInput = document.getElementById('loginPIN');
-            if (pinInput.value.length < 4) {
-                pinInput.value += digit;
+        // ============ VIEW SWITCHING ============
+        function showView(view) {
+            // Close sidebar
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+            
+            // Hide all product views
+            document.getElementById('view-bloom').style.display = 'none';
+            document.getElementById('view-nectar').style.display = 'none';
+            document.getElementById('view-atlas').style.display = 'none';
+            
+            // Show the selected view or dashboard
+            if (view === 'bloom') {
+                document.getElementById('view-bloom').style.display = 'block';
+            } else if (view === 'nectar') {
+                document.getElementById('view-nectar').style.display = 'block';
+            } else if (view === 'atlas') {
+                document.getElementById('view-atlas').style.display = 'block';
+            }
+            // If 'dashboard', all views are hidden, showing main dashboard
+            
+            // Update active state
+            document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+            if (view === 'dashboard') {
+                document.querySelector('.sidebar-item[onclick*="dashboard"]').classList.add('active');
             }
         }
-
-        function deletePinDigit() {
-            const pinInput = document.getElementById('loginPIN');
-            pinInput.value = pinInput.value.slice(0, -1);
+        
+        function filterDept(dept) {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+            document.getElementById('deptFilter').value = dept;
+            filterTasks();
         }
 
-        function clearPin() {
-            document.getElementById('loginPIN').value = '';
-        }
+        // ============ DATA ============
+        const DEPT_NAMES = {
+            airfresh: 'Air Fresh',
+            streetteams: 'Street Teams Co',
+            humming: 'Humming Agent',
+            webdev: 'Web Dev',
+            operations: 'Operations',
+            sales: 'Sales',
+            legal: 'Legal'
+        };
 
-        function attemptLogin() {
-            const password = document.getElementById('loginPassword').value;
-            const pin = document.getElementById('loginPIN').value;
-            const errorDiv = document.getElementById('loginError');
+        const DEPT_STATUS = {
+            airfresh: { status: 'operational', tasks: 2, progress: 10, blockers: 0 },
+            streetteams: { status: 'operational', tasks: 0, progress: 0, blockers: 0 },
+            humming: { status: 'operational', tasks: 2, progress: 45, blockers: 0 },
+            webdev: { status: 'active', tasks: 4, progress: 60, blockers: 0 },
+            operations: { status: 'operational', tasks: 3, progress: 30, blockers: 1 },
+            sales: { status: 'operational', tasks: 2, progress: 20, blockers: 0 },
+            legal: { status: 'operational', tasks: 1, progress: 50, blockers: 0 }
+        };
 
-            if (password === CORRECT_PASSWORD && pin === CORRECT_PIN) {
-                // Success
-                sessionStorage.setItem('pepperLoggedIn', 'true');
-                document.body.classList.remove('logged-out');
-                document.getElementById('loginScreen').classList.add('hidden');
-                errorDiv.textContent = '';
-            } else {
-                // Error
-                errorDiv.textContent = '❌ Invalid credentials. Try again.';
-                document.getElementById('loginPassword').value = '';
-                document.getElementById('loginPIN').value = '';
-            }
-        }
+        // Load tasks from localStorage or use defaults
+        let tasks = JSON.parse(localStorage.getItem('kanban-tasks')) || [
+            { id: 1, title: 'AFM Website Redesign', dept: 'airfresh', status: 'progress', progress: 10, time: '2w', due: '2026-02-15', blocker: '' },
+            { id: 2, title: 'Client Campaign Q1', dept: 'airfresh', status: 'todo', progress: 0, time: '1w', due: '2026-02-01', blocker: '' },
+            { id: 3, title: 'Skylead Outreach', dept: 'humming', status: 'progress', progress: 45, time: '3d', due: '2026-02-05', blocker: '' },
+            { id: 4, title: 'AI Agent Development', dept: 'humming', status: 'progress', progress: 40, time: '1m', due: '2026-03-01', blocker: '' },
+            { id: 5, title: 'ImmerseForge Login Links', dept: 'webdev', status: 'done', progress: 100, time: '2h', due: '2026-01-30', blocker: '' },
+            { id: 6, title: 'Dashboard System', dept: 'webdev', status: 'progress', progress: 75, time: '1w', due: '2026-02-01', blocker: '' },
+            { id: 7, title: 'Security Audit', dept: 'webdev', status: 'todo', progress: 0, time: '3d', due: '2026-02-10', blocker: '' },
+            { id: 8, title: 'SSL Certificate Renewal', dept: 'webdev', status: 'todo', progress: 0, time: '1h', due: '2026-02-28', blocker: '' },
+            { id: 9, title: 'Email Server Migration', dept: 'operations', status: 'blocked', progress: 30, time: '2d', due: '2026-02-05', blocker: 'Waiting for DNS propagation' },
+            { id: 10, title: 'CRM Integration', dept: 'operations', status: 'progress', progress: 25, time: '1w', due: '2026-02-10', blocker: '' },
+            { id: 11, title: 'Lead Pipeline Setup', dept: 'sales', status: 'todo', progress: 0, time: '3d', due: '2026-02-07', blocker: '' },
+            { id: 12, title: 'Q1 Goals Review', dept: 'sales', status: 'progress', progress: 50, time: '2h', due: '2026-01-31', blocker: '' },
+            { id: 13, title: 'Privacy Policy Update', dept: 'legal', status: 'progress', progress: 60, time: '4h', due: '2026-02-03', blocker: '' }
+        ];
 
-        function logout() {
-            sessionStorage.removeItem('pepperLoggedIn');
-            document.body.classList.add('logged-out');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('loginPIN').value = '';
-        }
-
-        // Check login status on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('pepperLoggedIn') === 'true') {
-                document.body.classList.remove('logged-out');
-                document.getElementById('loginScreen').classList.add('hidden');
-            }
-        });
-
-        // Allow Enter key to login
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') attemptLogin();
-            });
-        });
-
-        // Sidebar Toggle
-        const sidebar = document.getElementById('sidebar');
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const mainContent = document.getElementById('mainContent');
-
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            menuToggle.classList.toggle('open');
-            sidebarOverlay.classList.toggle('show');
-            mainContent.classList.toggle('sidebar-open');
-        });
-
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            menuToggle.classList.remove('open');
-            sidebarOverlay.classList.remove('show');
-            mainContent.classList.remove('sidebar-open');
-        });
-
-        // View Switching
-        const navItems = document.querySelectorAll('.nav-item[data-view]');
-        const views = document.querySelectorAll('.view');
-
-        navItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const viewId = item.dataset.view;
-
-                // Update active nav item
-                navItems.forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-
-                // Switch views
-                views.forEach(view => view.classList.remove('active'));
-                document.getElementById(`view-${viewId}`).classList.add('active');
-
-                // Close sidebar on mobile
-                if (window.innerWidth < 768) {
-                    sidebar.classList.remove('open');
-                    menuToggle.classList.remove('open');
-                    sidebarOverlay.classList.remove('show');
-                    mainContent.classList.remove('sidebar-open');
+        // ============ RENDERING ============
+        function renderTasks() {
+            const filter = document.getElementById('deptFilter').value;
+            const statuses = ['todo', 'progress', 'blocked', 'done'];
+            
+            statuses.forEach(status => {
+                const container = document.getElementById(`tasks-${status}`);
+                let filteredTasks = tasks.filter(t => t.status === status);
+                if (filter !== 'all') {
+                    filteredTasks = filteredTasks.filter(t => t.dept === filter);
                 }
-            });
-        });
-
-        // Weather emoji mapping
-        function getWeatherEmoji(forecast) {
-            const lower = forecast.toLowerCase();
-            if (lower.includes('snow')) return '❄️';
-            if (lower.includes('rain')) return '🌧️';
-            if (lower.includes('thunder') || lower.includes('storm')) return '⛈️';
-            if (lower.includes('sunny') || lower.includes('clear')) return '☀️';
-            if (lower.includes('partly cloudy')) return '⛅';
-            if (lower.includes('cloudy') || lower.includes('overcast')) return '☁️';
-            if (lower.includes('fog')) return '🌫️';
-            if (lower.includes('wind')) return '💨';
-            return '🌤️';
-        }
-
-        // Fetch NOAA Weather Data
-        async function updateWeather() {
-            try {
-                const response = await fetch('https://api.weather.gov/gridpoints/BOU/64,58/forecast');
-                const data = await response.json();
-                const periods = data.properties.periods.slice(0, 7);
                 
-                const current = periods[0];
-                const emoji = getWeatherEmoji(current.shortForecast);
-                
-                let html = `
-                    <div style="text-align: center;">
-                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">${emoji}</div>
-                        <div class="stat-large">${current.temperature}°F</div>
-                        <div class="stat-label">${current.shortForecast}</div>
-                        <div class="stat-label" style="margin-top: 0.5rem;">
-                            ${current.windSpeed} ${current.windDirection} • ${current.probabilityOfPrecipitation.value || 0}% precip
-                        </div>
-                    </div>
-                `;
-                
-                document.getElementById('weatherData').innerHTML = html;
-                
-                // Full weather view
-                let fullHtml = html + `
-                    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-                        <div class="stat-label" style="margin-bottom: 1rem; font-weight: 600;">📅 Forecast</div>
-                `;
-                
-                periods.forEach((period, idx) => {
-                    if (idx === 0) return;
-                    const dayEmoji = getWeatherEmoji(period.shortForecast);
-                    fullHtml += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <span style="font-size: 1.5rem;">${dayEmoji}</span>
-                                <div>
-                                    <div style="font-weight: 600;">${period.name}</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">${period.shortForecast}</div>
-                                </div>
-                            </div>
-                            <div style="font-weight: 600; font-size: 1.1rem;">${period.temperature}°</div>
-                        </div>
-                    `;
-                });
-                
-                fullHtml += '</div>';
-                document.getElementById('weatherDataFull').innerHTML = fullHtml;
-            } catch (error) {
-                console.error('Weather fetch error:', error);
-                document.getElementById('weatherData').innerHTML = '<p>Unable to load weather data</p>';
-            }
-        }
-
-        // Fetch HummingAgent Tasks
-        async function updateHummingTasks() {
-            try {
-                const response = await fetch('https://project.hummingagent.ai/api/tasks?project_id=5d3ad50f-d8ba-4a1e-8a18-ee2d6e8adee5', {
-                    headers: {
-                        'Authorization': 'Bearer pd_lIcJX2dmXIs0jkOzP3v3iiIRLRnuv2yt'
-                    }
-                });
-                const data = await response.json();
-                
-                let html = '';
-                const tasks = data.tasks || [];
-                const notStarted = tasks.filter(t => t.status === 'not-started').slice(0, 5);
-                
-                if (notStarted.length === 0) {
-                    html = '<p style="color: var(--text-secondary);">No pending tasks</p>';
+                if (filteredTasks.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No tasks</div>';
                 } else {
-                    notStarted.forEach(task => {
-                        html += `<p style="margin-bottom: 0.5rem;">• ${task.title}</p>`;
-                    });
+                    container.innerHTML = filteredTasks.map(task => renderTaskCard(task)).join('');
                 }
                 
-                document.getElementById('hummingTasks').innerHTML = html;
-                document.getElementById('hummingTasksFull').innerHTML = html;
-            } catch (error) {
-                document.getElementById('hummingTasks').innerHTML = '<p style="color: var(--text-secondary);">Unable to load tasks</p>';
+                document.getElementById(`count-${status}`).textContent = filteredTasks.length;
+            });
+            
+            updateStats();
+            updateBlockers();
+            setupDragAndDrop();
+            saveTasks();
+        }
+
+        function renderTaskCard(task) {
+            const progressClass = task.progress < 30 ? 'low' : task.progress < 70 ? 'medium' : 'high';
+            const dueDate = task.due ? new Date(task.due) : null;
+            const now = new Date();
+            let dueClass = '';
+            let dueText = task.due || '--';
+            
+            if (dueDate) {
+                const daysUntil = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+                if (daysUntil < 0) {
+                    dueClass = 'overdue';
+                    dueText = `${Math.abs(daysUntil)}d overdue`;
+                } else if (daysUntil <= 3) {
+                    dueClass = 'soon';
+                    dueText = daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `${daysUntil}d`;
+                } else {
+                    dueText = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+            }
+
+            return `
+                <div class="task-card" draggable="true" data-task-id="${task.id}">
+                    <div class="task-dept-bar ${task.dept}"></div>
+                    <div class="task-header">
+                        <span class="task-dept-label ${task.dept}">${DEPT_NAMES[task.dept]}</span>
+                    </div>
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-progress">
+                        <div class="progress-header">
+                            <span class="progress-label">Progress</span>
+                            <span class="progress-percent">${task.progress}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${progressClass}" style="width: ${task.progress}%"></div>
+                        </div>
+                    </div>
+                    <div class="task-meta">
+                        <div class="task-meta-item">⏱ ${task.time || '--'}</div>
+                        <div class="task-meta-item ${dueClass}">📅 ${dueText}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStats() {
+            const counts = {
+                todo: tasks.filter(t => t.status === 'todo').length,
+                progress: tasks.filter(t => t.status === 'progress').length,
+                blocked: tasks.filter(t => t.status === 'blocked').length,
+                done: tasks.filter(t => t.status === 'done').length
+            };
+            
+            document.getElementById('stat-todo').textContent = counts.todo;
+            document.getElementById('stat-progress').textContent = counts.progress;
+            document.getElementById('stat-blocked').textContent = counts.blocked;
+            document.getElementById('stat-done').textContent = counts.done;
+            
+            const total = tasks.length;
+            const overallProgress = total > 0 
+                ? Math.round(tasks.reduce((sum, t) => sum + t.progress, 0) / total)
+                : 0;
+            document.getElementById('stat-overall').textContent = overallProgress + '%';
+        }
+
+        function updateBlockers() {
+            const blockedTasks = tasks.filter(t => t.status === 'blocked');
+            const blockersList = document.getElementById('blockersList');
+            const blockersCount = document.getElementById('blockersCount');
+            
+            blockersCount.textContent = blockedTasks.length;
+            
+            if (blockedTasks.length === 0) {
+                blockersList.innerHTML = '<div class="no-blockers">✓ No active blockers</div>';
+                document.querySelector('.blockers-section').style.borderColor = 'rgba(34, 197, 94, 0.3)';
+                document.querySelector('.blockers-section').style.background = 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%)';
+            } else {
+                blockersList.innerHTML = blockedTasks.map(t => `
+                    <div class="blocker-item">
+                        <span class="blocker-dept task-dept-label ${t.dept}">${DEPT_NAMES[t.dept]}</span>
+                        <span><strong>${t.title}</strong>${t.blocker ? ': ' + t.blocker : ''}</span>
+                    </div>
+                `).join('');
+                document.querySelector('.blockers-section').style.borderColor = 'rgba(232, 33, 39, 0.3)';
+                document.querySelector('.blockers-section').style.background = 'linear-gradient(135deg, rgba(232, 33, 39, 0.1) 0%, rgba(232, 33, 39, 0.05) 100%)';
             }
         }
 
-        // Initial load (after login)
-        window.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('pepperLoggedIn') === 'true') {
-                updateWeather();
-                updateHummingTasks();
-                setInterval(updateWeather, 1800000); // 30 min
-                setInterval(updateHummingTasks, 300000); // 5 min
-            }
+        function renderDeptStatus() {
+            const panel = document.getElementById('deptStatusPanel');
+            panel.innerHTML = Object.entries(DEPT_STATUS).map(([dept, data]) => `
+                <div class="dept-card">
+                    <div class="dept-header">
+                        <div class="dept-name">
+                            <div class="dept-icon ${dept}"></div>
+                            ${DEPT_NAMES[dept]}
+                        </div>
+                        <span class="dept-status-badge ${data.status}">${data.status}</span>
+                    </div>
+                    <div class="dept-stats">
+                        <div>
+                            <div class="dept-stat-value">${tasks.filter(t => t.dept === dept).length}</div>
+                            <div class="dept-stat-label">Tasks</div>
+                        </div>
+                        <div>
+                            <div class="dept-stat-value">${Math.round(tasks.filter(t => t.dept === dept).reduce((sum, t) => sum + t.progress, 0) / Math.max(tasks.filter(t => t.dept === dept).length, 1))}%</div>
+                            <div class="dept-stat-label">Progress</div>
+                        </div>
+                        <div>
+                            <div class="dept-stat-value">${tasks.filter(t => t.dept === dept && t.status === 'blocked').length}</div>
+                            <div class="dept-stat-label">Blocked</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            // Kanban Board System
-            const kanbanData = {
-                tasks: [
-                    // ATLAS Tasks
-                    { id: 1, title: 'Build ATLAS research engine', project: 'atlas', channel: 'labs', status: 'done', priority: 'high', description: 'Apollo API integration for prospect research' },
-                    { id: 2, title: 'Generate personalized landing pages', project: 'atlas', channel: 'labs', status: 'done', priority: 'high', description: '5 custom landing pages created' },
-                    { id: 3, title: 'Test email outreach automation', project: 'atlas', channel: 'labs', status: 'testing', priority: 'medium', description: 'Validate email generation quality' },
-                    { id: 4, title: 'Deploy ATLAS to production', project: 'atlas', channel: 'labs', status: 'todo', priority: 'high', description: 'Gmail API + live sending' },
-                    
-                    // RentAHuman Tasks
-                    { id: 5, title: 'Build RentAHuman UI', project: 'rentahuman', channel: 'labs', status: 'done', priority: 'high', description: 'Complete Vercel deployment' },
-                    { id: 6, title: 'Set up Supabase database', project: 'rentahuman', channel: 'labs', status: 'in-progress', priority: 'high', description: 'Apply database schema' },
-                    { id: 7, title: 'Integrate Stripe payments', project: 'rentahuman', channel: 'labs', status: 'backlog', priority: 'medium', description: 'Payment processing system' },
-                    { id: 8, title: 'Add worker verification', project: 'rentahuman', channel: 'labs', status: 'backlog', priority: 'low', description: 'Background checks & reviews' },
-                    
-                    // ImmerseForge Tasks
-                    { id: 9, title: 'Build help pages', project: 'immerseforge', channel: 'immerse-forge-dev', status: 'done', priority: 'medium', description: '7 categories, 26 Q&A items' },
-                    { id: 10, title: 'Deploy 3 pending commits', project: 'immerseforge', channel: 'immerse-forge-dev', status: 'in-progress', priority: 'high', description: '2,300+ lines of code' },
-                    { id: 11, title: 'Fix calendar integration', project: 'immerseforge', channel: 'immerse-forge-dev', status: 'testing', priority: 'high', description: 'Event booking system' },
-                    { id: 12, title: 'GPS photo tracking', project: 'immerseforge', channel: 'immerse-forge-dev', status: 'backlog', priority: 'medium', description: 'Mobile app feature' },
-                    
-                    // Air Fresh Tasks
-                    { id: 13, title: 'Launch dev2.airfreshmarketing.com', project: 'airfresh', channel: 'air-fresh', status: 'in-progress', priority: 'high', description: 'New website deployment' },
-                    { id: 14, title: 'Follow up with Mark Edgar', project: 'airfresh', channel: 'air-fresh', status: 'todo', priority: 'high', description: 'Depop NYC training confirmation' },
-                    { id: 15, title: 'Quote for Trung Pham', project: 'airfresh', channel: 'air-fresh', status: 'todo', priority: 'high', description: 'Trade show MC role' },
-                    { id: 16, title: 'Setup email management', project: 'airfresh', channel: 'chief-of-staff', status: 'backlog', priority: 'medium', description: '5 email accounts' },
-                    
-                    // Humming Agent Tasks
-                    { id: 17, title: 'Build Pepper dashboard', project: 'hummingagent', channel: 'chief-of-staff', status: 'in-progress', priority: 'high', description: 'Command center with kanban' },
-                    { id: 18, title: 'Add Labs section', project: 'hummingagent', channel: 'chief-of-staff', status: 'done', priority: 'high', description: 'All projects visible' },
-                    { id: 19, title: 'Security hardening', project: 'hummingagent', channel: 'chief-of-staff', status: 'testing', priority: 'critical', description: 'Rotate exposed credentials' },
-                    { id: 20, title: 'Deploy to correct Vercel', project: 'hummingagent', channel: 'chief-of-staff', status: 'done', priority: 'high', description: 'pepper-dashboard.vercel.app' },
-                ]
-            };
-
-            function initKanban() {
-                const viewMode = document.getElementById('kanban-view-mode');
-                const projectFilter = document.getElementById('kanban-project-filter');
-                const channelFilter = document.getElementById('kanban-channel-filter');
-                const projectContainer = document.getElementById('project-filter-container');
-                const channelContainer = document.getElementById('channel-filter-container');
-
-                // View mode change handler
-                viewMode.addEventListener('change', () => {
-                    const mode = viewMode.value;
-                    projectContainer.style.display = mode === 'project' ? 'block' : 'none';
-                    channelContainer.style.display = mode === 'channel' ? 'block' : 'none';
-                    renderKanban();
+        // ============ DRAG & DROP ============
+        function setupDragAndDrop() {
+            const cards = document.querySelectorAll('.task-card');
+            const containers = document.querySelectorAll('.tasks-container');
+            
+            cards.forEach(card => {
+                card.addEventListener('dragstart', () => card.classList.add('dragging'));
+                card.addEventListener('dragend', () => card.classList.remove('dragging'));
+            });
+            
+            containers.forEach(container => {
+                container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const dragging = document.querySelector('.dragging');
+                    if (dragging) container.appendChild(dragging);
                 });
-
-                // Filter change handlers
-                projectFilter.addEventListener('change', renderKanban);
-                channelFilter.addEventListener('change', renderKanban);
-
-                renderKanban();
-            }
-
-            function renderKanban() {
-                const viewMode = document.getElementById('kanban-view-mode').value;
-                const projectFilter = document.getElementById('kanban-project-filter').value;
-                const channelFilter = document.getElementById('kanban-channel-filter').value;
-
-                // Filter tasks
-                let filteredTasks = kanbanData.tasks;
-                if (viewMode === 'project' && projectFilter) {
-                    filteredTasks = filteredTasks.filter(task => task.project === projectFilter);
-                }
-                if (viewMode === 'channel' && channelFilter) {
-                    filteredTasks = filteredTasks.filter(task => task.channel === channelFilter);
-                }
-
-                // Clear all columns
-                document.querySelectorAll('.kanban-cards').forEach(container => {
-                    container.innerHTML = '';
-                });
-
-                // Render tasks
-                filteredTasks.forEach(task => {
-                    const card = createKanbanCard(task);
-                    const column = document.querySelector(`.kanban-column[data-status="${task.status}"] .kanban-cards`);
-                    if (column) {
-                        column.appendChild(card);
+                
+                container.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const dragging = document.querySelector('.dragging');
+                    if (!dragging) return;
+                    
+                    const taskId = parseInt(dragging.dataset.taskId);
+                    const newStatus = container.dataset.status;
+                    const task = tasks.find(t => t.id === taskId);
+                    
+                    if (task && task.status !== newStatus) {
+                        task.status = newStatus;
+                        if (newStatus === 'done') task.progress = 100;
+                        renderTasks();
+                        renderDeptStatus();
                     }
                 });
-
-                // Update counts
-                document.querySelectorAll('.kanban-column').forEach(column => {
-                    const status = column.dataset.status;
-                    const count = column.querySelectorAll('.kanban-card').length;
-                    column.querySelector('.kanban-count').textContent = count;
-                });
-            }
-
-            function createKanbanCard(task) {
-                const card = document.createElement('div');
-                card.className = 'kanban-card';
-                card.dataset.taskId = task.id;
-                card.draggable = true;
-
-                const priorityColors = {
-                    critical: '#fc8181',
-                    high: '#f6ad55',
-                    medium: '#667eea',
-                    low: '#a0aec0'
-                };
-
-                const projectIcons = {
-                    atlas: '⚡',
-                    rentahuman: '💼',
-                    immerseforge: '🏔️',
-                    streetteams: '🎯',
-                    collegemarketing: '🎓',
-                    airfresh: '🌬️',
-                    hummingagent: '🐝'
-                };
-
-                card.innerHTML = `
-                    <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; cursor: move; transition: all 0.2s ease;">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span style="font-size: 1.2rem;">${projectIcons[task.project] || '📌'}</span>
-                                <span style="padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; background: ${priorityColors[task.priority]}22; color: ${priorityColors[task.priority]};">${task.priority.toUpperCase()}</span>
-                            </div>
-                            <span style="font-size: 0.8rem; color: var(--text-secondary);">#${task.channel}</span>
-                        </div>
-                        <div style="font-weight: 600; margin-bottom: 0.5rem; line-height: 1.4;">${task.title}</div>
-                        <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;">${task.description}</div>
-                    </div>
-                `;
-
-                // Drag and drop events
-                card.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/plain', task.id);
-                    card.style.opacity = '0.5';
-                });
-
-                card.addEventListener('dragend', () => {
-                    card.style.opacity = '1';
-                });
-
-                return card;
-            }
-
-            // Drag and drop for columns
-            document.addEventListener('DOMContentLoaded', () => {
-                initKanban();
-
-                document.querySelectorAll('.kanban-cards').forEach(container => {
-                    container.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
-                    });
-
-                    container.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        const taskId = parseInt(e.dataTransfer.getData('text/plain'));
-                        const task = kanbanData.tasks.find(t => t.id === taskId);
-                        const newStatus = container.closest('.kanban-column').dataset.status;
-                        
-                        if (task) {
-                            task.status = newStatus;
-                            renderKanban();
-                        }
-                    });
-                });
             });
+        }
+
+        // ============ TASK CRUD ============
+        function openAddTaskModal() {
+            document.getElementById('addTaskModal').classList.add('active');
+        }
+
+        function closeAddTaskModal() {
+            document.getElementById('addTaskModal').classList.remove('active');
+            document.getElementById('addTaskForm').reset();
+        }
+
+        function addTask(event) {
+            event.preventDefault();
+            
+            const newTask = {
+                id: Date.now(),
+                title: document.getElementById('taskTitle').value,
+                dept: document.getElementById('taskDept').value,
+                status: document.getElementById('taskStatus').value,
+                progress: parseInt(document.getElementById('taskProgress').value) || 0,
+                time: document.getElementById('taskTime').value,
+                due: document.getElementById('taskDue').value,
+                blocker: document.getElementById('taskBlocker').value
+            };
+            
+            tasks.push(newTask);
+            renderTasks();
+            renderDeptStatus();
+            closeAddTaskModal();
+        }
+
+        function saveTasks() {
+            localStorage.setItem('kanban-tasks', JSON.stringify(tasks));
+        }
+
+        function filterTasks() {
+            renderTasks();
+        }
+
+        // ============ UTILITIES ============
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function refreshDashboard() {
+            renderTasks();
+            renderDeptStatus();
+        }
+
+        // Modal close on outside click
+        document.getElementById('addTaskModal').addEventListener('click', e => {
+            if (e.target.id === 'addTaskModal') closeAddTaskModal();
         });
+
+        // ============ AUTH ============
+        const AUTH_PASSWORD = 'pepper';
+        const AUTH_CODE = '2222';
+        let keypadCode = '';
+        
+        function checkAuth() {
+            const auth = sessionStorage.getItem('pepper-auth');
+            if (auth === 'full') {
+                // Fully authenticated
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('keypadOverlay').classList.add('hidden');
+            } else if (auth === 'password') {
+                // Password done, need keypad
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('keypadOverlay').classList.remove('hidden');
+            } else {
+                // Need password
+                document.getElementById('loginOverlay').classList.remove('hidden');
+                document.getElementById('keypadOverlay').classList.add('hidden');
+            }
+        }
+        
+        function checkPassword() {
+            const pwd = document.getElementById('loginPassword').value;
+            if (pwd === AUTH_PASSWORD) {
+                sessionStorage.setItem('pepper-auth', 'password');
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('keypadOverlay').classList.remove('hidden');
+                document.getElementById('loginPassword').value = '';
+            } else {
+                document.getElementById('loginError').textContent = 'Incorrect password';
+                setTimeout(() => document.getElementById('loginError').textContent = '', 2000);
+            }
+        }
+        
+        function addKey(digit) {
+            console.log('Key pressed:', digit, 'Current code:', keypadCode);
+            if (keypadCode.length < 4) {
+                keypadCode += digit;
+                updateKeypadDisplay();
+                
+                if (keypadCode.length === 4) {
+                    submitKeys();
+                }
+            }
+        }
+        
+        function clearKeys() {
+            keypadCode = '';
+            updateKeypadDisplay();
+            document.getElementById('keypadError').textContent = '';
+        }
+        
+        function updateKeypadDisplay() {
+            const display = document.getElementById('keypadDisplay');
+            if (display) {
+                const filled = '●'.repeat(keypadCode.length);
+                const empty = '○'.repeat(4 - keypadCode.length);
+                display.textContent = filled + empty;
+            }
+        }
+        
+        function submitKeys() {
+            console.log('Submitting code:', keypadCode, 'Expected:', AUTH_CODE);
+            if (keypadCode === AUTH_CODE) {
+                sessionStorage.setItem('pepper-auth', 'full');
+                document.getElementById('keypadOverlay').classList.add('hidden');
+                keypadCode = ''; // Reset for next time
+            } else {
+                document.getElementById('keypadError').textContent = 'Invalid code';
+                keypadCode = '';
+                updateKeypadDisplay();
+                setTimeout(() => {
+                    const err = document.getElementById('keypadError');
+                    if (err) err.textContent = '';
+                }, 2000);
+            }
+        }
+        
+        // Check auth on load
+        checkAuth();
+        
+        // Usage tracking
+        async function refreshUsage() {
+            try {
+                const res = await fetch('/api/usage');
+                const data = await res.json();
+                
+                if (data.services) {
+                    const container = document.getElementById('usageCards');
+                    container.innerHTML = data.services.map(s => {
+                        let fillClass = '';
+                        if (s.percent > 80) fillClass = 'danger';
+                        else if (s.percent > 50) fillClass = 'warning';
+                        
+                        const barHtml = s.percent !== null 
+                            ? `<div class="usage-bar"><div class="usage-fill ${fillClass}" style="width:${s.percent}%"></div></div>`
+                            : '';
+                        
+                        const textHtml = s.percent !== null
+                            ? `${s.used?.toLocaleString() || 0} / ${s.limit?.toLocaleString() || '∞'} (${s.percent}%)`
+                            : (s.note || s.plan);
+                        
+                        return `
+                            <div class="usage-card">
+                                <div class="usage-service">${s.service}</div>
+                                ${barHtml}
+                                <div class="usage-text">${textHtml}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error('Usage fetch error:', err);
+            }
+        }
+        
+        // Load usage on page load
+        setTimeout(refreshUsage, 1000);
+        
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const sunIcon = document.getElementById('sunIcon');
+            const moonIcon = document.getElementById('moonIcon');
+            
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                sunIcon.classList.remove('active');
+                moonIcon.classList.add('active');
+                localStorage.setItem('pepper-theme', 'dark');
+            } else {
+                body.classList.add('light-theme');
+                sunIcon.classList.add('active');
+                moonIcon.classList.remove('active');
+                localStorage.setItem('pepper-theme', 'light');
+            }
+        }
+        
+        // Load saved theme
+        if (localStorage.getItem('pepper-theme') === 'light') {
+            document.body.classList.add('light-theme');
+            document.getElementById('sunIcon').classList.add('active');
+            document.getElementById('moonIcon').classList.remove('active');
+        }
+        
+        function toggleMenu() {
+            // TODO: Add slide-out menu
+            console.log('Menu clicked');
+        }
+        
+        function toggleNotifications() {
+            // TODO: Show notifications panel  
+            console.log('Notifications clicked');
+        }
+
+        // ============ INIT ============
+        updateClock();
+        setInterval(updateClock, 1000);
+        renderTasks();
+        renderDeptStatus();
+    </script>
+
+    <!-- Floating Chat Button & Widget -->
+    <style>
+        .chat-fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e82127, #c91c21);
+            border: none;
+            box-shadow: 0 4px 20px rgba(232, 33, 39, 0.4);
+            cursor: pointer;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all 0.3s ease;
+        }
+        .chat-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 28px rgba(232, 33, 39, 0.5);
+        }
+        .chat-fab.hidden { display: none; }
+
+        .chat-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 340px;
+            height: 480px;
+            background: #141414;
+            border: 1px solid #333;
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-widget.open { display: flex; }
+
+        @media (max-width: 480px) {
+            .chat-widget {
+                width: calc(100% - 20px);
+                height: calc(100% - 100px);
+                bottom: 10px;
+                right: 10px;
+                border-radius: 16px;
+            }
+            .chat-fab {
+                bottom: 16px;
+                right: 16px;
+            }
+        }
+
+        .chat-widget-header {
+            background: linear-gradient(135deg, #e82127, #c91c21);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .chat-widget-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chat-widget-header .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse-online 2s infinite;
+        }
+        @keyframes pulse-online {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .close-chat-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-chat-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .chat-widget-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-msg {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .chat-msg.assistant {
+            background: #252525;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-msg.user {
+            background: linear-gradient(135deg, #e82127, #c91c21);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-widget-input {
+            padding: 12px 16px;
+            border-top: 1px solid #333;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-widget-input input {
+            flex: 1;
+            padding: 12px 16px;
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 24px;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .chat-widget-input input:focus {
+            border-color: #e82127;
+        }
+        .chat-widget-input input::placeholder {
+            color: #666;
+        }
+        .chat-send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e82127, #c91c21);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chat-send-btn:hover {
+            opacity: 0.9;
+        }
+        .voice-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .voice-btn:hover {
+            background: rgba(232,33,39,0.2);
+            color: #e82127;
+        }
+        .voice-btn.playing {
+            color: #e82127;
+            animation: pulse-voice 1s infinite;
+        }
+        @keyframes pulse-voice {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .voice-call-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #252525;
+            border: 2px solid #444;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .voice-call-btn:hover {
+            border-color: #e82127;
+        }
+        .attach-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #252525;
+            border: 2px solid #444;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .attach-btn:hover {
+            border-color: #e82127;
+        }
+        .play-voice-btn {
+            background: #e82127;
+            border: none;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        .play-voice-btn:hover {
+            background: #c91c21;
+        }
+        .voice-call-btn.active {
+            background: linear-gradient(135deg, #e82127, #c91c21);
+            border-color: #e82127;
+            animation: pulse-mic 1.5s infinite;
+        }
+        @keyframes pulse-mic {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(232,33,39,0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(232,33,39,0); }
+        }
+        .voice-status {
+            display: none;
+            padding: 8px 16px;
+            background: rgba(232,33,39,0.1);
+            border-top: 1px solid rgba(232,33,39,0.2);
+            font-size: 0.8rem;
+            color: #e82127;
+            text-align: center;
+        }
+        .voice-status.active {
+            display: block;
+        }
+        
+        /* Usage Section */
+        .usage-section {
+            background: var(--bg-secondary, #141414);
+            border: 1px solid var(--border-color, #2a2a2a);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .usage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+        .usage-cards {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .usage-card {
+            flex: 1;
+            min-width: 150px;
+            background: rgba(255,255,255,0.03);
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+        .usage-service {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+        .usage-bar {
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.4rem;
+        }
+        .usage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .usage-fill.warning { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+        .usage-fill.danger { background: linear-gradient(90deg, #ef4444, #dc2626); }
+        .usage-text {
+            font-size: 0.75rem;
+            color: #666;
+        }
+        body.light-theme .usage-section {
+            background: #fff;
+            border-color: #e0e0e0;
+        }
+        body.light-theme .usage-card {
+            background: #f5f5f5;
+        }
+        
+        /* Clean Header Styles */
+        .menu-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 8px;
+        }
+        .menu-btn:hover {
+            opacity: 0.8;
+        }
+        .branding h1 {
+            font-size: 1.3rem !important;
+            font-weight: 600;
+        }
+        .branding .subtitle {
+            display: none;
+        }
+        .theme-toggle {
+            display: flex;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 4px;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .theme-icon {
+            padding: 6px 10px;
+            border-radius: 16px;
+            font-size: 1rem;
+            opacity: 0.5;
+            transition: all 0.2s;
+        }
+        .theme-icon.active {
+            background: rgba(255,255,255,0.2);
+            opacity: 1;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+        }
+        .icon-btn:hover {
+            opacity: 0.8;
+        }
+        
+        /* Light theme - EVERYTHING light */
+        body.light-theme {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e4e6eb;
+            --bg-card: #ffffff;
+            --bg-hover: #f5f5f5;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --border-color: #e0e0e0;
+            --border-light: #eee;
+        }
+        body.light-theme {
+            background: var(--bg-primary) !important;
+        }
+        body.light-theme .header {
+            background: #fff !important;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        body.light-theme .menu-btn,
+        body.light-theme .icon-btn {
+            color: #333;
+        }
+        body.light-theme .branding h1 {
+            color: #333;
+        }
+        body.light-theme .theme-toggle {
+            background: rgba(0,0,0,0.08);
+        }
+        body.light-theme .clock {
+            color: #666;
+        }
+        body.light-theme .container {
+            background: var(--bg-primary);
+        }
+        body.light-theme .blockers-section {
+            background: #fff3f3 !important;
+            border-color: #ffcdd2 !important;
+        }
+        body.light-theme .summary-card {
+            background: #fff !important;
+            border: 1px solid #e0e0e0 !important;
+            color: #333 !important;
+        }
+        body.light-theme .summary-card .label {
+            color: #666 !important;
+        }
+        body.light-theme .summary-card .value {
+            color: #1a1a1a !important;
+        }
+        body.light-theme .section-header h2 {
+            color: #333 !important;
+        }
+        body.light-theme .kanban-column {
+            background: #f8f9fa !important;
+            border: 1px solid #e0e0e0 !important;
+        }
+        body.light-theme .column-header {
+            background: #f0f2f5 !important;
+            color: #333 !important;
+            border-bottom: 1px solid #e0e0e0 !important;
+        }
+        body.light-theme .task-card {
+            background: #fff !important;
+            border: 1px solid #e0e0e0 !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+        }
+        body.light-theme .task-title {
+            color: #1a1a1a !important;
+        }
+        body.light-theme .task-meta {
+            color: #666 !important;
+        }
+        body.light-theme .dept-card {
+            background: #fff !important;
+            border: 1px solid #e0e0e0 !important;
+        }
+        body.light-theme .dept-name {
+            color: #333 !important;
+        }
+        body.light-theme .progress-bar {
+            background: #e0e0e0 !important;
+        }
+        body.light-theme .chat-widget {
+            background: #fff !important;
+            border: 1px solid #e0e0e0 !important;
+        }
+        body.light-theme .chat-widget-messages {
+            background: #fafafa !important;
+        }
+        body.light-theme .chat-msg.assistant {
+            background: #f0f2f5 !important;
+            color: #333 !important;
+        }
+        body.light-theme .chat-widget-input {
+            background: #fff !important;
+            border-top: 1px solid #e0e0e0 !important;
+        }
+        body.light-theme .chat-widget-input input {
+            background: #f5f5f5 !important;
+            border: 1px solid #e0e0e0 !important;
+            color: #333 !important;
+        }
+        body.light-theme .chat-fab {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        }
+    </style>
+
+    <!-- Chat FAB -->
+    <!-- Product Views (hidden by default) -->
+    <div id="view-bloom" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9000; background: #0a0a0a;">
+        <div style="padding: 1rem; background: #1a1a2e; display: flex; align-items: center; gap: 1rem;">
+            <button onclick="showView('dashboard')" style="padding: 0.5rem 1rem; background: linear-gradient(135deg, #f687b3, #f6ad55); border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">← Back to Dashboard</button>
+            <span style="color: #f687b3; font-size: 1.2rem; font-weight: 600;">🌸 BLOOM Proposal System</span>
+        </div>
+        <iframe src="live/bloom.html" style="width: 100%; height: calc(100% - 60px); border: none;"></iframe>
+    </div>
+
+    <div id="view-nectar" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9000; background: #0a0a0a;">
+        <div style="padding: 1rem; background: #1a1a2e; display: flex; align-items: center; gap: 1rem;">
+            <button onclick="showView('dashboard')" style="padding: 0.5rem 1rem; background: linear-gradient(135deg, #f6ad55, #ed8936); border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">← Back to Dashboard</button>
+            <span style="color: #f6ad55; font-size: 1.2rem; font-weight: 600;">🍯 NECTAR CRM</span>
+        </div>
+        <iframe src="live/nectar.html" style="width: 100%; height: calc(100% - 60px); border: none;"></iframe>
+    </div>
+
+    <div id="view-atlas" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9000; background: #0a0a0a;">
+        <div style="padding: 1rem; background: #1a1a2e; display: flex; align-items: center; gap: 1rem;">
+            <button onclick="showView('dashboard')" style="padding: 0.5rem 1rem; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">← Back to Dashboard</button>
+            <span style="color: #667eea; font-size: 1.2rem; font-weight: 600;">⚡ ATLAS AI Employee</span>
+        </div>
+        <iframe src="live/atlas.html" style="width: 100%; height: calc(100% - 60px); border: none;"></iframe>
+    </div>
+
+    <button class="chat-fab" id="chatFab" onclick="openChat()">🌶️</button>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-widget-header">
+            <h3><span class="online-dot"></span> Chat with Pepper</h3>
+            <button class="close-chat-btn" onclick="closeChat()">✕</button>
+        </div>
+        <div class="chat-widget-messages" id="chatMessages">
+            <div class="chat-msg assistant">Hey Joey! 🌶️ What do you need?</div>
+        </div>
+        <div class="chat-widget-input">
+            <button class="voice-call-btn" id="voiceCallBtn" onclick="callPepper()" title="Call Pepper">📞</button>
+            <button class="voice-call-btn" id="micBtn" onclick="toggleVoiceCall()" title="Voice Chat">🎙️</button>
+            <label class="attach-btn" for="fileInput">📎</label>
+            <input type="file" id="fileInput" style="display:none" onchange="handleAttachment(this)" accept="image/*,.pdf,.doc,.docx,.txt">
+            <input type="text" id="chatInput" placeholder="Type, mic, or call..." onkeypress="if(event.key==='Enter')sendChat()">
+            <button class="chat-send-btn" onclick="sendChat()">➤</button>
+        </div>
+        <div class="voice-status" id="voiceStatus"></div>
+    </div>
+
+    <script>
+        let chatHistory = [];
+        
+        function openChat() {
+            document.getElementById('chatFab').classList.add('hidden');
+            document.getElementById('chatWidget').classList.add('open');
+            setTimeout(() => document.getElementById('chatInput').focus(), 100);
+        }
+        
+        function closeChat() {
+            document.getElementById('chatWidget').classList.remove('open');
+            document.getElementById('chatFab').classList.remove('hidden');
+        }
+        
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const msgsDiv = document.getElementById('chatMessages');
+            
+            // Add user message
+            msgsDiv.innerHTML += `<div class="chat-msg user">${escapeHtml(msg)}</div>`;
+            input.value = '';
+            input.disabled = true;
+            msgsDiv.scrollTop = msgsDiv.scrollHeight;
+            
+            // Show typing indicator
+            const typingId = 'typing-' + Date.now();
+            msgsDiv.innerHTML += `<div class="chat-msg assistant" id="${typingId}" style="opacity:0.6">Thinking...</div>`;
+            msgsDiv.scrollTop = msgsDiv.scrollHeight;
+
+            try {
+                // Call the API
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: msg,
+                        history: chatHistory.slice(-10) // Last 10 messages for context
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Remove typing indicator
+                document.getElementById(typingId)?.remove();
+                
+                if (data.error) {
+                    msgsDiv.innerHTML += `<div class="chat-msg assistant" style="color:#e82127">Error: ${escapeHtml(data.error)}</div>`;
+                } else {
+                    // Add to history
+                    chatHistory.push({ role: 'user', content: msg });
+                    chatHistory.push({ role: 'assistant', content: data.response });
+                    
+                    // Display response with voice button
+                    const msgId = 'msg-' + Date.now();
+                    msgsDiv.innerHTML += `<div class="chat-msg assistant" id="${msgId}">${formatResponse(data.response)}<button class="voice-btn" onclick="playVoice('${msgId}', \`${escapeForAttr(data.response)}\`)">🔊</button></div>`;
+                }
+            } catch (err) {
+                document.getElementById(typingId)?.remove();
+                msgsDiv.innerHTML += `<div class="chat-msg assistant" style="color:#e82127">Connection error. Try again.</div>`;
+            }
+            
+            input.disabled = false;
+            input.focus();
+            msgsDiv.scrollTop = msgsDiv.scrollHeight;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatResponse(text) {
+            // Basic markdown-like formatting
+            return escapeHtml(text)
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+        }
+        
+        function escapeForAttr(text) {
+            return text.replace(/`/g, '\\`').replace(/\$/g, '\\$').replace(/'/g, "\\'");
+        }
+        
+        let currentAudio = null;
+        let voiceCallActive = false;
+        let recognition = null;
+        
+        function toggleVoiceCall() {
+            if (voiceCallActive) {
+                stopVoiceCall();
+            } else {
+                startVoiceCall();
+            }
+        }
+        
+        function startVoiceCall() {
+            const status = document.getElementById('voiceStatus');
+            const btn = document.getElementById('micBtn');
+            
+            // Check for speech recognition support
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                status.classList.add('active');
+                status.textContent = '❌ Voice not supported - use Chrome';
+                status.style.color = '#e82127';
+                setTimeout(() => {
+                    status.classList.remove('active');
+                    status.style.color = '';
+                }, 3000);
+                return;
+            }
+            
+            // Show starting status
+            status.classList.add('active');
+            status.textContent = '🎙️ Starting mic...';
+            if (btn) btn.classList.add('active');
+            
+            // Unlock audio for iOS on user interaction
+            if (audioPlayer) {
+                audioPlayer.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+                audioPlayer.play().catch(() => {});
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            const btn = document.getElementById('micBtn');
+            const status = document.getElementById('voiceStatus');
+            const input = document.getElementById('chatInput');
+            
+            if (btn) btn.classList.add('active');
+            status.classList.add('active');
+            status.textContent = '🎙️ Listening...';
+            voiceCallActive = true;
+            
+            let finalTranscript = '';
+            let silenceTimer = null;
+            
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                // Show what's being said
+                input.value = finalTranscript + interimTranscript;
+                status.textContent = '🎙️ ' + (interimTranscript || 'Listening...');
+                
+                // Reset silence timer
+                clearTimeout(silenceTimer);
+                
+                // If we have a final transcript, wait for SHORT silence then send
+                if (finalTranscript.trim()) {
+                    silenceTimer = setTimeout(() => {
+                        if (finalTranscript.trim() && voiceCallActive) {
+                            // Send the message
+                            input.value = finalTranscript.trim();
+                            sendChatWithVoice();
+                            finalTranscript = '';
+                        }
+                    }, 800); // 0.8 seconds = faster response
+                }
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Speech error:', event.error);
+                const errorMessages = {
+                    'not-allowed': '❌ Mic access denied - check permissions',
+                    'no-speech': '🔇 No speech detected - try again',
+                    'audio-capture': '❌ No microphone found',
+                    'network': '❌ Network error',
+                    'aborted': '⏹️ Stopped',
+                    'service-not-allowed': '❌ Speech service not allowed'
+                };
+                status.textContent = errorMessages[event.error] || `❌ Error: ${event.error}`;
+                if (event.error === 'not-allowed' || event.error === 'audio-capture') {
+                    setTimeout(stopVoiceCall, 3000);
+                }
+            };
+            
+            recognition.onend = () => {
+                // Restart if still active
+                if (voiceCallActive) {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.log('Recognition restart failed');
+                    }
+                }
+            };
+            
+            recognition.start();
+        }
+        
+        function stopVoiceCall() {
+            voiceCallActive = false;
+            
+            if (recognition) {
+                recognition.stop();
+                recognition = null;
+            }
+            
+            document.getElementById('micBtn')?.classList.remove('active');
+            document.getElementById('voiceStatus').classList.remove('active');
+            document.getElementById('chatInput').value = '';
+            
+            // Stop any playing audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+        }
+        
+        async function sendChatWithVoice() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const msgsDiv = document.getElementById('chatMessages');
+            const status = document.getElementById('voiceStatus');
+            
+            // Add user message
+            msgsDiv.innerHTML += `<div class="chat-msg user">${escapeHtml(msg)}</div>`;
+            input.value = '';
+            msgsDiv.scrollTop = msgsDiv.scrollHeight;
+            
+            status.textContent = '💭 Pepper is thinking...';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: msg,
+                        history: chatHistory.slice(-10)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    msgsDiv.innerHTML += `<div class="chat-msg assistant" style="color:#e82127">Error: ${escapeHtml(data.error)}</div>`;
+                    status.textContent = '🎙️ Listening...';
+                    return;
+                }
+                
+                // Add to history
+                chatHistory.push({ role: 'user', content: msg });
+                chatHistory.push({ role: 'assistant', content: data.response });
+                
+                // Display response
+                const msgId = 'msg-' + Date.now();
+                const responseText = data.response;
+                msgsDiv.innerHTML += `<div class="chat-msg assistant" id="${msgId}">${formatResponse(responseText)}</div>`;
+                msgsDiv.scrollTop = msgsDiv.scrollHeight;
+                
+                // Auto-speak the response using native browser speech
+                speakResponse(responseText);
+                
+            } catch (err) {
+                msgsDiv.innerHTML += `<div class="chat-msg assistant" style="color:#e82127">Connection error</div>`;
+                status.textContent = '🎙️ Listening...';
+            }
+        }
+        
+        // Audio player element (more reliable on iOS)
+        let audioPlayer = null;
+        
+        // Create audio player on page load
+        function initAudioPlayer() {
+            audioPlayer = document.createElement('audio');
+            audioPlayer.id = 'pepperVoice';
+            audioPlayer.setAttribute('playsinline', '');
+            audioPlayer.setAttribute('webkit-playsinline', '');
+            document.body.appendChild(audioPlayer);
+        }
+        initAudioPlayer();
+        
+        async function speakResponse(text) {
+            const status = document.getElementById('voiceStatus');
+            status.textContent = '🔊 Pepper speaking...';
+            
+            // Use browser's native speech synthesis
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.1;
+                utterance.volume = 1.0;
+                
+                // Try to get a female voice
+                const voices = window.speechSynthesis.getVoices();
+                const femaleVoice = voices.find(v => 
+                    v.name.includes('Samantha') || 
+                    v.name.includes('Karen') || 
+                    v.name.includes('Female') ||
+                    v.name.includes('Google US English')
+                );
+                if (femaleVoice) {
+                    utterance.voice = femaleVoice;
+                }
+                
+                utterance.onend = () => {
+                    status.textContent = voiceCallActive ? '🎙️ Listening...' : '';
+                };
+                
+                utterance.onerror = (e) => {
+                    console.error('Speech error:', e);
+                    status.textContent = voiceCallActive ? '🎙️ Listening...' : '';
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                status.textContent = voiceCallActive ? '🎙️ Listening...' : '';
+            }
+        }
+        
+        // ElevenLabs Phone Call - Direct to Pepper
+        const PEPPER_PHONE = '9709720417';
+        
+        function callPepper() {
+            // Opens phone dialer to call Pepper directly
+            window.location.href = 'tel:' + PEPPER_PHONE;
+        }
+        
+        // Manual play button (bypasses autoplay restrictions)
+        async function playThisMessage(msgId, text) {
+            const btn = document.querySelector(`#${msgId} .play-voice-btn`);
+            if (btn) btn.textContent = '⏳ Loading...';
+            
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text.substring(0, 300) })
+                });
+                
+                if (!response.ok) {
+                    if (btn) btn.textContent = '❌ Error';
+                    return;
+                }
+                
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                const audio = new Audio(audioUrl);
+                audio.onended = () => {
+                    URL.revokeObjectURL(audioUrl);
+                    if (btn) btn.textContent = '🔊 Play';
+                };
+                
+                if (btn) btn.textContent = '🔊 Playing...';
+                await audio.play();
+                
+            } catch (err) {
+                console.error('Play error:', err);
+                if (btn) btn.textContent = '❌ Error';
+            }
+        }
+        
+        // Attachment handler
+        function handleAttachment(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const msgsDiv = document.getElementById('chatMessages');
+            
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    msgsDiv.innerHTML += `<div class="chat-msg user"><img src="${e.target.result}" style="max-width:200px;border-radius:8px;"></div>`;
+                    msgsDiv.scrollTop = msgsDiv.scrollHeight;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                msgsDiv.innerHTML += `<div class="chat-msg user">📎 ${file.name}</div>`;
+                msgsDiv.scrollTop = msgsDiv.scrollHeight;
+            }
+            
+            // Clear input for next upload
+            input.value = '';
+        }
+        
+        async function playVoice(msgId, text) {
+            const btn = document.querySelector(`#${msgId} .voice-btn`);
+            
+            // Stop if already playing
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                document.querySelectorAll('.voice-btn').forEach(b => b.classList.remove('playing'));
+                return;
+            }
+            
+            btn.classList.add('playing');
+            btn.textContent = '⏹️';
+            
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text.substring(0, 500) }) // Limit text length
+                });
+                
+                if (!response.ok) throw new Error('TTS failed');
+                
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                currentAudio = new Audio(audioUrl);
+                currentAudio.onended = () => {
+                    btn.classList.remove('playing');
+                    btn.textContent = '🔊';
+                    currentAudio = null;
+                };
+                currentAudio.play();
+                
+            } catch (err) {
+                console.error('Voice error:', err);
+                btn.classList.remove('playing');
+                btn.textContent = '🔊';
+            }
+        }
     </script>
 </body>
 </html>

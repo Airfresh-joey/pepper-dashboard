@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLOOM 🌸 Proposal System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
+    <style>
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --bg-card: #252b48;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --accent: #f687b3;
+            --accent-secondary: #f6ad55;
+            --success: #48bb78;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f3a 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon { font-size: 2.5rem; }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            background: rgba(246, 135, 179, 0.2);
+            color: var(--accent);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group { margin-bottom: 1rem; }
+        
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-group textarea { min-height: 100px; resize: vertical; }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(246, 135, 179, 0.4); }
+
+        .proposal-preview {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            color: #1a1a2e;
+            min-height: 600px;
+        }
+
+        .proposal-header {
+            border-bottom: 3px solid #f687b3;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .proposal-title { font-size: 2rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
+        .proposal-subtitle { color: #666; font-size: 1.1rem; }
+
+        .proposal-section { margin-bottom: 2rem; }
+        .proposal-section h3 { color: #f687b3; font-size: 1.2rem; margin-bottom: 1rem; }
+        .proposal-section p { color: #444; line-height: 1.7; }
+
+        .pricing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .pricing-table th, .pricing-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .pricing-table th { background: #f8f9fa; color: #333; font-weight: 600; }
+        .pricing-table .total { font-weight: 700; font-size: 1.2rem; background: #fff5f8; }
+
+        .status-bar {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-item { text-align: center; }
+        .status-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .status-label { font-size: 0.8rem; color: var(--text-secondary); }
+
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-icon">🌸</span>
+                <div>
+                    <div class="logo-text">BLOOM</div>
+                    <div class="tagline">From requirements to winning proposals in minutes</div>
+                </div>
+            </div>
+            <span class="badge">AI-Powered</span>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-value">10min</div>
+                <div class="status-label">Avg Generation Time</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">85%</div>
+                <div class="status-label">Win Rate</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">$5,200</div>
+                <div class="status-label">Avg Deal Size</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">127</div>
+                <div class="status-label">Proposals Created</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-title">📝 New Proposal</div>
+                    <div class="form-group">
+                        <label>Client Name</label>
+                        <input type="text" id="clientName" value="Acme Corporation" />
+                    </div>
+                    <div class="form-group">
+                        <label>Project Type</label>
+                        <select id="projectType">
+                            <option>Website Development</option>
+                            <option>Digital Marketing Campaign</option>
+                            <option>Brand Identity</option>
+                            <option>SEO Optimization</option>
+                            <option>Social Media Management</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Requirements Summary</label>
+                        <textarea id="requirements">Modern website redesign with e-commerce functionality, mobile-first design, and CMS integration. Timeline: 8 weeks.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Budget Range</label>
+                        <select id="budget">
+                            <option>$5,000 - $10,000</option>
+                            <option>$10,000 - $25,000</option>
+                            <option>$25,000 - $50,000</option>
+                            <option>$50,000+</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateProposal()">🌸 Generate Proposal</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📂 Templates</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                        <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border); cursor: pointer;">📄 Standard Web Project</div>
+                        <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border); cursor: pointer;">📄 Marketing Retainer</div>
+                        <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border); cursor: pointer;">📄 Branding Package</div>
+                        <div style="padding: 0.75rem 0; cursor: pointer;">📄 Custom Template +</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="proposal-preview" id="proposalPreview">
+                <div class="proposal-header">
+                    <div class="proposal-title">Website Redesign Proposal</div>
+                    <div class="proposal-subtitle">Prepared for Acme Corporation • February 2026</div>
+                </div>
+
+                <div class="proposal-section">
+                    <h3>Executive Summary</h3>
+                    <p>We are pleased to present this proposal for a comprehensive website redesign that will transform your digital presence. Our approach combines modern design principles with cutting-edge technology to deliver a website that not only looks stunning but drives measurable business results.</p>
+                </div>
+
+                <div class="proposal-section">
+                    <h3>Scope of Work</h3>
+                    <p>This project encompasses a complete redesign of your existing website, including:</p>
+                    <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: #444;">
+                        <li>Modern, mobile-first responsive design</li>
+                        <li>E-commerce integration with secure payment processing</li>
+                        <li>Content Management System (CMS) for easy updates</li>
+                        <li>SEO optimization and performance tuning</li>
+                        <li>Analytics integration and tracking setup</li>
+                    </ul>
+                </div>
+
+                <div class="proposal-section">
+                    <h3>Investment</h3>
+                    <table class="pricing-table">
+                        <tr>
+                            <th>Service</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                        </tr>
+                        <tr>
+                            <td>Design & UX</td>
+                            <td>Custom design, wireframes, prototypes</td>
+                            <td>$3,500</td>
+                        </tr>
+                        <tr>
+                            <td>Development</td>
+                            <td>Frontend & backend development</td>
+                            <td>$4,800</td>
+                        </tr>
+                        <tr>
+                            <td>E-commerce</td>
+                            <td>Shopping cart, payments, inventory</td>
+                            <td>$2,200</td>
+                        </tr>
+                        <tr>
+                            <td>Testing & Launch</td>
+                            <td>QA, optimization, deployment</td>
+                            <td>$1,000</td>
+                        </tr>
+                        <tr class="total">
+                            <td colspan="2">Total Investment</td>
+                            <td>$11,500</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="proposal-section">
+                    <h3>Timeline</h3>
+                    <p>This project will be completed in <strong>8 weeks</strong>, with the following milestones:</p>
+                    <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: #444;">
+                        <li>Week 1-2: Discovery & Design</li>
+                        <li>Week 3-5: Development</li>
+                        <li>Week 6-7: Testing & Refinement</li>
+                        <li>Week 8: Launch & Training</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #eee; text-align: center; color: #888; font-size: 0.9rem;">
+                    Generated by BLOOM 🌸 | Humming Agent AI Suite
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateProposal() {
+            const btn = document.querySelector('.btn-primary');
+            btn.innerHTML = '⏳ Generating...';
+            setTimeout(() => {
+                btn.innerHTML = '✅ Proposal Ready!';
+                setTimeout(() => {
+                    btn.innerHTML = '🌸 Generate Proposal';
+                }, 2000);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

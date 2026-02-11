@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"="width=device-width, initial-scale=1.0">
+    <title>Pepper 🌶️ Command Center</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌶️</text></svg>">
+    <style>
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --bg-card: #252b48;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --accent: #667eea;
+            --success: #48bb78;
+            --warning: #f6ad55;
+            --danger: #fc8181;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f3a 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Login Screen Styles */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f3a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.3s ease;
+        }
+
+        .login-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .login-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .pin-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .pin-btn {
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pin-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .pin-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            min-height: 1.5rem;
+            text-align: center;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Hide main content when not logged in */
+        body.logged-out .sidebar,
+        body.logged-out .main-content,
+        body.logged-out .menu-toggle {
+            display: none;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(26, 31, 58, 0.98);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-section {
+            padding: 1.5rem 1rem;
+        }
+
+        .nav-section-title {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Hamburger Menu */
+        .menu-toggle {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .menu-toggle span {
+            width: 24px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .menu-toggle.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 0;
+            padding: 6rem 2rem 2rem 2rem;
+            transition: margin-left 0.3s;
+            min-height: 100vh;
+        }
+
+        @media (min-width: 768px) {
+            .main-content.sidebar-open {
+                margin-left: 280px;
+            }
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        .stat-large {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* View Container */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 5rem 1rem 1rem 1rem;
+            }
+
+            .dashboard-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="logged-out">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-icon">🌶️</div>
+                <h1 class="login-title">Pepper Command Center</h1>
+                <p class="login-subtitle">Enter your credentials to continue</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label>PIN Code</label>
+                    <input type="text" id="loginPIN" placeholder="Enter 4-digit PIN" maxlength="4" autocomplete="off" readonly>
+                    <div class="pin-pad">
+                        <button class="pin-btn" onclick="addPinDigit('1')">1</button>
+                        <button class="pin-btn" onclick="addPinDigit('2')">2</button>
+                        <button class="pin-btn" onclick="addPinDigit('3')">3</button>
+                        <button class="pin-btn" onclick="addPinDigit('4')">4</button>
+                        <button class="pin-btn" onclick="addPinDigit('5')">5</button>
+                        <button class="pin-btn" onclick="addPinDigit('6')">6</button>
+                        <button class="pin-btn" onclick="addPinDigit('7')">7</button>
+                        <button class="pin-btn" onclick="addPinDigit('8')">8</button>
+                        <button class="pin-btn" onclick="addPinDigit('9')">9</button>
+                        <button class="pin-btn" onclick="clearPin()">Clear</button>
+                        <button class="pin-btn" onclick="addPinDigit('0')">0</button>
+                        <button class="pin-btn" onclick="deletePinDigit()">⌫</button>
+                    </div>
+                </div>
+                
+                <div id="loginError" class="login-error"></div>
+                
+                <button class="login-btn" onclick="attemptLogin()">
+                    <span>🔓 Login</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Hamburger Menu -->
+    <button class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">🌶️ Pepper</div>
+        </div>
+
+        <nav class="nav-section">
+            <div class="nav-section-title">Dashboard</div>
+            <a href="#" class="nav-item active" data-view="overview">
+                <span class="nav-icon">📊</span>
+                <span>Overview</span>
+            </a>
+            <a href="#" class="nav-item" data-view="weather">
+                <span class="nav-icon">🌤️</span>
+                <span>Weather</span>
+            </a>
+            <a href="#" class="nav-item" data-view="tasks">
+                <span class="nav-icon">✅</span>
+                <span>Tasks</span>
+            </a>
+            <a href="#" class="nav-item" data-view="labs">
+                <span class="nav-icon">🧪</span>
+                <span>Labs</span>
+            </a>
+            <a href="#" class="nav-item" data-view="kanban">
+                <span class="nav-icon">📋</span>
+                <span>Kanban</span>
+            </a>
+        </nav>
+
+        <nav class="nav-section">
+            <div class="nav-section-title">AI Products</div>
+            <a href="#" class="nav-item" data-view="bloom">
+                <span class="nav-icon">🌸</span>
+                <span>BLOOM</span>
+            </a>
+            <a href="#" class="nav-item" data-view="nectar">
+                <span class="nav-icon">🍯</span>
+                <span>NECTAR</span>
+            </a>
+        </nav>
+
+        <nav class="nav-section">
+            <div class="nav-section-title">Quick Links</div>
+            <a href="#" class="nav-item" onclick="logout(); return false;">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Overview View -->
+        <div id="view-overview" class="view active">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Mission Control</h1>
+                <p class="dashboard-subtitle">Tuesday, February 4th, 2026 • 7:32 AM MST</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="card" style="padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #48bb78; margin-bottom: 0.5rem;">6</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Active Projects</div>
+                </div>
+                <div class="card" style="padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #667eea; margin-bottom: 0.5rem;">7</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Departments</div>
+                </div>
+                <div class="card" style="padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #f6ad55; margin-bottom: 0.5rem;">2</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Live Demos</div>
+                </div>
+                <div class="card" style="padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #fc8181; margin-bottom: 0.5rem;">3</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Slack Channels</div>
+                </div>
+            </div>
+
+            <!-- Departments -->
+            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">📊 Departments</h2>
+            <div class="dashboard-grid" style="margin-bottom: 2rem;">
+                <!-- Air Fresh Marketing -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🌬️</span>
+                            Air Fresh Marketing
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
+                    </div>
+                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">📍 Status: Dev site launching soon</div>
+                        <div style="margin-bottom: 0.5rem;">🔗 dev2.airfreshmarketing.com</div>
+                        <div>📧 Lead generation campaigns active</div>
+                    </div>
+                </div>
+
+                <!-- Humming Agent AI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🐝</span>
+                            Humming Agent AI
+                        </div>
+                        <span class="status-indicator" style="background: rgba(102, 126, 234, 0.2); color: #667eea;">Active</span>
+                    </div>
+                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">📍 Status: ATLAS demo ready</div>
+                        <div style="margin-bottom: 0.5rem;">🤖 AI employee prototypes</div>
+                        <div>💼 Sales automation live</div>
+                    </div>
+                </div>
+
+                <!-- Web Development -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">💻</span>
+                            Web Development
+                        </div>
+                        <span class="status-indicator" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">On Track</span>
+                    </div>
+                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">📍 ImmerseForge: 3 commits ahead</div>
+                        <div style="margin-bottom: 0.5rem;">📍 RentAHuman: Live on Vercel</div>
+                        <div>📍 StreetTeams & College sites in progress</div>
+                    </div>
+                </div>
+
+                <!-- Sales & Operations -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">📈</span>
+                            Sales & Operations
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Needs Attention</span>
+                    </div>
+                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">📍 LinkedIn: Skylead campaigns running</div>
+                        <div style="margin-bottom: 0.5rem;">📍 Email: Management needed (5 accounts)</div>
+                        <div>📍 CRM: HubSpot integration pending</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Projects -->
+            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">🚀 Active Projects</h2>
+            <div class="dashboard-grid" style="margin-bottom: 2rem;">
+                <!-- ATLAS -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">⚡</span>
+                            ATLAS AI Employee
+                        </div>
+                        <span class="status-indicator" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">Demo Ready</span>
+                    </div>
+                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">✅ 5 prospects processed</div>
+                        <div style="margin-bottom: 0.5rem;">✅ 5 landing pages generated</div>
+                        <div>✅ Ready to show clients</div>
+                    </div>
+                </div>
+
+                <!-- RentAHuman -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">💼</span>
+                            RentAHuman
+                        </div>
+                        <span class="status-indicator" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">Live</span>
+                    </div>
+                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">✅ Deployed to Vercel (12s build)</div>
+                        <div style="margin-bottom: 0.5rem;">⏳ Database schema ready</div>
+                        <div>🔗 rentahuman.vercel.app</div>
+                    </div>
+                </div>
+
+                <!-- ImmerseForge -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🏔️</span>
+                            ImmerseForge
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
+                    </div>
+                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">📍 Help pages complete</div>
+                        <div style="margin-bottom: 0.5rem;">📍 3 commits ready to deploy</div>
+                        <div>📍 2,300+ lines of code</div>
+                    </div>
+                </div>
+
+                <!-- BLOOM -->
+                <div class="card" onclick="window.open('live/bloom.html', '_blank')" style="cursor: pointer;">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🌸</span>
+                            BLOOM Proposal System
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Demo</span>
+                    </div>
+                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">📄 AI-powered proposal generation</div>
+                        <div style="margin-bottom: 0.5rem;">💰 Auto-pricing & templates</div>
+                        <div>📤 Click to view demo →</div>
+                    </div>
+                </div>
+
+                <!-- NECTAR -->
+                <div class="card" onclick="window.open('live/nectar.html', '_blank')" style="cursor: pointer;">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🍯</span>
+                            NECTAR CRM
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Demo</span>
+                    </div>
+                    <div style="padding: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">🤝 AI-enriched contact management</div>
+                        <div style="margin-bottom: 0.5rem;">📊 Smart deal scoring & pipeline</div>
+                        <div>📤 Click to view demo →</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access -->
+            <div class="dashboard-grid">
+                <!-- Weather Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🌤️</span>
+                            Denver Weather
+                        </div>
+                    </div>
+                    <div id="weatherData">Loading weather...</div>
+                </div>
+
+                <!-- Tasks Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">✅</span>
+                            Pending Tasks
+                        </div>
+                    </div>
+                    <div id="hummingTasks">Loading tasks...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weather View -->
+        <div id="view-weather" class="view">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Weather</h1>
+                <p class="dashboard-subtitle">Denver, Colorado</p>
+            </div>
+            <div class="card">
+                <div id="weatherDataFull">Loading weather...</div>
+            </div>
+        </div>
+
+        <!-- Tasks View -->
+        <div id="view-tasks" class="view">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Tasks</h1>
+                <p class="dashboard-subtitle">HummingAgent Project Dashboard</p>
+            </div>
+            <div class="card">
+                <div id="hummingTasksFull">Loading tasks...</div>
+            </div>
+        </div>
+
+        <!-- Labs View -->
+        <div id="view-labs" class="view">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">🧪 Labs</h1>
+                <p class="dashboard-subtitle">Active Projects & Demos</p>
+            </div>
+
+            <!-- AI Employees -->
+            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">🤖 AI Employees</h2>
+            <div class="dashboard-grid" style="margin-bottom: 2rem;">
+                <!-- ATLAS -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">⚡</span>
+                            ATLAS Sales Employee
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Testing</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            Autonomous AI employee that researches prospects, generates personalized emails, and creates custom landing pages. 24/7 operation with built-in safety features.
+                        </div>
+                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">5</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Prospects</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">5</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Landing Pages</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">$0.16</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Per Lead</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="live/atlas.html" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">View Widget</a>
+                            <a href="live/ATLAS-EXECUTIVE-SUMMARY.md" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); text-decoration: none; font-size: 0.9rem;">Summary</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOOM Proposal System -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🌸</span>
+                            BLOOM Proposal System
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Demo</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            From requirements to winning proposals in minutes. AI-powered generation with smart templates, auto-pricing, and professional PDF export.
+                        </div>
+                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #f687b3;">10min</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Avg Time</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #f687b3;">85%</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Win Rate</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #f687b3;">$5k</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Avg Deal</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="live/bloom.html" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #f687b3 0%, #f6ad55 100%); color: white; text-decoration: none; font-size: 0.9rem;">View Demo</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NECTAR CRM -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🍯</span>
+                            NECTAR CRM
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Demo</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            Sweet, sticky relationships that last. AI-enriched contacts, intelligent deal scoring, smart follow-ups, and full suite integration.
+                        </div>
+                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #f6ad55;">250+</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Contacts</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #f6ad55;">$48k</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Pipeline</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #f6ad55;">12</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Active Deals</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="live/nectar.html" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%); color: white; text-decoration: none; font-size: 0.9rem;">View Demo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Web Platforms -->
+            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">🌐 Web Platforms</h2>
+            <div class="dashboard-grid" style="margin-bottom: 2rem;">
+                <!-- RentAHuman -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">💼</span>
+                            RentAHuman
+                        </div>
+                        <span class="status-indicator" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">Live</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            Web3-powered gig platform connecting skilled workers with clients. Crypto payments, instant bookings, and verified reviews.
+                        </div>
+                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #48bb78;">12s</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Build Time</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #48bb78;">7</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Pages</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #48bb78;">100%</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Complete</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="https://rentahuman.vercel.app" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Live Site</a>
+                            <a href="live/rentahuman-demo.html" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); text-decoration: none; font-size: 0.9rem;">Demo Page</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ImmerseForge -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🏔️</span>
+                            ImmerseForge
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            Tour management system with GPS photo tracking, client portals, and admin dashboard. Multiple active components in development.
+                        </div>
+                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">4</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Components</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">3</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Commits Ahead</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">2.3K</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;">Lines of Code</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="https://immerseforge.com" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Main Site</a>
+                            <a href="https://dev2.immerseforge.com" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); text-decoration: none; font-size: 0.9rem;">Dev Site</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- StreetTeamsCo -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🎯</span>
+                            StreetTeamsCo
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            Street team marketing platform. Website in development for college campus marketing services.
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="https://streetteamsco.com" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Visit Site</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CollegeMarketing.co -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🎓</span>
+                            CollegeMarketing.co
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Building</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            College marketing services platform. Website development in progress.
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="https://collegemarketing.co" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Visit Site</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marketing Sites -->
+            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">📢 Marketing Sites</h2>
+            <div class="dashboard-grid" style="margin-bottom: 2rem;">
+                <!-- Air Fresh Marketing -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🌬️</span>
+                            Air Fresh Marketing
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Launching Soon</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            Marketing agency website with AI-powered content generation and client portal.
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="https://dev2.airfreshmarketing.com" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Dev Site</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Humming Agent AI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🐝</span>
+                            Humming Agent AI
+                        </div>
+                        <span class="status-indicator" style="background: rgba(102, 126, 234, 0.2); color: #667eea;">Active Development</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            AI agency platform showcasing autonomous employee capabilities and custom AI solutions.
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="https://hummingagent.ai" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Main Site</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard & Tools -->
+            <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-primary);">🛠️ Internal Tools</h2>
+            <div class="dashboard-grid">
+                <!-- Pepper's Dashboard V2 Demo -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🌶️</span>
+                            Dashboard V2 Demo
+                        </div>
+                        <span class="status-indicator" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55;">Testing</span>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            Alternative dashboard layout demo with unified metrics view.
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="pepper-dashboard-v2.html" target="_blank" style="padding: 0.5rem 1rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; font-size: 0.9rem;">Open Demo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kanban View -->
+        <div id="view-kanban" class="view">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">📋 Kanban Board</h1>
+                <p class="dashboard-subtitle">Project & Channel Task Management</p>
+            </div>
+
+            <!-- Filter Controls -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap; align-items: center;">
+                    <!-- View Mode -->
+                    <div>
+                        <label style="display: block; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">View Mode:</label>
+                        <select id="kanban-view-mode" style="background: var(--bg-secondary); color: white; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.95rem;">
+                            <option value="all">All Tasks</option>
+                            <option value="project">By Project</option>
+                            <option value="channel">By Slack Channel</option>
+                        </select>
+                    </div>
+
+                    <!-- Project Filter -->
+                    <div id="project-filter-container" style="display: none;">
+                        <label style="display: block; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">Project:</label>
+                        <select id="kanban-project-filter" style="background: var(--bg-secondary); color: white; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.95rem;">
+                            <option value="">Select Project...</option>
+                            <option value="atlas">⚡ ATLAS AI Employee</option>
+                            <option value="bloom">🌸 BLOOM Proposal System</option>
+                            <option value="nectar">🍯 NECTAR CRM</option>
+                            <option value="rentahuman">💼 RentAHuman</option>
+                            <option value="immerseforge">🏔️ ImmerseForge</option>
+                            <option value="streetteams">🎯 StreetTeamsCo</option>
+                            <option value="collegemarketing">🎓 CollegeMarketing.co</option>
+                            <option value="airfresh">🌬️ Air Fresh Marketing</option>
+                            <option value="hummingagent">🐝 Humming Agent AI</option>
+                        </select>
+                    </div>
+
+                    <!-- Channel Filter -->
+                    <div id="channel-filter-container" style="display: none;">
+                        <label style="display: block; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">Slack Channel:</label>
+                        <select id="kanban-channel-filter" style="background: var(--bg-secondary); color: white; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.95rem;">
+                            <option value="">Select Channel...</option>
+                            <option value="chief-of-staff">#chief-of-staff</option>
+                            <option value="labs">#labs</option>
+                            <option value="air-fresh">#air-fresh</option>
+                            <option value="immerse-forge-dev">#immerse-forge-dev</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kanban Board -->
+            <div id="kanban-board" style="display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 2rem;">
+                <!-- Backlog Column -->
+                <div class="kanban-column" data-status="backlog" style="min-width: 300px; flex: 1;">
+                    <div style="background: rgba(160, 174, 192, 0.1); border: 1px solid rgba(160, 174, 192, 0.3); border-radius: 12px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.1rem; color: #a0aec0; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>📥</span>
+                                <span>Backlog</span>
+                            </h3>
+                            <span class="kanban-count" style="background: rgba(160, 174, 192, 0.2); color: #a0aec0; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
+                        </div>
+                        <div class="kanban-cards" style="min-height: 100px;"></div>
+                    </div>
+                </div>
+
+                <!-- To Do Column -->
+                <div class="kanban-column" data-status="todo" style="min-width: 300px; flex: 1;">
+                    <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 12px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.1rem; color: #667eea; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>📝</span>
+                                <span>To Do</span>
+                            </h3>
+                            <span class="kanban-count" style="background: rgba(102, 126, 234, 0.2); color: #667eea; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
+                        </div>
+                        <div class="kanban-cards" style="min-height: 100px;"></div>
+                    </div>
+                </div>
+
+                <!-- In Progress Column -->
+                <div class="kanban-column" data-status="in-progress" style="min-width: 300px; flex: 1;">
+                    <div style="background: rgba(246, 173, 85, 0.1); border: 1px solid rgba(246, 173, 85, 0.3); border-radius: 12px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.1rem; color: #f6ad55; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>⚡</span>
+                                <span>In Progress</span>
+                            </h3>
+                            <span class="kanban-count" style="background: rgba(246, 173, 85, 0.2); color: #f6ad55; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
+                        </div>
+                        <div class="kanban-cards" style="min-height: 100px;"></div>
+                    </div>
+                </div>
+
+                <!-- Testing Column -->
+                <div class="kanban-column" data-status="testing" style="min-width: 300px; flex: 1;">
+                    <div style="background: rgba(159, 122, 234, 0.1); border: 1px solid rgba(159, 122, 234, 0.3); border-radius: 12px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.1rem; color: #9f7aea; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🧪</span>
+                                <span>Testing</span>
+                            </h3>
+                            <span class="kanban-count" style="background: rgba(159, 122, 234, 0.2); color: #9f7aea; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
+                        </div>
+                        <div class="kanban-cards" style="min-height: 100px;"></div>
+                    </div>
+                </div>
+
+                <!-- Done Column -->
+                <div class="kanban-column" data-status="done" style="min-width: 300px; flex: 1;">
+                    <div style="background: rgba(72, 187, 120, 0.1); border: 1px solid rgba(72, 187, 120, 0.3); border-radius: 12px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.1rem; color: #48bb78; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>✅</span>
+                                <span>Done</span>
+                            </h3>
+                            <span class="kanban-count" style="background: rgba(72, 187, 120, 0.2); color: #48bb78; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600;">0</span>
+                        </div>
+                        <div class="kanban-cards" style="min-height: 100px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOOM View -->
+        <div id="view-bloom" class="view">
+            <iframe src="live/bloom.html" style="width: 100%; height: calc(100vh - 40px); border: none; border-radius: 12px;"></iframe>
+        </div>
+
+        <!-- NECTAR View -->
+        <div id="view-nectar" class="view">
+            <iframe src="live/nectar.html" style="width: 100%; height: calc(100vh - 40px); border: none; border-radius: 12px;"></iframe>
+        </div>
+    </main>
+
+    <script>
+        // Login System
+        const CORRECT_PASSWORD = 'pepper';
+        const CORRECT_PIN = '2222';
+
+        function addPinDigit(digit) {
+            const pinInput = document.getElementById('loginPIN');
+            if (pinInput.value.length < 4) {
+                pinInput.value += digit;
+            }
+        }
+
+        function deletePinDigit() {
+            const pinInput = document.getElementById('loginPIN');
+            pinInput.value = pinInput.value.slice(0, -1);
+        }
+
+        function clearPin() {
+            document.getElementById('loginPIN').value = '';
+        }
+
+        function attemptLogin() {
+            const password = document.getElementById('loginPassword').value;
+            const pin = document.getElementById('loginPIN').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (password === CORRECT_PASSWORD && pin === CORRECT_PIN) {
+                // Success
+                sessionStorage.setItem('pepperLoggedIn', 'true');
+                document.body.classList.remove('logged-out');
+                document.getElementById('loginScreen').classList.add('hidden');
+                errorDiv.textContent = '';
+            } else {
+                // Error
+                errorDiv.textContent = '❌ Invalid credentials. Try again.';
+                document.getElementById('loginPassword').value = '';
+                document.getElementById('loginPIN').value = '';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('pepperLoggedIn');
+            document.body.classList.add('logged-out');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginPIN').value = '';
+        }
+
+        // Check login status on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('pepperLoggedIn') === 'true') {
+                document.body.classList.remove('logged-out');
+                document.getElementById('loginScreen').classList.add('hidden');
+            }
+        });
+
+        // Allow Enter key to login
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') attemptLogin();
+            });
+        });
+
+        // Sidebar Toggle
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mainContent = document.getElementById('mainContent');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            menuToggle.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show');
+            mainContent.classList.toggle('sidebar-open');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            menuToggle.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+            mainContent.classList.remove('sidebar-open');
+        });
+
+        // View Switching
+        const navItems = document.querySelectorAll('.nav-item[data-view]');
+        const views = document.querySelectorAll('.view');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const viewId = item.dataset.view;
+
+                // Update active nav item
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                // Switch views
+                views.forEach(view => view.classList.remove('active'));
+                document.getElementById(`view-${viewId}`).classList.add('active');
+
+                // Close sidebar on mobile
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('open');
+                    menuToggle.classList.remove('open');
+                    sidebarOverlay.classList.remove('show');
+                    mainContent.classList.remove('sidebar-open');
+                }
+            });
+        });
+
+        // Weather emoji mapping
+        function getWeatherEmoji(forecast) {
+            const lower = forecast.toLowerCase();
+            if (lower.includes('snow')) return '❄️';
+            if (lower.includes('rain')) return '🌧️';
+            if (lower.includes('thunder') || lower.includes('storm')) return '⛈️';
+            if (lower.includes('sunny') || lower.includes('clear')) return '☀️';
+            if (lower.includes('partly cloudy')) return '⛅';
+            if (lower.includes('cloudy') || lower.includes('overcast')) return '☁️';
+            if (lower.includes('fog')) return '🌫️';
+            if (lower.includes('wind')) return '💨';
+            return '🌤️';
+        }
+
+        // Fetch NOAA Weather Data
+        async function updateWeather() {
+            try {
+                const response = await fetch('https://api.weather.gov/gridpoints/BOU/64,58/forecast');
+                const data = await response.json();
+                const periods = data.properties.periods.slice(0, 7);
+                
+                const current = periods[0];
+                const emoji = getWeatherEmoji(current.shortForecast);
+                
+                let html = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">${emoji}</div>
+                        <div class="stat-large">${current.temperature}°F</div>
+                        <div class="stat-label">${current.shortForecast}</div>
+                        <div class="stat-label" style="margin-top: 0.5rem;">
+                            ${current.windSpeed} ${current.windDirection} • ${current.probabilityOfPrecipitation.value || 0}% precip
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('weatherData').innerHTML = html;
+                
+                // Full weather view
+                let fullHtml = html + `
+                    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <div class="stat-label" style="margin-bottom: 1rem; font-weight: 600;">📅 Forecast</div>
+                `;
+                
+                periods.forEach((period, idx) => {
+                    if (idx === 0) return;
+                    const dayEmoji = getWeatherEmoji(period.shortForecast);
+                    fullHtml += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span style="font-size: 1.5rem;">${dayEmoji}</span>
+                                <div>
+                                    <div style="font-weight: 600;">${period.name}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">${period.shortForecast}</div>
+                                </div>
+                            </div>
+                            <div style="font-weight: 600; font-size: 1.1rem;">${period.temperature}°</div>
+                        </div>
+                    `;
+                });
+                
+                fullHtml += '</div>';
+                document.getElementById('weatherDataFull').innerHTML = fullHtml;
+            } catch (error) {
+                console.error('Weather fetch error:', error);
+                document.getElementById('weatherData').innerHTML = '<p>Unable to load weather data</p>';
+            }
+        }
+
+        // Fetch HummingAgent Tasks
+        async function updateHummingTasks() {
+            try {
+                const response = await fetch('https://project.hummingagent.ai/api/tasks?project_id=5d3ad50f-d8ba-4a1e-8a18-ee2d6e8adee5', {
+                    headers: {
+                        'Authorization': 'Bearer pd_lIcJX2dmXIs0jkOzP3v3iiIRLRnuv2yt'
+                    }
+                });
+                const data = await response.json();
+                
+                let html = '';
+                const tasks = data.tasks || [];
+                const notStarted = tasks.filter(t => t.status === 'not-started').slice(0, 5);
+                
+                if (notStarted.length === 0) {
+                    html = '<p style="color: var(--text-secondary);">No pending tasks</p>';
+                } else {
+                    notStarted.forEach(task => {
+                        html += `<p style="margin-bottom: 0.5rem;">• ${task.title}</p>`;
+                    });
+                }
+                
+                document.getElementById('hummingTasks').innerHTML = html;
+                document.getElementById('hummingTasksFull').innerHTML = html;
+            } catch (error) {
+                document.getElementById('hummingTasks').innerHTML = '<p style="color: var(--text-secondary);">Unable to load tasks</p>';
+            }
+        }
+
+        // Initial load (after login)
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('pepperLoggedIn') === 'true') {
+                updateWeather();
+                updateHummingTasks();
+                setInterval(updateWeather, 1800000); // 30 min
+                setInterval(updateHummingTasks, 300000); // 5 min
+            }
+
+            // Kanban Board System
+            const kanbanData = {
+                tasks: [
+                    // ATLAS Tasks
+                    { id: 1, title: 'Build ATLAS research engine', project: 'atlas', channel: 'labs', status: 'done', priority: 'high', description: 'Apollo API integration for prospect research' },
+                    { id: 2, title: 'Generate personalized landing pages', project: 'atlas', channel: 'labs', status: 'done', priority: 'high', description: '5 custom landing pages created' },
+                    { id: 3, title: 'Test email outreach automation', project: 'atlas', channel: 'labs', status: 'testing', priority: 'medium', description: 'Validate email generation quality' },
+                    { id: 4, title: 'Deploy ATLAS to production', project: 'atlas', channel: 'labs', status: 'todo', priority: 'high', description: 'Gmail API + live sending' },
+                    
+                    // RentAHuman Tasks
+                    { id: 5, title: 'Build RentAHuman UI', project: 'rentahuman', channel: 'labs', status: 'done', priority: 'high', description: 'Complete Vercel deployment' },
+                    { id: 6, title: 'Set up Supabase database', project: 'rentahuman', channel: 'labs', status: 'in-progress', priority: 'high', description: 'Apply database schema' },
+                    { id: 7, title: 'Integrate Stripe payments', project: 'rentahuman', channel: 'labs', status: 'backlog', priority: 'medium', description: 'Payment processing system' },
+                    { id: 8, title: 'Add worker verification', project: 'rentahuman', channel: 'labs', status: 'backlog', priority: 'low', description: 'Background checks & reviews' },
+                    
+                    // ImmerseForge Tasks
+                    { id: 9, title: 'Build help pages', project: 'immerseforge', channel: 'immerse-forge-dev', status: 'done', priority: 'medium', description: '7 categories, 26 Q&A items' },
+                    { id: 10, title: 'Deploy 3 pending commits', project: 'immerseforge', channel: 'immerse-forge-dev', status: 'in-progress', priority: 'high', description: '2,300+ lines of code' },
+                    { id: 11, title: 'Fix calendar integration', project: 'immerseforge', channel: 'immerse-forge-dev', status: 'testing', priority: 'high', description: 'Event booking system' },
+                    { id: 12, title: 'GPS photo tracking', project: 'immerseforge', channel: 'immerse-forge-dev', status: 'backlog', priority: 'medium', description: 'Mobile app feature' },
+                    
+                    // Air Fresh Tasks
+                    { id: 13, title: 'Launch dev2.airfreshmarketing.com', project: 'airfresh', channel: 'air-fresh', status: 'in-progress', priority: 'high', description: 'New website deployment' },
+                    { id: 14, title: 'Follow up with Mark Edgar', project: 'airfresh', channel: 'air-fresh', status: 'todo', priority: 'high', description: 'Depop NYC training confirmation' },
+                    { id: 15, title: 'Quote for Trung Pham', project: 'airfresh', channel: 'air-fresh', status: 'todo', priority: 'high', description: 'Trade show MC role' },
+                    { id: 16, title: 'Setup email management', project: 'airfresh', channel: 'chief-of-staff', status: 'backlog', priority: 'medium', description: '5 email accounts' },
+                    
+                    // Humming Agent Tasks
+                    { id: 17, title: 'Build Pepper dashboard', project: 'hummingagent', channel: 'chief-of-staff', status: 'in-progress', priority: 'high', description: 'Command center with kanban' },
+                    { id: 18, title: 'Add Labs section', project: 'hummingagent', channel: 'chief-of-staff', status: 'done', priority: 'high', description: 'All projects visible' },
+                    { id: 19, title: 'Security hardening', project: 'hummingagent', channel: 'chief-of-staff', status: 'testing', priority: 'critical', description: 'Rotate exposed credentials' },
+                    { id: 20, title: 'Deploy to correct Vercel', project: 'hummingagent', channel: 'chief-of-staff', status: 'done', priority: 'high', description: 'pepper-dashboard.vercel.app' },
+                ]
+            };
+
+            function initKanban() {
+                const viewMode = document.getElementById('kanban-view-mode');
+                const projectFilter = document.getElementById('kanban-project-filter');
+                const channelFilter = document.getElementById('kanban-channel-filter');
+                const projectContainer = document.getElementById('project-filter-container');
+                const channelContainer = document.getElementById('channel-filter-container');
+
+                // View mode change handler
+                viewMode.addEventListener('change', () => {
+                    const mode = viewMode.value;
+                    projectContainer.style.display = mode === 'project' ? 'block' : 'none';
+                    channelContainer.style.display = mode === 'channel' ? 'block' : 'none';
+                    renderKanban();
+                });
+
+                // Filter change handlers
+                projectFilter.addEventListener('change', renderKanban);
+                channelFilter.addEventListener('change', renderKanban);
+
+                renderKanban();
+            }
+
+            function renderKanban() {
+                const viewMode = document.getElementById('kanban-view-mode').value;
+                const projectFilter = document.getElementById('kanban-project-filter').value;
+                const channelFilter = document.getElementById('kanban-channel-filter').value;
+
+                // Filter tasks
+                let filteredTasks = kanbanData.tasks;
+                if (viewMode === 'project' && projectFilter) {
+                    filteredTasks = filteredTasks.filter(task => task.project === projectFilter);
+                }
+                if (viewMode === 'channel' && channelFilter) {
+                    filteredTasks = filteredTasks.filter(task => task.channel === channelFilter);
+                }
+
+                // Clear all columns
+                document.querySelectorAll('.kanban-cards').forEach(container => {
+                    container.innerHTML = '';
+                });
+
+                // Render tasks
+                filteredTasks.forEach(task => {
+                    const card = createKanbanCard(task);
+                    const column = document.querySelector(`.kanban-column[data-status="${task.status}"] .kanban-cards`);
+                    if (column) {
+                        column.appendChild(card);
+                    }
+                });
+
+                // Update counts
+                document.querySelectorAll('.kanban-column').forEach(column => {
+                    const status = column.dataset.status;
+                    const count = column.querySelectorAll('.kanban-card').length;
+                    column.querySelector('.kanban-count').textContent = count;
+                });
+            }
+
+            function createKanbanCard(task) {
+                const card = document.createElement('div');
+                card.className = 'kanban-card';
+                card.dataset.taskId = task.id;
+                card.draggable = true;
+
+                const priorityColors = {
+                    critical: '#fc8181',
+                    high: '#f6ad55',
+                    medium: '#667eea',
+                    low: '#a0aec0'
+                };
+
+                const projectIcons = {
+                    atlas: '⚡',
+                    rentahuman: '💼',
+                    immerseforge: '🏔️',
+                    streetteams: '🎯',
+                    collegemarketing: '🎓',
+                    airfresh: '🌬️',
+                    hummingagent: '🐝'
+                };
+
+                card.innerHTML = `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; cursor: move; transition: all 0.2s ease;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 1.2rem;">${projectIcons[task.project] || '📌'}</span>
+                                <span style="padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; background: ${priorityColors[task.priority]}22; color: ${priorityColors[task.priority]};">${task.priority.toUpperCase()}</span>
+                            </div>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">#${task.channel}</span>
+                        </div>
+                        <div style="font-weight: 600; margin-bottom: 0.5rem; line-height: 1.4;">${task.title}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;">${task.description}</div>
+                    </div>
+                `;
+
+                // Drag and drop events
+                card.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', task.id);
+                    card.style.opacity = '0.5';
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.style.opacity = '1';
+                });
+
+                return card;
+            }
+
+            // Drag and drop for columns
+            document.addEventListener('DOMContentLoaded', () => {
+                initKanban();
+
+                document.querySelectorAll('.kanban-cards').forEach(container => {
+                    container.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                    });
+
+                    container.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        const taskId = parseInt(e.dataTransfer.getData('text/plain'));
+                        const task = kanbanData.tasks.find(t => t.id === taskId);
+                        const newStatus = container.closest('.kanban-column').dataset.status;
+                        
+                        if (task) {
+                            task.status = newStatus;
+                            renderKanban();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

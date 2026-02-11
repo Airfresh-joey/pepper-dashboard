@@ -3,293 +3,638 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlas - AI Employee Widget (Mockup)</title>
+    <title>ATLAS ⚡ AI Sales Employee - Live Demo</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --bg-card: #252b48;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --accent: #667eea;
+            --success: #48bb78;
+            --warning: #f6ad55;
+            --danger: #fc8181;
+            --border: rgba(255, 255, 255, 0.1);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #0f0f0f;
-            color: #fff;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f3a 100%);
+            color: var(--text-primary);
             min-height: 100vh;
         }
-        
-        .atlas-widget {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 1px solid #2a2a4e;
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            height: 100vh;
         }
-        
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
         .header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #2a2a4e;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
         }
-        
-        .header h2 {
-            font-size: 20px;
-            font-weight: 600;
+
+        .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 1rem;
         }
-        
+
+        .logo-icon { font-size: 2.5rem; }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline { color: var(--text-secondary); font-size: 0.95rem; }
+
         .status-badge {
-            background: #10b981;
-            color: #fff;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(72, 187, 120, 0.2);
+            color: var(--success);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
-        
-        .status-badge::before {
-            content: '';
+
+        .status-dot {
             width: 8px;
             height: 8px;
-            background: #fff;
+            background: var(--success);
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            50% { opacity: 0.5; }
         }
-        
-        .uptime {
-            color: #94a3b8;
-            font-size: 13px;
-            margin-top: 8px;
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
-        
-        .stats {
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+        .stat-label { color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.25rem; }
+
+        /* Current Prospect */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .prospect-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .prospect-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .prospect-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .prospect-info h3 { font-size: 1.2rem; margin-bottom: 0.25rem; }
+        .prospect-company { color: var(--text-secondary); font-size: 0.9rem; }
+
+        .prospect-details {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 20px 0;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
         }
-        
-        .stat-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 16px;
-        }
-        
-        .stat-label {
-            color: #94a3b8;
-            font-size: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-        }
-        
-        .activity-section {
-            margin-top: 20px;
-        }
-        
-        .section-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #94a3b8;
-            margin-bottom: 12px;
+
+        .detail-item label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
         }
-        
-        .current-action {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
+
+        .detail-item span { font-size: 0.9rem; }
+
+        /* Progress Steps */
+        .progress-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
         }
-        
-        .action-title {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-bottom: 8px;
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
         }
-        
-        .action-content {
-            font-size: 15px;
-            font-weight: 500;
-            margin-bottom: 12px;
+
+        .step:last-child { border-bottom: none; }
+
+        .step-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
-        
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            overflow: hidden;
+
+        .step-icon.done { background: rgba(72, 187, 120, 0.2); }
+        .step-icon.active { background: rgba(102, 126, 234, 0.2); animation: pulse 1.5s infinite; }
+        .step-icon.pending { background: rgba(160, 174, 192, 0.2); }
+
+        .step-content { flex: 1; }
+        .step-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; }
+        .step-desc { color: var(--text-secondary); font-size: 0.85rem; }
+
+        /* Activity Feed (Right Panel) */
+        .activity-panel {
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            width: 87%;
-            border-radius: 3px;
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-        
-        .next-action {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 16px;
+
+        .panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .next-action-text {
-            font-size: 14px;
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
-        .next-action-time {
-            color: #94a3b8;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-        
-        .eta {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 12px;
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--danger);
+            font-size: 0.8rem;
             font-weight: 600;
         }
-        
-        .controls {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            animation: blink 1s infinite;
         }
-        
-        .btn {
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .activity-feed {
             flex: 1;
-            padding: 12px;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .activity-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .activity-type {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .activity-type.research { color: #667eea; }
+        .activity-type.linkedin { color: #0077b5; }
+        .activity-type.email { color: #f6ad55; }
+        .activity-type.landing { color: #48bb78; }
+        .activity-type.thinking { color: #9f7aea; }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .activity-content {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .activity-content strong { color: var(--text-primary); }
+
+        /* Chat Input */
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .chat-input input::placeholder { color: var(--text-secondary); }
+
+        .chat-input button {
+            padding: 0.75rem 1.25rem;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
             border: none;
             border-radius: 8px;
-            font-size: 14px;
+            color: white;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
+        .chat-input button:hover { transform: translateY(-2px); }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
         .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: #fff;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            color: white;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
-        }
-        
+
         .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
         }
-        
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.15);
-        }
-        
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-        
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.3);
+
+        .btn:hover { transform: translateY(-2px); }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+            .activity-panel { height: 400px; }
         }
     </style>
 </head>
 <body>
-    <div class="atlas-widget">
-        <div class="header">
-            <div>
-                <h2>🤖 ATLAS</h2>
-                <div class="uptime">Uptime: 47 hours</div>
-            </div>
-            <div class="status-badge">ACTIVE</div>
-        </div>
-        
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-label">📊 Prospects Today</div>
-                <div class="stat-value">24</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">📧 Emails Sent</div>
-                <div class="stat-value">18</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">💬 Responses</div>
-                <div class="stat-value">3</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">📅 Meetings</div>
-                <div class="stat-value">1</div>
-            </div>
-        </div>
-        
-        <div class="activity-section">
-            <div class="section-title">🔄 Current Action</div>
-            <div class="current-action">
-                <div class="action-title">Researching</div>
-                <div class="action-content">"Apex Construction LLC" — Denver, CO</div>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <div>
+                        <div class="logo-text">ATLAS</div>
+                        <div class="tagline">AI Sales Employee - Autonomous Outreach</div>
+                    </div>
+                </div>
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    Running
                 </div>
             </div>
-            
-            <div class="section-title">⏭️ Next Up</div>
-            <div class="next-action">
-                <div>
-                    <div class="next-action-text">Send email to Sarah Chen</div>
-                    <div class="next-action-time">TechFlow Solutions (IT Services)</div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-prospects">12</div>
+                    <div class="stat-label">Prospects Today</div>
                 </div>
-                <div class="eta">2 min</div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-emails">8</div>
+                    <div class="stat-label">Emails Sent</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-linkedin">5</div>
+                    <div class="stat-label">LinkedIn Actions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-pages">12</div>
+                    <div class="stat-label">Landing Pages</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="runDemo()">▶️ Run Demo</button>
+                <button class="btn btn-secondary" onclick="pauseDemo()">⏸️ Pause</button>
+                <button class="btn btn-secondary" onclick="resetDemo()">🔄 Reset</button>
+            </div>
+
+            <div class="section-title">🎯 Current Prospect</div>
+            <div class="prospect-card">
+                <div class="prospect-header">
+                    <div class="prospect-avatar" id="prospect-avatar">JD</div>
+                    <div class="prospect-info">
+                        <h3 id="prospect-name">James Davidson</h3>
+                        <div class="prospect-company" id="prospect-company">VP of Marketing @ TechStart Inc</div>
+                    </div>
+                </div>
+                <div class="prospect-details">
+                    <div class="detail-item">
+                        <label>Industry</label>
+                        <span id="prospect-industry">SaaS / Technology</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Company Size</label>
+                        <span id="prospect-size">50-200 employees</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Location</label>
+                        <span id="prospect-location">San Francisco, CA</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Match Score</label>
+                        <span id="prospect-score" style="color: #48bb78;">94% Match</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">📋 Process Steps</div>
+            <div class="progress-card">
+                <div class="step">
+                    <div class="step-icon done">✅</div>
+                    <div class="step-content">
+                        <div class="step-title">Research & Qualification</div>
+                        <div class="step-desc">Analyzed company, role, and fit score</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-icon done">✅</div>
+                    <div class="step-content">
+                        <div class="step-title">LinkedIn Profile Analysis</div>
+                        <div class="step-desc">Extracted interests, posts, and connections</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-icon active" id="step-3-icon">🔄</div>
+                    <div class="step-content">
+                        <div class="step-title" id="step-3-title">Generating Personalized Email</div>
+                        <div class="step-desc" id="step-3-desc">Creating custom outreach based on research...</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-icon pending" id="step-4-icon">⏳</div>
+                    <div class="step-content">
+                        <div class="step-title">LinkedIn Connection Request</div>
+                        <div class="step-desc">Send personalized connection with note</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-icon pending" id="step-5-icon">⏳</div>
+                    <div class="step-content">
+                        <div class="step-title">Generate Landing Page</div>
+                        <div class="step-desc">Create personalized landing page for prospect</div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="controls">
-            <button class="btn btn-primary">VIEW PIPELINE</button>
-            <button class="btn btn-secondary">SETTINGS</button>
-            <button class="btn btn-danger">PAUSE</button>
+
+        <div class="activity-panel">
+            <div class="panel-header">
+                <div class="panel-title">📡 Live Activity Feed</div>
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    LIVE
+                </div>
+            </div>
+            <div class="activity-feed" id="activityFeed">
+                <!-- Activity items will be added here -->
+            </div>
+            <div class="chat-input">
+                <input type="text" placeholder="Ask ATLAS anything..." id="chatInput" onkeypress="if(event.key==='Enter')sendChat()">
+                <button onclick="sendChat()">Send</button>
+            </div>
         </div>
     </div>
+
+    <script>
+        let demoRunning = false;
+        let demoInterval = null;
+
+        const activities = [
+            { type: 'thinking', icon: '🧠', text: 'Analyzing prospect database...' },
+            { type: 'research', icon: '🔍', text: 'Found new prospect: <strong>James Davidson</strong> - VP Marketing at TechStart Inc' },
+            { type: 'research', icon: '📊', text: 'Researching company: TechStart Inc - Series B, $15M raised, 120 employees' },
+            { type: 'linkedin', icon: '👤', text: 'Analyzing LinkedIn profile - 15 years marketing experience, previously at Salesforce' },
+            { type: 'linkedin', icon: '📝', text: 'Found recent post about "AI in marketing automation" - high engagement' },
+            { type: 'thinking', icon: '💡', text: 'Identified pain points: scaling marketing ops, need for automation' },
+            { type: 'email', icon: '✉️', text: 'Generating personalized email with AI marketing angle...' },
+            { type: 'email', icon: '📧', text: 'Email drafted: Subject "Scaling TechStart\'s marketing with AI"' },
+            { type: 'linkedin', icon: '🤝', text: 'Preparing LinkedIn connection request with personalized note' },
+            { type: 'linkedin', icon: '✅', text: 'Connection request sent: "Hi James, loved your post on AI marketing..."' },
+            { type: 'landing', icon: '🌐', text: 'Generating personalized landing page for TechStart Inc...' },
+            { type: 'landing', icon: '🎨', text: 'Landing page created: techstart.atlas-demo.com' },
+            { type: 'email', icon: '🚀', text: 'Email sent to james.davidson@techstart.io' },
+            { type: 'thinking', icon: '📈', text: 'Prospect added to follow-up sequence (Day 3, Day 7)' },
+            { type: 'research', icon: '🔄', text: 'Moving to next prospect: Sarah Chen - Director of Growth at CloudScale' }
+        ];
+
+        let activityIndex = 0;
+
+        function addActivity(activity) {
+            const feed = document.getElementById('activityFeed');
+            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+                <div class="activity-header">
+                    <div class="activity-type ${activity.type}">${activity.icon} ${activity.type.toUpperCase()}</div>
+                    <div class="activity-time">${time}</div>
+                </div>
+                <div class="activity-content">${activity.text}</div>
+            `;
+            
+            feed.insertBefore(item, feed.firstChild);
+            
+            // Update stats randomly
+            if (activity.type === 'email') {
+                document.getElementById('stat-emails').textContent = parseInt(document.getElementById('stat-emails').textContent) + 1;
+            } else if (activity.type === 'linkedin') {
+                document.getElementById('stat-linkedin').textContent = parseInt(document.getElementById('stat-linkedin').textContent) + 1;
+            } else if (activity.type === 'landing') {
+                document.getElementById('stat-pages').textContent = parseInt(document.getElementById('stat-pages').textContent) + 1;
+            } else if (activity.type === 'research' && activity.text.includes('Found new')) {
+                document.getElementById('stat-prospects').textContent = parseInt(document.getElementById('stat-prospects').textContent) + 1;
+            }
+        }
+
+        function runDemo() {
+            if (demoRunning) return;
+            demoRunning = true;
+            
+            addActivity({ type: 'thinking', icon: '🚀', text: 'ATLAS started - beginning autonomous outreach sequence' });
+            
+            demoInterval = setInterval(() => {
+                if (activityIndex < activities.length) {
+                    addActivity(activities[activityIndex]);
+                    activityIndex++;
+                    
+                    // Update progress steps
+                    if (activityIndex === 7) {
+                        document.getElementById('step-3-icon').textContent = '✅';
+                        document.getElementById('step-3-icon').className = 'step-icon done';
+                        document.getElementById('step-4-icon').textContent = '🔄';
+                        document.getElementById('step-4-icon').className = 'step-icon active';
+                    } else if (activityIndex === 10) {
+                        document.getElementById('step-4-icon').textContent = '✅';
+                        document.getElementById('step-4-icon').className = 'step-icon done';
+                        document.getElementById('step-5-icon').textContent = '🔄';
+                        document.getElementById('step-5-icon').className = 'step-icon active';
+                    } else if (activityIndex === 12) {
+                        document.getElementById('step-5-icon').textContent = '✅';
+                        document.getElementById('step-5-icon').className = 'step-icon done';
+                    }
+                } else {
+                    activityIndex = 0;
+                    addActivity({ type: 'thinking', icon: '🔄', text: 'Cycle complete - starting next prospect batch...' });
+                }
+            }, 2500);
+        }
+
+        function pauseDemo() {
+            demoRunning = false;
+            if (demoInterval) clearInterval(demoInterval);
+            addActivity({ type: 'thinking', icon: '⏸️', text: 'ATLAS paused by user' });
+        }
+
+        function resetDemo() {
+            pauseDemo();
+            activityIndex = 0;
+            document.getElementById('activityFeed').innerHTML = '';
+            document.getElementById('stat-prospects').textContent = '12';
+            document.getElementById('stat-emails').textContent = '8';
+            document.getElementById('stat-linkedin').textContent = '5';
+            document.getElementById('stat-pages').textContent = '12';
+            
+            // Reset steps
+            document.getElementById('step-3-icon').textContent = '🔄';
+            document.getElementById('step-3-icon').className = 'step-icon active';
+            document.getElementById('step-4-icon').textContent = '⏳';
+            document.getElementById('step-4-icon').className = 'step-icon pending';
+            document.getElementById('step-5-icon').textContent = '⏳';
+            document.getElementById('step-5-icon').className = 'step-icon pending';
+            
+            addActivity({ type: 'thinking', icon: '🔄', text: 'Demo reset - ready to run' });
+        }
+
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addActivity({ type: 'thinking', icon: '👤', text: `User: ${message}` });
+            input.value = '';
+            
+            setTimeout(() => {
+                addActivity({ type: 'thinking', icon: '🤖', text: 'ATLAS: I\'m currently processing prospects. I\'ve sent 8 personalized emails and created 12 landing pages today. Would you like me to focus on a specific industry or company size?' });
+            }, 1000);
+        }
+
+        // Auto-start demo on load
+        setTimeout(() => {
+            addActivity({ type: 'thinking', icon: '⚡', text: 'ATLAS AI Employee initialized and ready' });
+            addActivity({ type: 'thinking', icon: '📋', text: 'Connected to: Apollo API, LinkedIn, Gmail, Landing Page Generator' });
+        }, 500);
+    </script>
 </body>
 </html>
